@@ -40,8 +40,8 @@ h1 span{color:var(--accent)}
 .groupbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .groupbar b{color:var(--ink);font-weight:600}
 .code{font:700 13px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--ink)}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
-.tabs button{border:none;min-height:40px;border-radius:9px;font:600 14px var(--body);background:none;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.tabs button{border:none;min-height:40px;border-radius:9px;font:600 13.5px var(--body);padding:8px 4px;background:none;color:var(--muted)}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .chip{font:600 13px var(--body);padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);white-space:nowrap;cursor:pointer;min-height:0}
@@ -142,6 +142,39 @@ td.name{font-weight:600}
 .rank .meta2{font-size:12.5px;color:var(--muted);grid-column:2/3;font-variant-numeric:tabular-nums}
 .rank .won{font-family:var(--display);font-weight:700;font-size:24px;color:var(--win);text-align:right;grid-row:1/3;grid-column:3;font-variant-numeric:tabular-nums}
 .rank .won small{display:block;font:500 11px var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+select.pick{font:600 14px var(--body);padding:8px 10px;border-radius:10px;background:var(--surface);min-width:0;width:auto;max-width:100%}
+.live-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.live-tools .sp{flex:1}
+details.slip>summary{list-style:none;cursor:pointer}
+details.slip>summary::-webkit-details-marker{display:none}
+.sum{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:12px 14px;align-items:center}
+.sum .ttl{font-weight:600;min-width:0}
+.sum .ttl small{display:block;font-weight:500;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sum .right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.dots{display:flex;gap:4px;flex-wrap:wrap;grid-column:1/-1}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--track);border:1px solid var(--line)}
+.dots i.won{background:var(--win);border-color:var(--win)}.dots i.lost{background:var(--loss);border-color:var(--loss)}.dots i.live{background:var(--live);border-color:var(--live)}
+.sweat{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+details.slip[open] .sum{border-bottom:1px solid var(--line)}
+.chev{transition:transform .2s;color:var(--muted);font-size:12px}
+details.slip[open] .chev{transform:rotate(180deg)}
+.reacts{display:flex;gap:6px;flex-wrap:wrap;padding:8px 14px;border-top:1px solid var(--line)}
+.react{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 9px;min-height:30px;font-size:14px;font-weight:600;color:var(--ink)}
+.react[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+.react span{font-size:12px;color:var(--muted);margin-left:3px}
+.bell{position:relative}
+.bell b{position:absolute;top:-2px;right:-4px;background:var(--loss);color:#fff;border-radius:999px;font:700 10px var(--body);padding:1px 5px}
+.notif{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.notif:last-child{border-bottom:none}.notif.unread b{color:var(--accent)}
+.notif time{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+.game-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:12px 14px;border-bottom:1px solid var(--line)}
+.game-h b{font-family:var(--display);font-size:20px;text-transform:uppercase}
+.game-h span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.owner{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mem{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.mem:last-child{border-bottom:none}.mem .sp{flex:1}
+.toggle{display:flex;gap:10px;align-items:center;font-size:14px}.toggle input{width:20px;height:20px;flex:none;appearance:auto;-webkit-appearance:checkbox;accent-color:var(--accent,#c4531a);padding:0;margin:0}
 footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (max-width:440px){.c2{grid-column:span 3}.c3{grid-column:span 6}}
 </style>
@@ -175,16 +208,21 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     <div class="groupbar">
       <span>You're <b id="meName"></b></span><span>·</span><span>Group <span class="code" id="groupCode"></span></span>
       <span class="sp"></span>
+      <button type="button" class="ghost bell" id="bellBtn" aria-label="Notifications">🔔<b id="bellCount" hidden>0</b></button>
       <button type="button" class="ghost" id="polyBtn">Connect Polymarket</button>
+      <button type="button" class="ghost" id="membersBtn">Members</button>
       <button type="button" class="ghost" id="inviteBtn">Invite friends</button>
       <button type="button" class="ghost" id="leaveBtn">Switch</button>
     </div>
+    <section class="panel" id="notifPanel" hidden><div class="section-head"><h2>Reactions</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
+    <section class="panel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div></section>
 
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="live" id="tab-live">Live</button>
       <button role="tab" aria-selected="false" data-tab="history" id="tab-history">History</button>
       <button role="tab" aria-selected="false" data-tab="picks" id="tab-picks">Picks</button>
       <button role="tab" aria-selected="false" data-tab="board" id="tab-board">Board</button>
+      <button role="tab" aria-selected="false" data-tab="me" id="tab-me">Me</button>
     </div>
 
     <section class="panel" id="polyPanel" hidden>
@@ -233,8 +271,13 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
         </div>
       </section>
 
-      <div class="section-head"><h2>Open slips</h2>
-        <div class="chips" id="whoFilter"></div></div>
+      <div class="section-head"><h2>Open slips</h2><div class="chips" id="liveView"></div></div>
+      <div class="live-tools">
+        <label class="sr" for="whoSel" style="position:absolute;left:-9999px">Whose slips</label><select class="pick" id="whoSel"></select>
+        <label for="sortSel" style="position:absolute;left:-9999px">Sort</label><select class="pick" id="sortSel">
+          <option value="close">Closest to cashing</option><option value="soon">Starting soonest</option><option value="pay">Biggest payout</option><option value="new">Newest</option></select>
+        <span class="sp"></span><button type="button" class="ghost" id="expandAll">Expand all</button><button type="button" class="ghost" id="collapseAll">Collapse all</button>
+      </div>
       <div class="list" id="liveList"></div>
     </section>
 
@@ -242,6 +285,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     <section id="view-history" hidden style="flex-direction:column;gap:12px">
       <div class="chips" id="histWho"></div>
       <div class="chips" id="histCat"></div>
+      <div class="row-end"><button type="button" class="small" id="exportCsv">Export to spreadsheet (CSV)</button></div>
       <div class="list" id="histList" style="gap:8px"></div>
     </section>
 
@@ -260,9 +304,26 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="cat-grid" id="modelRecord"></div>
     </section>
 
+    <!-- ME (private) -->
+    <section id="view-me" hidden style="flex-direction:column;gap:14px">
+      <div class="panel"><h2>Just you</h2><p>Only you can see this tab. Your Polymarket account totals are read on this phone and never sent to the group.</p></div>
+      <div class="section-head"><h2>Polymarket US account</h2><span class="statline" id="pmHistStatus"></span></div>
+      <div class="cat-grid" id="meAccount"></div>
+      <div class="tablewrap"><table id="meAccountCats"></table></div>
+      <div class="section-head"><h2>Your tracked slips</h2></div>
+      <div class="cat-grid" id="meSlips"></div>
+      <div class="section-head"><h2>Settings</h2></div>
+      <div class="panel" style="gap:14px">
+        <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
+        <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
+        <div class="row-end"><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
+      </div>
+    </section>
+
     <!-- LEADERBOARD -->
     <section id="view-board" hidden style="flex-direction:column;gap:16px">
-      <div class="section-head"><h2>All-time profit &amp; loss</h2></div>
+      <div class="chips" id="boardRange"></div>
+      <div class="section-head"><h2 id="plTitle">All-time profit &amp; loss</h2></div>
       <div class="pl-grid" id="plGrid"></div>
       <div class="section-head"><h2>Rankings</h2><div class="chips" id="rankBy"></div></div>
       <div class="list" id="rankList" style="gap:8px"></div>
@@ -271,6 +332,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     </section>
   </div>
 
+  <div class="toast" id="toast" hidden></div>
   <footer>
     <span>Live data from ESPN, refreshed every 20 seconds while open. Slips are shared only with people who have your group code.</span>
   </footer>
@@ -677,6 +739,16 @@ let scanLeague = ls.get(KEY+".league","nba");
 let uid = null, db = null, unsub = [];
 let slips = [], members = {};
 let tab = "live", whoLive = "all", histWho = "all", histCat = "all", boardWho = "all";
+let liveView="person", sortBy=ls.get(KEY+".sort","close"), boardRange="all", editingId=null, groupDoc=null;
+const openSlips=new Set(ls.get(KEY+".open",[]));
+let reactions=[], notifs=[]; const seenNotifs=new Set(ls.get(KEY+".seenN",[]));
+const myKey=()=> (me?.key) || norm(me?.name||"").replace(/ /g,"");
+const removedNames=()=>new Set(Object.values(members).filter(m=>m.removed).map(m=>norm(m.name)));
+const vis=()=>{ const r=removedNames(); return slips.filter(s=>!r.has(norm(s.name))); };
+const hiddenNames=()=>new Set(Object.values(members).filter(m=>m.hideMoney).map(m=>norm(m.name)));
+const showMoney=name=> norm(name)===norm(me?.name) || !hiddenNames().has(norm(name));
+const moneyAs=(name,n,signed)=> showMoney(name) ? ((signed&&n>0?"+":"")+money(n)) : "$•••";
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,4000); }
 const boards = {}, boxes = {};
 let lastUpdate=0, busy=false;
 
@@ -698,7 +770,15 @@ function startGroup(){
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
   gref().collection("members").doc(uid).set({name:me.name, joinedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{});
   unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
-  unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(400).onSnapshot(s=>{
+  gref().get().then(d=>{ groupDoc=d.data()||null; }).catch(()=>{});
+  unsub.push(gref().collection("reactions").limit(2000).onSnapshot(q=>{ reactions=q.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{}));
+  unsub.push(gref().collection("notifs").where("toName","==",me.name).limit(100).onSnapshot(q=>{
+    notifs=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
+    const fresh=notifs.filter(n=>!n.read && !seenNotifs.has(n.id));
+    fresh.forEach(n=>{ seenNotifs.add(n.id); const msg=`${n.fromName} reacted ${n.emoji} to your ${n.label||"slip"}`; toast(msg);
+      try{ if(window.Notification && Notification.permission==="granted") new Notification("Live Bet Tracker",{body:msg}); }catch{} });
+    ls.set(KEY+".seenN",[...seenNotifs].slice(-300)); renderBell(); },()=>{}));
+  unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(800).onSnapshot(s=>{
     slips=s.docs.map(d=>({id:d.id,...d.data()}));
     renderAll(); refresh();
   }, e=>note("Couldn't load slips: "+e.message)));
@@ -721,7 +801,7 @@ async function enter(name, code, create){
     if(create) await db.collection("groups").doc(code).set({createdAt:firebase.firestore.FieldValue.serverTimestamp(), createdBy:uid});
     else { const g=await db.collection("groups").doc(code).get(); if(!g.exists){ note("No group with code "+code+". Check the code and try again."); return; } }
   }catch(e){ note("Couldn't reach the group database: "+e.message); return; }
-  me={name,group:code}; ls.set(KEY+".me",me); note();
+  me={name,group:code,key:norm(name).replace(/ /g,"")}; ls.set(KEY+".me",me); note();
   rememberInUrl();
   $("#joinPanel").hidden=true; $("#app").hidden=false; startGroup();
 }
@@ -740,14 +820,19 @@ $("#inviteBtn").onclick=async()=>{
 document.querySelector(".tabs").addEventListener("click",e=>{
   const t=e.target.dataset.tab; if(!t) return; tab=t;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["live","history","picks","board"].forEach(v=>{const el=$("#view-"+v); el.hidden=v!==t; if(v===t) el.style.display="flex";});
+  ["live","history","picks","board","me"].forEach(v=>{const el=$("#view-"+v); el.hidden=v!==t; if(v===t) el.style.display="flex";});
   renderAll();
 });
 const chipRow=(el,items,cur,attr)=>{ el.innerHTML=items.map(([k,l])=>`<button type="button" class="chip" data-${attr}="${esc(k)}" aria-pressed="${k===cur}">${esc(l)}</button>`).join(""); };
 function renderSportChips(){ chipRow($("#sports"),Object.entries(LEAGUES).map(([k,v])=>[k,v.label]),scanLeague,"lg"); }
 $("#sports").addEventListener("click",e=>{const k=e.target.dataset.lg; if(!k) return; scanLeague=k; ls.set(KEY+".league",k); renderSportChips();});
-const people=()=>{ const m=new Map(); for(const s of slips){ const k=norm(s.name); if(!m.has(k)) m.set(k,s.name); } for(const v of Object.values(members)){ const k=norm(v.name); if(!m.has(k)) m.set(k,v.name);} return [...m.entries()]; };
-$("#whoFilter").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==null) return; whoLive=k; renderLive();});
+const people=()=>{ const r=removedNames(); const m=new Map(); for(const s of slips){ const k=norm(s.name); if(!r.has(k)&&!m.has(k)) m.set(k,s.name); } for(const v of Object.values(members)){ const k=norm(v.name); if(!v.removed&&!r.has(k)&&!m.has(k)) m.set(k,v.name);} return [...m.entries()]; };
+$("#whoSel").addEventListener("change",e=>{ whoLive=e.target.value; renderLive(); });
+$("#sortSel").addEventListener("change",e=>{ sortBy=e.target.value; ls.set(KEY+".sort",sortBy); renderLive(); });
+$("#liveView").addEventListener("click",e=>{const k=e.target.dataset.lv; if(!k) return; liveView=k; renderLive();});
+$("#expandAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=true; openSlips.add(d.dataset.sid);}); ls.set(KEY+".open",[...openSlips]); };
+$("#collapseAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=false;}); openSlips.clear(); ls.set(KEY+".open",[]); };
+$("#liveList").addEventListener("toggle",e=>{ const d=e.target; if(!d.matches?.("details.slip")) return; if(d.open) openSlips.add(d.dataset.sid); else openSlips.delete(d.dataset.sid); ls.set(KEY+".open",[...openSlips].slice(-200)); },true);
 $("#histWho").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==null) return; histWho=k; renderHistory();});
 $("#histCat").addEventListener("click",e=>{const k=e.target.dataset.cat; if(k==null) return; histCat=k; renderHistory();});
 $("#boardWho").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==null) return; boardWho=k; renderBoard();});
@@ -873,56 +958,108 @@ function legHTML(s,l,i){
     ${st.cur!=null&&st.pct!=null?`<div class="bar" aria-hidden="true"><div class="fill" style="width:${(st.pct*100).toFixed(1)}%"></div>${st.tick?`<div class="tick" style="left:${st.tick*100}%"></div>`:""}</div>`:""}
     ${l.raw&&l.kind!=="pmus"&&l.kind!=="moneyline"?`<div class="statline">Polymarket: ${esc(l.raw.length>90?l.raw.slice(0,88)+"…":l.raw)}</div>`:""}
     ${st.detail?`<div class="statline">${esc(st.detail)}${st.pace!=null&&!res?` · on pace for ${st.pace.toFixed(1)}`:""}</div>`:""}
+    ${needText(l,st)?`<div class="sweat">${needText(l,st)}</div>`:""}
     <div class="meta"><span class="pill ${pill[0]}">${pill[1]}</span><span>${esc(lg?.label||"")}</span>${g?`<span>${esc(g.detail||"")}</span>`:""}${!res&&st.missing?`<span>${esc(st.missing)}</span>`:""}<span class="sp"></span>${manual}${espn?`<a href="${espn}" target="_blank" rel="noopener">ESPN</a>`:""}</div>
   </div>`;
 }
+function needText(l,st){
+  if(st.result || st.cur==null || l.line==null) return "";
+  if(l.kind==="prop"||l.kind==="total"){
+    const line=Number(l.line);
+    if((l.side||"over")==="over"){ const need=Math.floor(line)+1-st.cur; if(need<=0) return ""; const unit=l.kind==="total"?"pts":(l.market||"").replace(/^pts\+.*/,"").trim()||"more"; return `Needs ${Math.round(need*10)/10} more${unit&&unit!=="more"?" "+unit:""}`; }
+    const room=line-st.cur; return room>0?`${Math.round(room*10)/10} to spare`:"";
+  }
+  return "";
+}
+const REACTS=["🔥","💰","👀","😬","🙏","🤡"];
+function legState(s,l){
+  if(l.kind==="poly"||l.kind==="pmus") return {res:l.result||(s.status!=="open"?s.status:null), live:true, pct:null};
+  const st=evaluateLeg(l,gameOf(l),boxes[l.gameId]); return {res:l.result||st.result, live:st.live, pct:st.pct, cur:st.cur, game:st.game, st};
+}
+function slipProgress(s){
+  const ls_=s.legs.map(l=>legState(s,l));
+  const won=ls_.filter(x=>x.res==="won"||x.res==="push").length, lost=ls_.some(x=>x.res==="lost");
+  const rem=ls_.filter(x=>!x.res); const close=rem.length? rem.reduce((m,x)=>m+(x.pct??0),0)/rem.length : 1;
+  const start=Math.min(...s.legs.map(l=>Date.parse(gameOf(l)?.date||"")||Infinity));
+  return {states:ls_, won, lost, remaining:rem.length, close, start, live:ls_.some(x=>x.live&&!x.res)};
+}
+function reactBar(s){
+  const mine=reactions.find(r=>r.slipId===s.id && r.uid===uid)?.emoji;
+  const counts={}; reactions.filter(r=>r.slipId===s.id).forEach(r=>counts[r.emoji]=(counts[r.emoji]||0)+1);
+  return `<div class="reacts">${REACTS.map(e=>`<button type="button" class="react" data-react="${esc(s.id)}|${e}" aria-pressed="${mine===e}" aria-label="React ${e}">${e}${counts[e]?`<span>${counts[e]}</span>`:""}</button>`).join("")}</div>`;
+}
 function slipHTML(s){
-  const hit=s.legs.filter(l=>l.result==="won").length;
-  const status = s.status!=="open" ? s.status : (s.legs.some(l=>l.result==="lost")?"lost":"open");
-  const label = status==="won"?["won","Cashed"]:status==="lost"?["lost","Busted"]:status==="push"?["wait","Push"]:["live",`${hit}/${s.legs.length} hit`];
+  const pr=slipProgress(s);
+  const status = s.status!=="open" ? s.status : (pr.lost?"lost":"open");
+  const label = status==="won"?["won","Cashed"]:status==="lost"?["lost","Busted"]:status==="push"?["wait","Push"]:[pr.live?"live":"wait",`${pr.won}/${s.legs.length} hit`];
   const when=s.createdAt?.toDate? s.createdAt.toDate().toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
   const mine=s.uid===uid;
-  return `<article class="slip ${status==="open"?"":status}">
-    <div class="slip-h"><div><span class="who">${s.legs.length}-leg ${esc(slipCategory(s))}</span> <span class="tag">${esc(when)}</span></div>
-      <div class="money">${s.stake?`<b>${money(+s.stake)}</b>`:""}${s.payout?` → <b>${money(+s.payout)}</b>`:""}${s.odds?` · ${esc(s.odds)}`:""}</div>
-      <span class="pill ${label[0]}">${label[1]}</span></div>
+  const sweat = status==="open" && pr.remaining===1 && s.legs.length>1 ? "1 leg away" : status==="open" && pr.remaining===0 ? "Settling…" : "";
+  const dots=pr.states.map(x=>`<i class="${x.res==="won"||x.res==="push"?"won":x.res==="lost"?"lost":x.live?"live":""}"></i>`).join("");
+  const isOpen=openSlips.has(s.id);
+  const canEdit = mine && !s.source;
+  return `<details class="slip ${status==="open"?"":status}" data-sid="${esc(s.id)}" ${isOpen?"open":""}>
+    <summary class="sum"><div class="ttl">${s.legs.length}-leg ${esc(slipCategory(s))} <span class="tag">${esc(when)}</span>
+        <small>${s.stake?moneyAs(s.name,+s.stake):""}${s.payout?" → "+moneyAs(s.name,+s.payout):""}${s.odds?` · ${esc(s.odds)}`:""}</small></div>
+      <div class="right"><span class="pill ${label[0]}">${label[1]}</span>${sweat?`<span class="sweat">${sweat}</span>`:""}<span class="chev" aria-hidden="true">▼</span></div>
+      <div class="dots" aria-hidden="true">${dots}</div></summary>
     <div class="legs">${s.legs.map((l,i)=>legHTML(s,l,i)).join("")}</div>
-    ${mine&&s.source!=="polymarket"&&s.source!=="pmus"?`<div class="slip-f"><button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
-  </article>`;
+    ${reactBar(s)}
+    ${mine&&s.source!=="polymarket"&&s.source!=="pmus"?`<div class="slip-f">${canEdit?`<button type="button" class="ghost" data-edit="${esc(s.id)}">Edit</button>`:""}<button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
+  </details>`;
+}
+function liveSlips(){
+  let open=vis().filter(s=>s.status==="open" && !s.legs.some(l=>l.result==="lost"));
+  if(whoLive==="me") open=open.filter(s=>s.uid===uid||norm(s.name)===norm(me.name));
+  else if(whoLive!=="all") open=open.filter(s=>norm(s.name)===whoLive);
+  const P=new Map(open.map(s=>[s.id,slipProgress(s)]));
+  const key={close:s=>[P.get(s.id).remaining, -P.get(s.id).close], soon:s=>[P.get(s.id).start,0], pay:s=>[-(Number(s.payout)||0),0], new:s=>[-(s.createdAt?.toMillis?.()||0),0]}[sortBy]||(()=>[0,0]);
+  open.sort((a,b)=>{const x=key(a),y=key(b); return x[0]-y[0]||x[1]-y[1];});
+  return {open,P};
 }
 function renderLive(){
   const ppl=people();
-  chipRow($("#whoFilter"),[["all","Everyone"],["me","Just me"]],whoLive,"who");
-  let open=slips.filter(s=>s.status==="open");
-  if(whoLive==="me") open=open.filter(s=>s.uid===uid);
-  const list=$("#liveList");
+  const sel=$("#whoSel"); const opts=[["all","Everyone"],["me","Just me"],...ppl.filter(([k])=>k!==norm(me.name))];
+  sel.innerHTML=opts.map(([k,l])=>`<option value="${esc(k)}" ${k===whoLive?"selected":""}>${esc(l)}</option>`).join("");
+  $("#sortSel").value=sortBy;
+  chipRow($("#liveView"),[["person","By person"],["game","By game"]],liveView,"lv");
+  const {open}=liveSlips(); const list=$("#liveList");
   if(!open.length){
-    list.innerHTML=`<div class="empty"><b>No open slips</b>${slips.length?"Everything's settled. Check History and the Leaderboard.":"Pick a sport, then scan a screenshot of your slip or add one by hand. Your friends will see it here live."}</div>`;
+    list.innerHTML=`<div class="empty"><b>No open slips</b>${slips.length?"Everything's settled. Check History and the Board.":"Pick a sport, then scan a screenshot of your slip or add one by hand. Your friends will see it here live."}</div>`;
     return;
   }
+  if(liveView==="game"){ list.innerHTML=gamesHTML(open); return; }
   const by=new Map();
-  for(const s of open){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.uid===uid,slips:[]}); by.get(k).slips.push(s); }
+  for(const s of open){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.uid===uid||k===norm(me.name),slips:[]}); by.get(k).slips.push(s); }
   const groups=[...by.values()].sort((a,b)=>(b.mine-a.mine)||a.name.localeCompare(b.name));
   list.innerHTML=groups.map(g=>{
-    const t=tally(slips.filter(s=>norm(s.name)===norm(g.name)));
-    return `<div class="person"><div class="person-h"><h3>${esc(g.name)}${g.mine?' <span class="tag">YOU</span>':""}</h3><span>${t.w}-${t.l}${t.p?"-"+t.p:""} · ${t.profit>=0?"+":""}${money(t.profit)}</span></div>${g.slips.map(slipHTML).join("")}</div>`;
+    const t=tally(vis().filter(s=>norm(s.name)===norm(g.name)));
+    return `<div class="person"><div class="person-h"><h3>${esc(g.name)}${g.mine?' <span class="tag">YOU</span>':""}</h3><span>${t.w}-${t.l}${t.p?"-"+t.p:""} · ${moneyAs(g.name,t.profit,true)} · ${g.slips.length} open</span></div>${g.slips.map(slipHTML).join("")}</div>`;
   }).join("");
+}
+function gamesHTML(open){
+  const games=new Map(); const loose=[];
+  for(const s of open) s.legs.forEach((l,i)=>{ if(l.result) return; const g=gameOf(l); if(g){ if(!games.has(g.id)) games.set(g.id,{g,rows:[]}); games.get(g.id).rows.push({s,l,i}); } else loose.push({s,l,i}); });
+  const order=[...games.values()].sort((a,b)=>(a.g.state==="in"?0:a.g.state==="pre"?1:2)-(b.g.state==="in"?0:b.g.state==="pre"?1:2)||Date.parse(a.g.date)-Date.parse(b.g.date));
+  const block=(title,sub,rows)=>`<article class="slip"><div class="game-h"><b>${esc(title)}</b><span>${esc(sub)}</span></div><div class="legs">${rows.map(r=>`<div><div class="owner" style="padding:10px 14px 0">${esc(r.s.name)}</div>${legHTML(r.s,r.l,r.i)}</div>`).join("")}</div></article>`;
+  return order.map(x=>block(x.g.name||x.g.teams.map(t=>t.abbr).join(" vs "), [x.g.teams.map(t=>`${t.abbr} ${t.score}`).join(" · "), x.g.detail].filter(Boolean).join(" · "), x.rows)).join("")
+    + (loose.length? block("Other legs","Not matched to a game yet",loose):"");
 }
 
 /* ---------- Render: history ---------- */
 function renderHistory(){
   const ppl=people();
   chipRow($("#histWho"),[["all","Everyone"],...ppl],histWho,"who");
-  const cats=[...new Set(slips.map(slipCategory))];
+  const cats=[...new Set(vis().map(slipCategory))];
   chipRow($("#histCat"),[["all","All sports"],...cats.map(c=>[c,c])],histCat,"cat");
-  let done=slips.filter(s=>s.status!=="open");
+  let done=vis().filter(s=>s.status!=="open");
   if(histWho!=="all") done=done.filter(s=>norm(s.name)===histWho);
   if(histCat!=="all") done=done.filter(s=>slipCategory(s)===histCat);
   $("#histList").innerHTML = done.length ? done.map(s=>{
     const p=profitOf(s); const r=s.status==="won"?"W":s.status==="lost"?"L":"P";
     const when=(s.settledAt||s.createdAt)?.toDate? (s.settledAt||s.createdAt).toDate().toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
     const legs=s.legs.map(l=>(l.result==="won"?"✓ ":l.result==="lost"?"✗ ":"· ")+legTitle(l)).join("  ");
-    return `<div class="hist"><div class="r ${s.status}">${r}</div><div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${esc(when)} · ${esc(legs)}</span></div><div class="p ${p>0?"pos":p<0?"neg":""}">${p>0?"+":""}${money(p)}</div></div>`;
+    return `<div class="hist"><div class="r ${s.status}">${r}</div><div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${esc(when)} · ${esc(legs)}</span></div><div class="p ${p>0?"pos":p<0?"neg":""}">${moneyAs(s.name,p,true)}</div></div>`;
   }).join("") : `<div class="empty"><b>No settled slips yet</b>Slips land here once every leg is decided.</div>`;
 }
 
@@ -940,14 +1077,19 @@ function spark(points){
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${W}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--line)" stroke-dasharray="3 3"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${x(points.length-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="3" fill="${col}"/></svg>`;
 }
 $("#rankBy").addEventListener("click",e=>{const k=e.target.dataset.rb; if(!k) return; rankBy=k; renderBoard();});
+function rangeStart(r){ const d=new Date(); d.setHours(0,0,0,0); if(r==="week"){ d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getTime(); } if(r==="month"){ d.setDate(1); return d.getTime(); } return 0; }
+$("#boardRange").addEventListener("click",e=>{const k=e.target.dataset.br; if(!k) return; boardRange=k; renderBoard();});
 function renderBoard(){
   const ppl=people().filter(([k])=>k!=="model");
-  const settled=slips.filter(s=>isPerson(s) && s.status!=="open");
+  chipRow($("#boardRange"),[["all","All-time"],["month","This month"],["week","This week"]],boardRange,"br");
+  $("#plTitle").textContent = boardRange==="week"?"This week's profit & loss":boardRange==="month"?"This month's profit & loss":"All-time profit & loss";
+  const from=rangeStart(boardRange);
+  const settled=vis().filter(s=>isPerson(s) && s.status!=="open" && settledAt(s)>=from);
   // ---- All-time P/L ----
   const cards=ppl.map(([k,name])=>{
     const mine=settled.filter(s=>norm(s.name)===k).sort((a,b)=>settledAt(a)-settledAt(b));
     let run=0; const pts=[{y:0}]; mine.forEach(s=>{ run+=profitOf(s); pts.push({y:run}); });
-    const t=tally(mine); const open=slips.filter(s=>isPerson(s)&&s.status==="open"&&norm(s.name)===k);
+    const t=tally(mine); const open=vis().filter(s=>isPerson(s)&&s.status==="open"&&norm(s.name)===k);
     const atRisk=open.reduce((m,s)=>m+(Number(s.stake)||0),0);
     return {k,name,net:run,t,pts,atRisk,openN:open.length,me:k===norm(me?.name)};
   }).filter(c=>c.t.n||c.t.p||c.openN);
@@ -955,10 +1097,10 @@ function renderBoard(){
   $("#plGrid").innerHTML = cards.length ? cards.map(c=>{
     const cls=c.net>0.004?"up":c.net<-0.004?"down":""; const label=c.net>0.004?"In the green":c.net<-0.004?"In the red":"Even";
     return `<div class="pl ${cls}"><div class="who"><span>${esc(c.name)}${c.me?' <span class="tag">YOU</span>':""}</span><span class="pill ${cls==="up"?"won":cls==="down"?"lost":"wait"}">${label}</span></div>
-      <div class="net ${cls==="up"?"pos":cls==="down"?"neg":""}">${c.net>0?"+":""}${money(c.net)}</div>
+      <div class="net ${cls==="up"?"pos":cls==="down"?"neg":""}">${showMoney(c.name)?(c.net>0?"+":"")+money(c.net):(c.t.roi!=null?(c.t.roi>0?"+":"")+Math.round(c.t.roi*100)+"% ROI":"—")}</div>
       ${spark(c.pts)}
-      <div class="sub2">${c.t.w}-${c.t.l}${c.t.p?"-"+c.t.p:""} · ${money(c.t.staked)} staked${c.t.roi!=null?" · ROI "+Math.round(c.t.roi*100)+"%":""}</div>
-      ${c.openN?`<div class="sub2">${c.openN} open · ${money(c.atRisk)} riding</div>`:""}</div>`;
+      <div class="sub2">${c.t.w}-${c.t.l}${c.t.p?"-"+c.t.p:""}${showMoney(c.name)?` · ${money(c.t.staked)} staked`:""}${c.t.roi!=null?" · ROI "+Math.round(c.t.roi*100)+"%":""}</div>
+      ${c.openN?`<div class="sub2">${c.openN} open${showMoney(c.name)?` · ${money(c.atRisk)} riding`:""}</div>`:""}</div>`;
   }).join("") : `<div class="empty" style="grid-column:1/-1"><b>No results yet</b>Each person's running profit shows here once slips settle.</div>`;
 
   // ---- Rankings: wins only, no losses shown ----
@@ -969,24 +1111,24 @@ function renderBoard(){
     const won=amts.reduce((m,x)=>m+x,0);
     let best=null; wins.forEach((s,i)=>{ if(!best||amts[i]>best.amt) best={amt:amts[i],legs:(s.legs||[]).length,cat:slipCategory(s)}; });
     const legsHit=settled.filter(s=>norm(s.name)===k).reduce((m,s)=>m+(s.legs||[]).filter(l=>l.result==="won").length,0);
-    return {name,won,wins:wins.length,best,legsHit,me:k===norm(me?.name)};
+    return {name,won,wins:wins.length,best,legsHit,me:k===norm(me?.name),show:showMoney(name)};
   }).filter(r=>r.wins>0);
   const key={won:r=>r.won, wins:r=>r.wins, best:r=>r.best?.amt||0}[rankBy];
   rows.sort((a,b)=>key(b)-key(a)||b.won-a.won);
-  const big=r=> rankBy==="wins" ? `${r.wins}<small>wins</small>` : rankBy==="best" ? `+${money(r.best?.amt||0)}<small>biggest hit</small>` : `+${money(r.won)}<small>total won</small>`;
+  const big=r=> rankBy==="wins" ? `${r.wins}<small>wins</small>` : !r.show ? `$•••<small>${rankBy==="best"?"biggest hit":"total won"}</small>` : rankBy==="best" ? `+${money(r.best?.amt||0)}<small>biggest hit</small>` : `+${money(r.won)}<small>total won</small>`;
   $("#rankList").innerHTML = rows.length ? rows.map((r,i)=>`<div class="rank r${i+1}"><div class="pos">${i+1}</div><div class="nm">${esc(r.name)}${r.me?' <span class="tag">YOU</span>':""}</div><div class="won">${big(r)}</div>
-      <div class="meta2">${r.wins} win${r.wins===1?"":"s"} · ${r.legsHit} legs hit${r.best?` · best: +${money(r.best.amt)} on a ${r.best.legs}-leg ${esc(r.best.cat)}`:""}</div></div>`).join("")
+      <div class="meta2">${r.wins} win${r.wins===1?"":"s"} · ${r.legsHit} legs hit${r.best?` · best: ${r.show?"+"+money(r.best.amt):"a"} ${r.show?"on a ":""}${r.best.legs}-leg ${esc(r.best.cat)}`:""}</div></div>`).join("")
     : `<div class="empty"><b>No wins yet</b>The first cashed slip puts someone on the board.</div>`;
 
   // ---- Best sport (unchanged) ----
   chipRow($("#boardWho"),[["all","Whole group"],...ppl],boardWho,"who");
-  const pool = (boardWho==="all"? slips : slips.filter(s=>norm(s.name)===boardWho)).filter(isPerson);
+  const pool = (boardWho==="all"? settled : settled.filter(s=>norm(s.name)===boardWho));
   const byCat=new Map(); for(const s of pool){ const c=slipCategory(s); if(!byCat.has(c)) byCat.set(c,[]); byCat.get(c).push(s); }
   const cats=[...byCat].map(([c,ss])=>({c,t:tally(ss)})).filter(x=>x.t.n||x.t.p).sort((a,b)=>(b.t.pct||0)-(a.t.pct||0));
-  $("#catGrid").innerHTML = cats.length ? cats.map((x,i)=>`<div class="cat"><span class="k">${esc(x.c)}${i===0?' <span class="tag">BEST</span>':""}</span><span class="v">${pct(x.t.pct)}</span><span class="s">${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""} · <span class="${x.t.profit>0?"pos":x.t.profit<0?"neg":""}">${x.t.profit>0?"+":""}${money(x.t.profit)}</span></span></div>`).join("")
+  $("#catGrid").innerHTML = cats.length ? cats.map((x,i)=>`<div class="cat"><span class="k">${esc(x.c)}${i===0?' <span class="tag">BEST</span>':""}</span><span class="v">${pct(x.t.pct)}</span><span class="s">${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""} · <span class="${x.t.profit>0?"pos":x.t.profit<0?"neg":""}">${(boardWho==="all"?!pool.some(z=>!showMoney(z.name)):showMoney(boardWho))?(x.t.profit>0?"+":"")+money(x.t.profit):(x.t.roi!=null?Math.round(x.t.roi*100)+"% ROI":"")}</span></span></div>`).join("")
     : `<div class="empty" style="grid-column:1/-1"><b>No results yet</b>Win rates by sport show up after the first slips settle.</div>`;
 }
-function renderAll(){ if(!me||$("#app").hidden) return; if(tab==="live") renderLive(); else if(tab==="history") renderHistory(); else if(tab==="picks") renderPicks(); else renderBoard(); }
+function renderAll(){ if(!me||$("#app").hidden) return; renderBell(); if(tab==="live") renderLive(); else if(tab==="history") renderHistory(); else if(tab==="picks") renderPicks(); else if(tab==="me") renderMe(); else renderBoard(); }
 
 /* ---------- Value picks ---------- */
 const PICK_LEAGUES=["nba","nfl","ncaafb","ncaamb","wnba","ncaawb","nhl","mlb"];
@@ -1218,11 +1360,118 @@ function pmToLeg(mkt, side, fallbackTitle){
   }
   return {...base, league:info.league, cat:catOf(info.league)};
 }
+// Signed GET with a query string: try signing the full path, then the bare path; remember which works.
+let pmSignMode=ls.get(KEY+".pmSign","full");
+async function pmusQ(base, query, key){
+  const full=base+(query?"?"+query:"");
+  if(!query) return pmusGet(base,key);
+  const order= pmSignMode==="bare" ? ["bare","full"] : ["full","bare"];
+  let last;
+  for(const m of order){
+    try{ const r= m==="full" ? await pmusGet(full,key) : await pmusGetSigned(base,full,key); if(m!==pmSignMode){ pmSignMode=m; ls.set(KEY+".pmSign",m); } return r; }
+    catch(e){ last=e; if(e.message!=="401") throw e; }
+  }
+  throw last;
+}
+async function pmPositionsAll(key){
+  const out={}; let cursor="";
+  for(let i=0;i<30;i++){
+    const r=await pmusQ("/v1/portfolio/positions", "limit=100"+(cursor?"&cursor="+encodeURIComponent(cursor):""), key).catch(e=>{ if(i===0) return pmusGet("/v1/portfolio/positions",key); throw e; });
+    Object.assign(out, r.positions||{});
+    if(r.eof || !r.nextCursor || r.nextCursor===cursor) break; cursor=r.nextCursor;
+  }
+  return out;
+}
+async function pmBuildLegs(slug, key, title, short){
+  let legs=null; const isCombo=/^(crossd|caoc)-/i.test(slug);
+  if(isCombo){
+    const cl=await pmComboLegs(slug,key);
+    if(cl) legs=await Promise.all(cl.map(async l=>pmToLeg(await pmMarket(l.symbol), short?(l.side==="SIDE_BUY"?"SIDE_SELL":"SIDE_BUY"):l.side, l.symbol)));
+  } else {
+    const mk=await pmMarket(slug);
+    legs=[pmToLeg(mk||{slug, short:title, q:title, sides:[{d:"Yes",long:true}]}, short?"SIDE_SELL":"SIDE_BUY", title)];
+  }
+  if(!legs) legs=[{league:"other",kind:"pmus",cat:polyCategory(slug)||"Other",team:"Yes",market:title||"Combo",slug,result:null}];
+  return legs;
+}
+const amt=a=> Number(a?.value ?? a ?? 0) || 0;
+const pmSlipId=slug=>("pu_"+myKey()+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,140);
+// Full account history from activities: one summary per market, kept on this device; settled sports markets become slips.
+let pmHistBusy=false;
+async function pmBackfill(force){
+  const key=ls.get(KEY+".pmus",null); if(!key || pmHistBusy || !db || !me) return;
+  if(!force && Date.now()-ls.get(KEY+".pmhistAt",0) < 10*60000) return;
+  pmHistBusy=true; if(tab==="me") $("#pmHistStatus").textContent="Reading your Polymarket history…";
+  try{
+    const acts=[]; let cursor="";
+    for(let i=0;i<60;i++){
+      const q="limit=100&types=ACTIVITY_TYPE_TRADE&types=ACTIVITY_TYPE_POSITION_RESOLUTION&sortOrder=SORT_ORDER_DESCENDING"+(cursor?"&cursor="+encodeURIComponent(cursor):"");
+      const r=await pmusQ("/v1/portfolio/activities", q, key);
+      acts.push(...(r.activities||[]));
+      if(r.eof || !r.nextCursor || r.nextCursor===cursor) break; cursor=r.nextCursor;
+      await new Promise(res=>setTimeout(res,250));
+    }
+    const pos=await pmPositionsAll(key).catch(()=>({}));
+    const by={};
+    const get=slug=>by[slug]||(by[slug]={slug, stake:0, pnl:0, t:0, resolved:false, short:false, title:""});
+    for(const a of acts){
+      if(a.trade && a.trade.state!=="TRADE_STATE_BUSTED" && a.trade.state!=="TRADE_STATE_REJECTED"){
+        const x=get(a.trade.marketSlug); const rp=amt(a.trade.realizedPnl);
+        if(!rp) x.stake+=Math.abs(amt(a.trade.costBasis)); x.pnl+=rp;
+        x.t=Math.max(x.t, Date.parse(a.trade.updateTime||a.trade.createTime)||0);
+      } else if(a.positionResolution){
+        const r=a.positionResolution, x=get(r.marketSlug);
+        x.pnl+=amt(r.afterPosition?.realized)-amt(r.beforePosition?.realized); x.resolved=true;
+        if(r.side==="POSITION_RESOLUTION_SIDE_SHORT") x.short=true;
+        const c=Math.abs(amt(r.beforePosition?.cost)); if(c>x.stake) x.stake=c;
+        x.title=r.beforePosition?.marketMetadata?.title||x.title;
+        x.t=Math.max(x.t, Date.parse(r.updateTime)||0);
+      }
+    }
+    const hist={};
+    for(const x of Object.values(by)){
+      const p=pos[x.slug]; const net=p?Number(p.netPositionDecimal ?? p.netPosition ?? 0):0;
+      x.settled = x.resolved || !p || net===0 || !!p?.expired;
+      if(p && !x.settled){ x.stake=Math.max(x.stake, Math.abs(amt(p.cost))); }
+      x.title = x.title || p?.marketMetadata?.title || "";
+      x.cat = polyCategory(x.slug) || "Other";
+      x.pnl=Math.round(x.pnl*100)/100; x.stake=Math.round(x.stake*100)/100;
+      hist[x.slug]={stake:x.stake,pnl:x.pnl,t:x.t,settled:x.settled,cat:x.cat,title:x.title};
+    }
+    ls.set(KEY+".pmhist",hist); ls.set(KEY+".pmhistAt",Date.now());
+    // Create slips for settled markets the group hasn't seen yet
+    const all=!!members[uid]?.polyAll; const col=gref().collection("slips");
+    const known=new Set(slips.filter(s=>s.source==="pmus").map(s=>s.id));
+    const sfx=slug=>"_"+String(slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,120);
+    const mineOld=slips.filter(s=>s.source==="pmus" && norm(s.name)===norm(me.name));
+    let added=0;
+    for(const x of Object.values(by).filter(x=>x.settled && x.t).sort((a,b)=>b.t-a.t)){
+      const id=pmSlipId(x.slug);
+      const ex= known.has(id) ? slips.find(s=>s.id===id) : mineOld.find(s=>s.id.endsWith(sfx(x.slug)));
+      const status=x.pnl>0.004?"won":x.pnl<-0.004?"lost":"push";
+      if(ex){
+        if(ex.status==="open" || Math.abs((ex.pnl??0)-x.pnl)>0.009) await col.doc(ex.id).update({status, pnl:x.pnl, settledAt:firebase.firestore.Timestamp.fromMillis(x.t), legs:(ex.legs||[]).map(l=>({...l,result:l.result||status}))}).catch(()=>{});
+        continue;
+      }
+      if(!all && !pmSlugInfo(x.slug) && (x.cat==="Other")) continue;
+      let legs=await pmBuildLegs(x.slug,key,x.title,x.short).catch(()=>null); if(!legs) continue;
+      const sportsy=legs.some(l=>l.kind!=="pmus"||l.cat!=="Other"); if(!sportsy && !all) continue;
+      legs=legs.map(l=>({...l,result:l.result||status}));
+      const ts=firebase.firestore.Timestamp.fromMillis(x.t);
+      await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:3, backfill:true}).catch(()=>{});
+      added++;
+    }
+    if(added) toast(`Added ${added} past Polymarket result${added===1?"":"s"} to your history.`);
+  }catch(e){ if(e.message==="401") note("Polymarket US didn't accept your key for history. Reconnect it from “Connect Polymarket”."); else if(force) note("Couldn't read Polymarket history: "+(e.message||e)); }
+  finally{ pmHistBusy=false; if(tab==="me") renderMe(); }
+}
+setInterval(()=>{ if(!document.hidden && db && me) pmBackfill(false); },60000);
+
 async function syncPmus(force){
   const key=ls.get(KEY+".pmus",null); if(!key || pmusBusy || (!force && Date.now()-pmusLast<60000)) return;
   pmusBusy=true; pmusLast=Date.now();
   try{
-    const res=await pmusGet("/v1/portfolio/positions",key);
+    const res={positions:await pmPositionsAll(key)};
     const all=!!members[uid]?.polyAll;
     const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="pmus").map(s=>[s.id,s]));
     const mineOld=slips.filter(s=>s.source==="pmus" && norm(s.name)===norm(me.name));
@@ -1230,24 +1479,13 @@ async function syncPmus(force){
       const md=p.marketMetadata||{};
       const net=Number(p.netPositionDecimal ?? p.netPosition ?? 0), sold=Number(p.qtySoldDecimal ?? p.qtySold ?? 0);
       const cost=Math.abs(Number(p.cost?.value||0)), realized=Number(p.realized?.value||0), upnl=Number(p.cashValue?.value||0);
-      const id=("pu_"+norm(me.name).replace(/ /g,"")+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,140);
+      const id=pmSlipId(slug);
       const settled = p.expired || (net===0 && sold>0);
       const pnl=Math.round(realized*100)/100;
       const status = settled ? (pnl>0?"won":pnl<0?"lost":"push") : "open";
       const live={liveValue:Math.round((cost+upnl)*100)/100, livePnl:Math.round(upnl*100)/100};
       const ex=have.get(id) || mineOld.find(x=>x.id.endsWith("_"+String(slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,120)));
-      const buildLegs=async()=>{
-        let legs=null; const isCombo=/^(crossd|caoc)-/i.test(slug);
-        if(isCombo){
-          const cl=await pmComboLegs(slug,key);
-          if(cl) legs=await Promise.all(cl.map(async l=>pmToLeg(await pmMarket(l.symbol), net<0?(l.side==="SIDE_BUY"?"SIDE_SELL":"SIDE_BUY"):l.side, l.symbol)));
-        } else {
-          const mk=await pmMarket(slug);
-          legs=[pmToLeg(mk||{slug, short:md.title, q:md.title, sides:[{d:md.outcome||"Yes",long:true}]}, net<0?"SIDE_SELL":"SIDE_BUY", md.title)];
-        }
-        if(!legs) legs=[{league:"other",kind:"pmus",cat:"Other",team:"Yes",market:md.title||"Combo",slug,result:null}];
-        return legs;
-      };
+      const buildLegs=()=>pmBuildLegs(slug,key,md.title,net<0);
       const goodLegs=l=>l.length>1||l[0]?.kind!=="pmus"||!/^(crossd|caoc)-/i.test(slug);
       if(ex && (ex.legsV||0)<3 && ex.status==="open"){
         const legs=await buildLegs(); await col.doc(ex.id).update({legs, legsV:goodLegs(legs)?3:1}).catch(()=>{}); continue;
@@ -1267,7 +1505,7 @@ async function syncPmus(force){
         await col.doc(ex.id).update(live).catch(()=>{});
       }
     }
-    note();
+    note(); pmBackfill(false);
   }catch(e){ if(e.message==="401") note("Polymarket US stopped accepting your key. Reconnect it from “Connect Polymarket”."); }
   finally{ pmusBusy=false; renderAll(); }
 }
@@ -1292,7 +1530,7 @@ async function importPoly(open, m){
   const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="polymarket").map(s=>[s.id,s]));
   const leg=(p,result)=>({league:"other", kind:"poly", cat:polyCategory(p.eventSlug||p.slug)||"Other", team:p.outcome, market:p.title, slug:p.eventSlug||p.slug||null, key:polyKey(p.conditionId,p.outcomeIndex), result});
   for(const p of open.filter(keep)){
-    const id="pm_"+norm(me.name).replace(/ /g,"")+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
+    const id="pm_"+myKey()+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
     const resolved=p.redeemable && (p.curPrice>=0.99 || p.curPrice<=0.01);
     const status= resolved ? (p.curPrice>=0.5?"won":"lost") : "open";
     const pnl= resolved ? Math.round(((status==="won"?p.size:0)-p.initialValue)*100)/100 : null;
@@ -1304,7 +1542,7 @@ async function importPoly(open, m){
     }
   }
   for(const p of (closed||[]).filter(keep)){
-    const id="pm_"+norm(me.name).replace(/ /g,"")+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
+    const id="pm_"+myKey()+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
     if(ex && ex.status!=="open") continue;
     const pnl=Math.round((p.realizedPnl||0)*100)/100; const status=pnl>0?"won":pnl<0?"lost":"push";
     const stake=Math.round((p.totalBought||0)*(p.avgPrice||0)*100)/100;
@@ -1322,7 +1560,115 @@ document.body.addEventListener("click",async e=>{
     await gref().collection("slips").doc(d.del).delete().catch(err=>note("Couldn't delete: "+err.message)); }
   if(d.settle){ const [id,res]=d.settle.split("|"); await gref().collection("slips").doc(id).update({status:res, manual:true, settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>note("Couldn't update: "+err.message)); }
   if(d.mark){ const [id,i,res]=d.mark.split("|"); const s=slips.find(x=>x.id===id); if(!s) return; s.legs[+i].result=res; persistLegs(s); }
+  const rb=e.target.closest?.("[data-react]"); if(rb){ e.preventDefault(); react(...rb.dataset.react.split("|")); }
+  if(d.edit){ const s=slips.find(x=>x.id===d.edit); if(!s) return; editingId=s.id;
+    drafts=s.legs.map(l=>({league:l.league,kind:l.kind,side:l.side||"over",player:l.player||"",team:l.team||"",market:l.market||"",line:l.line??""}));
+    $("#stake").value=s.stake||""; $("#odds").value=s.odds||""; $("#payout").value=s.payout||""; $("#previewImg").hidden=true;
+    document.querySelector('[data-tab="live"]')?.click(); showReview("Edit slip"); $("#saveSlip").textContent="Save changes"; $("#review").scrollIntoView({behavior:"smooth"}); }
 });
+async function react(slipId, emoji){
+  const s=slips.find(x=>x.id===slipId); if(!s) return;
+  const ref=gref().collection("reactions").doc(uid+"_"+slipId);
+  const cur=reactions.find(r=>r.slipId===slipId && r.uid===uid);
+  try{
+    if(cur && cur.emoji===emoji){ await ref.delete(); return; }
+    await ref.set({slipId, uid, name:me.name, emoji, at:firebase.firestore.FieldValue.serverTimestamp()});
+    if(s.uid!==uid && norm(s.name)!==norm(me.name)){
+      await gref().collection("notifs").add({to:s.uid||null, toName:s.name, from:uid, fromName:me.name, emoji, slipId,
+        label:`${s.legs.length}-leg ${slipCategory(s)}`, at:firebase.firestore.FieldValue.serverTimestamp(), read:false});
+    }
+  }catch(err){ note("Couldn't react: "+err.message); }
+}
+function renderBell(){
+  const n=notifs.filter(x=>!x.read).length; const b=$("#bellCount"); b.hidden=!n; b.textContent=n>9?"9+":n;
+  if(!$("#notifPanel").hidden) renderNotifs();
+}
+function renderNotifs(){
+  $("#notifList").innerHTML = notifs.length ? notifs.slice(0,40).map(n=>{
+    const when=n.at?.toDate? n.at.toDate().toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"";
+    return `<div class="notif ${n.read?"":"unread"}"><span class="e">${esc(n.emoji)}</span><div><b>${esc(n.fromName)}</b> reacted to your ${esc(n.label||"slip")}<small>${esc(when)}</small></div></div>`;
+  }).join("") : `<div class="empty"><b>No reactions yet</b>When a friend reacts to one of your slips, it shows up here.</div>`;
+}
+$("#bellBtn").onclick=async()=>{ const p=$("#notifPanel"); p.hidden=!p.hidden; if(p.hidden) return; renderNotifs();
+  const unread=notifs.filter(n=>!n.read); for(const n of unread) gref().collection("notifs").doc(n.id).update({read:true}).catch(()=>{}); };
+$("#notifClose").onclick=()=>$("#notifPanel").hidden=true;
+$("#alertsBtn").onclick=async()=>{ if(!window.Notification){ note("This browser doesn't support alerts. You'll still see reactions under the bell."); return; }
+  const r=await Notification.requestPermission(); $("#alertsBtn").textContent= r==="granted"?"Alerts on":"Alerts blocked";
+  if(r==="granted") toast("You'll get an alert when someone reacts, while the app is open."); };
+
+/* ---------- Members ---------- */
+const isOwner=()=> groupDoc?.createdBy===uid;
+function renderMembers(){
+  const own=isOwner();
+  $("#membersNote").textContent = own ? "You started this group, so you can remove people. Removed members and their slips are hidden from everyone." : "Only the person who started the group can remove members.";
+  const list=Object.entries(members).sort((a,b)=>(a[1].name||"").localeCompare(b[1].name||""));
+  $("#membersList").innerHTML=list.map(([id,m])=>`<div class="mem ${m.removed?"removed":""}"><span>${esc(m.name||"?")}${id===uid?' <span class="tag">YOU</span>':""}${groupDoc?.createdBy===id?' <span class="tag">OWNER</span>':""}${m.removed?' <span class="tag">REMOVED</span>':""}</span>
+    ${own&&id!==uid?`<button type="button" class="ghost" data-rmmem="${esc(id)}|${m.removed?0:1}">${m.removed?"Restore":"Remove"}</button>`:""}</div>`).join("");
+}
+$("#membersBtn").onclick=async()=>{ const p=$("#membersPanel"); p.hidden=!p.hidden; if(p.hidden) return;
+  try{ groupDoc=(await gref().get()).data()||groupDoc; }catch{} renderMembers(); };
+$("#membersClose").onclick=()=>$("#membersPanel").hidden=true;
+$("#membersList").addEventListener("click",async e=>{ const v=e.target.dataset.rmmem; if(!v) return; const [id,on]=v.split("|");
+  try{ await gref().collection("members").doc(id).update({removed:on==="1"}); renderMembers(); }catch(err){ note("Couldn't update member: "+err.message); } });
+
+/* ---------- Me tab ---------- */
+function statCard(k,v,sub,cls){ return `<div class="cat"><span class="k">${esc(k)}</span><span class="v ${cls||""}">${v}</span><span class="s">${sub||""}</span></div>`; }
+const signed=n=>(n>0?"+":"")+money(n);
+function renderMe(){
+  const h=ls.get(KEY+".pmhist",null);
+  const st=ls.get(KEY+".pmhistAt",0);
+  $("#pmHistStatus").textContent = !ls.get(KEY+".pmus",null) ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
+  if(h && Object.keys(h).length){
+    const rows=Object.values(h).filter(x=>x.settled);
+    const net=rows.reduce((m,x)=>m+x.pnl,0), staked=rows.reduce((m,x)=>m+x.stake,0);
+    const w=rows.filter(x=>x.pnl>0.004).length, l=rows.filter(x=>x.pnl<-0.004).length;
+    const open=Object.values(h).filter(x=>!x.settled);
+    const won=rows.filter(x=>x.pnl>0).reduce((m,x)=>m+x.pnl,0), lost=rows.filter(x=>x.pnl<0).reduce((m,x)=>m+x.pnl,0);
+    $("#meAccount").innerHTML = statCard("Net all-time",signed(net),"Every settled Polymarket US market",net>0?"pos":net<0?"neg":"")
+      + statCard("Record",`${w}-${l}`, w+l?Math.round(w/(w+l)*100)+"% of markets won":"")
+      + statCard("Total won",signed(won),"Profit from winners","pos") + statCard("Total lost",money(lost),"From losers","neg")
+      + statCard("Staked",money(staked), staked?"ROI "+Math.round(net/staked*100)+"%":"") + statCard("Open now",String(open.length), money(open.reduce((m,x)=>m+x.stake,0))+" in play");
+    const byCat=new Map(); rows.forEach(x=>{ const c=x.cat||"Other"; if(!byCat.has(c)) byCat.set(c,{w:0,l:0,pnl:0,stake:0}); const t=byCat.get(c); if(x.pnl>0.004) t.w++; else if(x.pnl<-0.004) t.l++; t.pnl+=x.pnl; t.stake+=x.stake; });
+    $("#meAccountCats").innerHTML = `<thead><tr><th>Sport</th><th>Record</th><th>Staked</th><th>Net</th></tr></thead><tbody>`+
+      [...byCat].sort((a,b)=>b[1].pnl-a[1].pnl).map(([c,t])=>`<tr><td>${esc(c)}</td><td>${t.w}-${t.l}</td><td>${money(t.stake)}</td><td class="${t.pnl>0?"pos":t.pnl<0?"neg":""}">${signed(t.pnl)}</td></tr>`).join("")+"</tbody>";
+  } else { $("#meAccount").innerHTML=""; $("#meAccountCats").innerHTML=""; }
+  const mine=vis().filter(s=>s.uid===uid||norm(s.name)===norm(me.name)).filter(isPerson);
+  const t=tally(mine); const open=mine.filter(s=>s.status==="open");
+  const best=mine.filter(s=>s.status==="won").sort((a,b)=>profitOf(b)-profitOf(a))[0];
+  $("#meSlips").innerHTML = statCard("Net (tracked slips)",signed(t.profit),"What the group sees, before hiding",t.profit>0?"pos":t.profit<0?"neg":"")
+    + statCard("Record",`${t.w}-${t.l}${t.p?"-"+t.p:""}`, t.pct!=null?Math.round(t.pct*100)+"% won":"")
+    + statCard("Staked",money(t.staked), t.roi!=null?"ROI "+Math.round(t.roi*100)+"%":"")
+    + statCard("Legs hit",t.legPct!=null?Math.round(t.legPct*100)+"%":"–", `${t.legsW} of ${t.legsT}`)
+    + statCard("Open",String(open.length), money(open.reduce((m,s)=>m+(Number(s.stake)||0),0))+" riding")
+    + statCard("Biggest hit",best?signed(profitOf(best)):"–", best?`${best.legs.length}-leg ${slipCategory(best)}`:"");
+  $("#hideMoney").checked=!!members[uid]?.hideMoney;
+  if(document.activeElement!==$("#renameInput")) $("#renameInput").value=me.name;
+}
+$("#hideMoney").addEventListener("change",async e=>{ try{ await gref().collection("members").doc(uid).set({hideMoney:e.target.checked},{merge:true}); toast(e.target.checked?"Your dollar amounts are hidden from the group.":"Your dollar amounts are visible to the group."); }catch(err){ note("Couldn't save: "+err.message); } });
+$("#renameBtn").onclick=async()=>{
+  const nn=$("#renameInput").value.trim().slice(0,24); if(!nn||nn===me.name) return;
+  if(people().some(([k])=>k===norm(nn))){ note("Someone in the group already uses that name."); return; }
+  const old=me.name; $("#renameBtn").disabled=true;
+  try{
+    await gref().collection("members").doc(uid).set({name:nn},{merge:true});
+    const mine=slips.filter(s=>s.uid===uid || norm(s.name)===norm(old));
+    for(let i=0;i<mine.length;i+=400){ const b=db.batch(); mine.slice(i,i+400).filter(s=>s.uid===uid).forEach(s=>b.update(gref().collection("slips").doc(s.id),{name:nn})); await b.commit(); }
+    me={...me,name:nn,key:me.key||norm(old).replace(/ /g,"")}; ls.set(KEY+".me",me); rememberInUrl(); toast("You're now "+nn+"."); startGroup();
+  }catch(err){ note("Couldn't rename: "+err.message); } finally{ $("#renameBtn").disabled=false; }
+};
+$("#pmRefresh").onclick=()=>{ ls.set(KEY+".pmhistAt",0); pmBackfill(true); };
+
+/* ---------- CSV ---------- */
+function toCsv(list){
+  const q=v=>{ const t=v==null?"":String(v); return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t; };
+  const head=["Date","Name","Status","Sport","Legs","Stake","Payout","Profit","Source","Details"];
+  const rows=list.map(s=>{ const d=(s.settledAt||s.createdAt)?.toDate?.(); return [d?d.toISOString().slice(0,10):"", s.name, s.status, slipCategory(s), (s.legs||[]).length,
+    showMoney(s.name)?s.stake:"", showMoney(s.name)?s.payout:"", s.status==="open"?"":(showMoney(s.name)?profitOf(s).toFixed(2):""), s.source||"manual", (s.legs||[]).map(l=>(l.result?l.result.toUpperCase()+" ":"")+legTitle(l)).join(" | ")]; });
+  return [head,...rows].map(r=>r.map(q).join(",")).join("\n");
+}
+function download(name,text){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type:"text/csv"})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
+$("#exportCsv").onclick=()=>{ let done=vis().filter(s=>s.status!=="open"); if(histWho!=="all") done=done.filter(s=>norm(s.name)===histWho); if(histCat!=="all") done=done.filter(s=>slipCategory(s)===histCat); download(`bets-${me.group}.csv`,toCsv(done)); };
+$("#exportMine").onclick=()=>download(`my-bets.csv`,toCsv(slips.filter(s=>s.uid===uid||norm(s.name)===norm(me.name))));
 
 /* ---------- Review / entry ---------- */
 let drafts=[];
@@ -1351,8 +1697,8 @@ $("#reviewList").addEventListener("change",e=>{ if(e.target.dataset.f==="league"
 $("#reviewList").addEventListener("click",e=>{const i=e.target.dataset.rm; if(i==null) return; readDrafts(); drafts.splice(+i,1); if(!drafts.length) drafts.push(blank()); showReview($("#reviewTitle").textContent);});
 const blank=()=>({league:scanLeague,kind:kindsFor(scanLeague)[0],side:"over"});
 $("#addLegRow").onclick=()=>{readDrafts(); drafts.push({...blank(),league:drafts.at(-1)?.league||scanLeague}); showReview($("#reviewTitle").textContent);};
-$("#manualBtn").onclick=()=>{drafts=[blank()]; $("#previewImg").hidden=true; ["stake","odds","payout"].forEach(id=>$("#"+id).value=""); showReview("New slip"); $("#review").scrollIntoView({behavior:"smooth"});};
-$("#cancelReview").onclick=()=>{drafts=[];$("#review").hidden=true;};
+$("#manualBtn").onclick=()=>{editingId=null; $("#saveSlip").textContent="Post slip"; drafts=[blank()]; $("#previewImg").hidden=true; ["stake","odds","payout"].forEach(id=>$("#"+id).value=""); showReview("New slip"); $("#review").scrollIntoView({behavior:"smooth"});};
+$("#cancelReview").onclick=()=>{drafts=[];editingId=null;$("#saveSlip").textContent="Post slip";$("#review").hidden=true;};
 const syncPayout=()=>{ const p=oddsToPayout($("#stake").value,$("#odds").value); if(p) $("#payout").value=p; };
 $("#odds").addEventListener("input",syncPayout); $("#stake").addEventListener("input",syncPayout);
 $("#saveSlip").onclick=async()=>{
@@ -1373,7 +1719,8 @@ $("#saveSlip").onclick=async()=>{
   const legs=drafts.map(d=>({league:d.league, kind:d.kind, side:d.side||"over", player:d.player||null, team:d.team||null, market:d.market||null, line:(d.line===""||d.line==null)?null:Number(d.line), gameId:null, result:null}));
   $("#saveSlip").disabled=true;
   try{
-    await gref().collection("slips").add({uid, name:me.name, createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs});
+    if(editingId){ await gref().collection("slips").doc(editingId).update({stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs, edited:true}); editingId=null; $("#saveSlip").textContent="Post slip"; }
+    else await gref().collection("slips").add({uid, name:me.name, createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs});
     drafts=[]; $("#review").hidden=true;
   }catch(e){ note("Couldn't post the slip: "+e.message); }
   finally{ $("#saveSlip").disabled=false; }
@@ -1427,7 +1774,7 @@ renderSportChips();
   const sp=new URLSearchParams(location.search);
   const q=sp.get("join"), ug=(sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,""), un=(sp.get("name")||"").trim().slice(0,24);
   if(ug && un && (!me || me.group!==ug || me.name!==un)){
-    try{ const g=await db.collection("groups").doc(ug).get(); if(g.exists){ me={name:un, group:ug}; ls.set(KEY+".me",me); } }catch{}
+    try{ const g=await db.collection("groups").doc(ug).get(); if(g.exists){ me={name:un, group:ug, key:(me&&me.group===ug&&me.key)||norm(un).replace(/ /g,"")}; ls.set(KEY+".me",me); } }catch{}
   }
   if(me && me.group && !q){ rememberInUrl(); $("#app").hidden=false; startGroup(); }
   else showJoin();
