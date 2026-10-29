@@ -1020,7 +1020,14 @@ $("#polySave").onclick=async()=>{
     const prev=ls.get(KEY+".pmus",null); if(secret.startsWith("••") && prev) secret=prev.secret;
     if(!keyId || !secret){ note("Add both the Key ID and the secret key from polymarket.us/developer."); return; }
     try{ await pmusGet("/v1/portfolio/positions",{keyId,secret}); }
-    catch(e){ note(e.message==="401"?"Polymarket US didn't accept that key. Check you copied the Key ID and the full secret key.":"Couldn't reach Polymarket US: "+e.message); return; }
+    catch(e){
+      const d=(e.detail||"").toLowerCase();
+      const msg = e.message!=="401" ? e.message
+        : d.includes("not found") ? "Polymarket US says that Key ID doesn't exist. Make sure you copied the Key ID (not the secret) into the first box, from the same account you use in the app."
+        : d.includes("signature") ? "The Key ID was found but the secret key doesn't match it. Create a new key and copy the secret right away. It's only shown once."
+        : d.includes("timestamp") ? "This device's clock is off. Turn on automatic date and time in your phone settings, then try again."
+        : "Polymarket US didn't accept the key"+(e.detail?` (${e.detail})`:"")+". If your account isn't identity-verified yet, finish that in the app first.";
+      note(msg); return; }
     ls.set(KEY+".pmus",{keyId,secret});
     await gref().collection("members").doc(uid).set({pmus:true, polyAll:$("#polyAll").checked},{merge:true});
     note(); $("#polyPanel").hidden=true; syncPmus(true); return;
@@ -1039,15 +1046,23 @@ $("#polyDisconnect").onclick=async()=>{ try{localStorage.removeItem(KEY+".pmus")
 /* ---- Polymarket US (signed, key stays on this device) ---- */
 const b64d=b=>Uint8Array.from(atob(b.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
 const b64e=u=>btoa(String.fromCharCode(...u));
+function pmSeed(secret){
+  let t=String(secret||"").replace(/[\s"'`]/g,"").replace(/^(secret(key)?[:=])/i,"");
+  let bytes=null;
+  if(/^(0x)?[0-9a-f]{64,128}$/i.test(t)){ t=t.replace(/^0x/i,""); bytes=Uint8Array.from(t.match(/../g).map(h=>parseInt(h,16))); }
+  else { try{ bytes=b64d(t.padEnd(Math.ceil(t.length/4)*4,"=")); }catch{ bytes=null; } }
+  if(!bytes || bytes.length<32) throw new Error("The secret key looks cut off or mistyped. Copy the whole secret key again.");
+  return bytes.slice(0,32);
+}
 async function pmusGet(path, key){
-  if(!window.nacl) throw new Error("signing library didn't load");
-  const seed=b64d(key.secret).slice(0,32); if(seed.length!==32) throw new Error("401");
+  if(!window.nacl) throw new Error("The signing library didn't load. Refresh the page and try again.");
+  const seed=pmSeed(key.secret);
+  key={...key, keyId:String(key.keyId||"").replace(/[\s"'`]/g,"")};
   const kp=nacl.sign.keyPair.fromSeed(seed);
   const ts=String(Date.now());
   const sig=b64e(nacl.sign.detached(new TextEncoder().encode(ts+"GET"+path), kp.secretKey));
   const r=await fetch("https://api.polymarket.us"+path,{headers:{"X-PM-Access-Key":key.keyId,"X-PM-Timestamp":ts,"X-PM-Signature":sig}});
-  if(r.status===401||r.status===403) throw new Error("401");
-  if(!r.ok) throw new Error("HTTP "+r.status);
+  if(!r.ok){ const t=(await r.text().catch(()=>"")).trim().slice(0,160); const e=new Error(r.status===401||r.status===403?"401":"HTTP "+r.status); e.detail=t; throw e; }
   return r.json();
 }
 let pmusBusy=false, pmusLast=0;
