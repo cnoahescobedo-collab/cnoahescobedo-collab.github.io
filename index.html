@@ -128,6 +128,20 @@ td.name{font-weight:600}
 .cat .v{font-family:var(--display);font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
 .cat .s{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tag{font:600 10px var(--body);letter-spacing:.1em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+.pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.pl{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.pl.up{border-color:color-mix(in srgb,var(--win) 55%,var(--line))}.pl.down{border-color:color-mix(in srgb,var(--loss) 55%,var(--line))}
+.pl .who{font-family:var(--display);font-weight:700;font-size:18px;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.pl .net{font-family:var(--display);font-weight:700;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.pl .sub2{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pl svg{width:100%;height:44px;display:block}
+.rank{display:grid;grid-template-columns:44px 1fr auto;gap:4px 12px;align-items:center;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.rank .pos{font-family:var(--display);font-weight:700;font-size:28px;text-align:center;color:var(--muted)}
+.rank.r1 .pos{color:#c9a227}.rank.r2 .pos{color:#9aa4b2}.rank.r3 .pos{color:#b07a4a}
+.rank .nm{font-family:var(--display);font-weight:700;font-size:20px;text-transform:uppercase;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank .meta2{font-size:12.5px;color:var(--muted);grid-column:2/3;font-variant-numeric:tabular-nums}
+.rank .won{font-family:var(--display);font-weight:700;font-size:24px;color:var(--win);text-align:right;grid-row:1/3;grid-column:3;font-variant-numeric:tabular-nums}
+.rank .won small{display:block;font:500 11px var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (max-width:440px){.c2{grid-column:span 3}.c3{grid-column:span 6}}
 </style>
@@ -248,8 +262,10 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
     <!-- LEADERBOARD -->
     <section id="view-board" hidden style="flex-direction:column;gap:16px">
-      <div class="section-head"><h2>Standings</h2></div>
-      <div class="tablewrap"><table id="boardTable"></table></div>
+      <div class="section-head"><h2>All-time profit &amp; loss</h2></div>
+      <div class="pl-grid" id="plGrid"></div>
+      <div class="section-head"><h2>Rankings</h2><div class="chips" id="rankBy"></div></div>
+      <div class="list" id="rankList" style="gap:8px"></div>
       <div class="section-head"><h2>Best sport</h2><div class="chips" id="boardWho"></div></div>
       <div class="cat-grid" id="catGrid"></div>
     </section>
@@ -687,6 +703,7 @@ function startGroup(){
     renderAll(); refresh();
   }, e=>note("Couldn't load slips: "+e.message)));
 }
+function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?group="+encodeURIComponent(me.group)+"&name="+encodeURIComponent(me.name)); }catch{} }
 function genCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; const r=crypto.getRandomValues(new Uint8Array(6)); r.forEach(x=>c+=a[x%a.length]); return c; }
 
 /* ---------- Join ---------- */
@@ -705,12 +722,12 @@ async function enter(name, code, create){
     else { const g=await db.collection("groups").doc(code).get(); if(!g.exists){ note("No group with code "+code+". Check the code and try again."); return; } }
   }catch(e){ note("Couldn't reach the group database: "+e.message); return; }
   me={name,group:code}; ls.set(KEY+".me",me); note();
-  if(location.search) history.replaceState(null,"",location.pathname);
+  rememberInUrl();
   $("#joinPanel").hidden=true; $("#app").hidden=false; startGroup();
 }
 $("#createGroup").onclick=()=>enter($("#joinName").value,"",true);
 $("#joinGroup").onclick=()=>enter($("#joinName").value,$("#joinCode").value,false);
-$("#leaveBtn").onclick=()=>{ unsub.forEach(f=>f()); unsub=[]; slips=[]; showJoin(); };
+$("#leaveBtn").onclick=()=>{ unsub.forEach(f=>f()); unsub=[]; slips=[]; try{ history.replaceState(null,"",location.pathname); }catch{} showJoin(); };
 $("#inviteBtn").onclick=async()=>{
   const url=location.origin+location.pathname+"?join="+me.group;
   const text=`Join my bet tracker group (code ${me.group}): ${url}`;
@@ -911,18 +928,62 @@ function renderHistory(){
 
 /* ---------- Render: leaderboard ---------- */
 const pct = x => x==null?"–":Math.round(x*100)+"%";
+let rankBy="won";
+const isPerson = s => s.source!=="model";
+const settledAt = s => (s.settledAt?.toMillis?.() || s.createdAt?.toMillis?.() || 0);
+function spark(points){
+  if(points.length<2) return "";
+  const W=200,H=44,P=3; const ys=points.map(p=>p.y); const lo=Math.min(0,...ys), hi=Math.max(0,...ys); const span=(hi-lo)||1;
+  const x=i=>P+i*(W-2*P)/(points.length-1), y=v=>H-P-(v-lo)*(H-2*P)/span;
+  const d=points.map((p,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(p.y).toFixed(1)).join(" ");
+  const last=points[points.length-1].y; const col=last>0?"var(--win)":last<0?"var(--loss)":"var(--muted)";
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${W}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--line)" stroke-dasharray="3 3"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${x(points.length-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="3" fill="${col}"/></svg>`;
+}
+$("#rankBy").addEventListener("click",e=>{const k=e.target.dataset.rb; if(!k) return; rankBy=k; renderBoard();});
 function renderBoard(){
-  const ppl=people();
-  const rows=ppl.map(([k,name])=>({k,name,t:tally(slips.filter(s=>norm(s.name)===k))})).filter(r=>r.t.n||r.t.p);
-  rows.sort((a,b)=>b.t.profit-a.t.profit||(b.t.pct||0)-(a.t.pct||0));
-  $("#boardTable").innerHTML = rows.length ? `<thead><tr><th>Player</th><th>Record</th><th>Win %</th><th>Legs hit</th><th>Staked</th><th>Profit</th><th>ROI</th></tr></thead><tbody>`+
-    rows.map((r,i)=>`<tr><td class="name"><span class="rank">${i+1}</span>${esc(r.name)}</td><td>${r.t.w}-${r.t.l}${r.t.p?"-"+r.t.p:""}</td><td>${pct(r.t.pct)}</td><td>${pct(r.t.legPct)}</td><td>${money(r.t.staked)}</td><td class="${r.t.profit>0?"pos":r.t.profit<0?"neg":""}">${r.t.profit>0?"+":""}${money(r.t.profit)}</td><td>${pct(r.t.roi)}</td></tr>`).join("")+"</tbody>"
-    : `<tbody><tr><td style="text-align:left;color:var(--muted)">Standings fill in as slips settle.</td></tr></tbody>`;
+  const ppl=people().filter(([k])=>k!=="model");
+  const settled=slips.filter(s=>isPerson(s) && s.status!=="open");
+  // ---- All-time P/L ----
+  const cards=ppl.map(([k,name])=>{
+    const mine=settled.filter(s=>norm(s.name)===k).sort((a,b)=>settledAt(a)-settledAt(b));
+    let run=0; const pts=[{y:0}]; mine.forEach(s=>{ run+=profitOf(s); pts.push({y:run}); });
+    const t=tally(mine); const open=slips.filter(s=>isPerson(s)&&s.status==="open"&&norm(s.name)===k);
+    const atRisk=open.reduce((m,s)=>m+(Number(s.stake)||0),0);
+    return {k,name,net:run,t,pts,atRisk,openN:open.length,me:k===norm(me?.name)};
+  }).filter(c=>c.t.n||c.t.p||c.openN);
+  cards.sort((a,b)=>(b.me-a.me)||(b.net-a.net));
+  $("#plGrid").innerHTML = cards.length ? cards.map(c=>{
+    const cls=c.net>0.004?"up":c.net<-0.004?"down":""; const label=c.net>0.004?"In the green":c.net<-0.004?"In the red":"Even";
+    return `<div class="pl ${cls}"><div class="who"><span>${esc(c.name)}${c.me?' <span class="tag">YOU</span>':""}</span><span class="pill ${cls==="up"?"won":cls==="down"?"lost":"wait"}">${label}</span></div>
+      <div class="net ${cls==="up"?"pos":cls==="down"?"neg":""}">${c.net>0?"+":""}${money(c.net)}</div>
+      ${spark(c.pts)}
+      <div class="sub2">${c.t.w}-${c.t.l}${c.t.p?"-"+c.t.p:""} · ${money(c.t.staked)} staked${c.t.roi!=null?" · ROI "+Math.round(c.t.roi*100)+"%":""}</div>
+      ${c.openN?`<div class="sub2">${c.openN} open · ${money(c.atRisk)} riding</div>`:""}</div>`;
+  }).join("") : `<div class="empty" style="grid-column:1/-1"><b>No results yet</b>Each person's running profit shows here once slips settle.</div>`;
+
+  // ---- Rankings: wins only, no losses shown ----
+  chipRow($("#rankBy"),[["won","Most won"],["wins","Most wins"],["best","Biggest hit"]],rankBy,"rb");
+  const rows=ppl.map(([k,name])=>{
+    const wins=settled.filter(s=>norm(s.name)===k && s.status==="won");
+    const amts=wins.map(s=>Math.max(0,profitOf(s)));
+    const won=amts.reduce((m,x)=>m+x,0);
+    let best=null; wins.forEach((s,i)=>{ if(!best||amts[i]>best.amt) best={amt:amts[i],legs:(s.legs||[]).length,cat:slipCategory(s)}; });
+    const legsHit=settled.filter(s=>norm(s.name)===k).reduce((m,s)=>m+(s.legs||[]).filter(l=>l.result==="won").length,0);
+    return {name,won,wins:wins.length,best,legsHit,me:k===norm(me?.name)};
+  }).filter(r=>r.wins>0);
+  const key={won:r=>r.won, wins:r=>r.wins, best:r=>r.best?.amt||0}[rankBy];
+  rows.sort((a,b)=>key(b)-key(a)||b.won-a.won);
+  const big=r=> rankBy==="wins" ? `${r.wins}<small>wins</small>` : rankBy==="best" ? `+${money(r.best?.amt||0)}<small>biggest hit</small>` : `+${money(r.won)}<small>total won</small>`;
+  $("#rankList").innerHTML = rows.length ? rows.map((r,i)=>`<div class="rank r${i+1}"><div class="pos">${i+1}</div><div class="nm">${esc(r.name)}${r.me?' <span class="tag">YOU</span>':""}</div><div class="won">${big(r)}</div>
+      <div class="meta2">${r.wins} win${r.wins===1?"":"s"} · ${r.legsHit} legs hit${r.best?` · best: +${money(r.best.amt)} on a ${r.best.legs}-leg ${esc(r.best.cat)}`:""}</div></div>`).join("")
+    : `<div class="empty"><b>No wins yet</b>The first cashed slip puts someone on the board.</div>`;
+
+  // ---- Best sport (unchanged) ----
   chipRow($("#boardWho"),[["all","Whole group"],...ppl],boardWho,"who");
-  const pool = boardWho==="all"? slips : slips.filter(s=>norm(s.name)===boardWho);
+  const pool = (boardWho==="all"? slips : slips.filter(s=>norm(s.name)===boardWho)).filter(isPerson);
   const byCat=new Map(); for(const s of pool){ const c=slipCategory(s); if(!byCat.has(c)) byCat.set(c,[]); byCat.get(c).push(s); }
-  const cards=[...byCat].map(([c,ss])=>({c,t:tally(ss)})).filter(x=>x.t.n||x.t.p).sort((a,b)=>(b.t.pct||0)-(a.t.pct||0));
-  $("#catGrid").innerHTML = cards.length ? cards.map((x,i)=>`<div class="cat"><span class="k">${esc(x.c)}${i===0?' <span class="tag">BEST</span>':""}</span><span class="v">${pct(x.t.pct)}</span><span class="s">${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""} · <span class="${x.t.profit>0?"pos":x.t.profit<0?"neg":""}">${x.t.profit>0?"+":""}${money(x.t.profit)}</span></span></div>`).join("")
+  const cats=[...byCat].map(([c,ss])=>({c,t:tally(ss)})).filter(x=>x.t.n||x.t.p).sort((a,b)=>(b.t.pct||0)-(a.t.pct||0));
+  $("#catGrid").innerHTML = cats.length ? cats.map((x,i)=>`<div class="cat"><span class="k">${esc(x.c)}${i===0?' <span class="tag">BEST</span>':""}</span><span class="v">${pct(x.t.pct)}</span><span class="s">${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""} · <span class="${x.t.profit>0?"pos":x.t.profit<0?"neg":""}">${x.t.profit>0?"+":""}${money(x.t.profit)}</span></span></div>`).join("")
     : `<div class="empty" style="grid-column:1/-1"><b>No results yet</b>Win rates by sport show up after the first slips settle.</div>`;
 }
 function renderAll(){ if(!me||$("#app").hidden) return; if(tab==="live") renderLive(); else if(tab==="history") renderHistory(); else if(tab==="picks") renderPicks(); else renderBoard(); }
@@ -1164,16 +1225,17 @@ async function syncPmus(force){
     const res=await pmusGet("/v1/portfolio/positions",key);
     const all=!!members[uid]?.polyAll;
     const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="pmus").map(s=>[s.id,s]));
+    const mineOld=slips.filter(s=>s.source==="pmus" && norm(s.name)===norm(me.name));
     for(const [slug,p] of Object.entries(res.positions||{})){
       const md=p.marketMetadata||{};
       const net=Number(p.netPositionDecimal ?? p.netPosition ?? 0), sold=Number(p.qtySoldDecimal ?? p.qtySold ?? 0);
       const cost=Math.abs(Number(p.cost?.value||0)), realized=Number(p.realized?.value||0), upnl=Number(p.cashValue?.value||0);
-      const id=("pu_"+uid.slice(0,8)+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,140);
+      const id=("pu_"+norm(me.name).replace(/ /g,"")+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,140);
       const settled = p.expired || (net===0 && sold>0);
       const pnl=Math.round(realized*100)/100;
       const status = settled ? (pnl>0?"won":pnl<0?"lost":"push") : "open";
       const live={liveValue:Math.round((cost+upnl)*100)/100, livePnl:Math.round(upnl*100)/100};
-      const ex=have.get(id);
+      const ex=have.get(id) || mineOld.find(x=>x.id.endsWith("_"+String(slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,120)));
       const buildLegs=async()=>{
         let legs=null; const isCombo=/^(crossd|caoc)-/i.test(slug);
         if(isCombo){
@@ -1188,7 +1250,7 @@ async function syncPmus(force){
       };
       const goodLegs=l=>l.length>1||l[0]?.kind!=="pmus"||!/^(crossd|caoc)-/i.test(slug);
       if(ex && (ex.legsV||0)<3 && ex.status==="open"){
-        const legs=await buildLegs(); await col.doc(id).update({legs, legsV:goodLegs(legs)?3:1}).catch(()=>{}); continue;
+        const legs=await buildLegs(); await col.doc(ex.id).update({legs, legsV:goodLegs(legs)?3:1}).catch(()=>{}); continue;
       }
       if(!ex){
         if(net===0 && !settled) continue;
@@ -1200,9 +1262,9 @@ async function syncPmus(force){
           payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?3:1, ...live,
           ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
       } else if(status!=="open" && (ex.status==="open" || ex.pnl!==pnl)){
-        await col.doc(id).update({status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
+        await col.doc(ex.id).update({status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
       } else if(ex.status==="open" && Math.abs((ex.liveValue||0)-live.liveValue)>=0.5){
-        await col.doc(id).update(live).catch(()=>{});
+        await col.doc(ex.id).update(live).catch(()=>{});
       }
     }
     note();
@@ -1230,7 +1292,7 @@ async function importPoly(open, m){
   const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="polymarket").map(s=>[s.id,s]));
   const leg=(p,result)=>({league:"other", kind:"poly", cat:polyCategory(p.eventSlug||p.slug)||"Other", team:p.outcome, market:p.title, slug:p.eventSlug||p.slug||null, key:polyKey(p.conditionId,p.outcomeIndex), result});
   for(const p of open.filter(keep)){
-    const id="pm_"+uid.slice(0,8)+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
+    const id="pm_"+norm(me.name).replace(/ /g,"")+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
     const resolved=p.redeemable && (p.curPrice>=0.99 || p.curPrice<=0.01);
     const status= resolved ? (p.curPrice>=0.5?"won":"lost") : "open";
     const pnl= resolved ? Math.round(((status==="won"?p.size:0)-p.initialValue)*100)/100 : null;
@@ -1242,7 +1304,7 @@ async function importPoly(open, m){
     }
   }
   for(const p of (closed||[]).filter(keep)){
-    const id="pm_"+uid.slice(0,8)+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
+    const id="pm_"+norm(me.name).replace(/ /g,"")+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
     if(ex && ex.status!=="open") continue;
     const pnl=Math.round((p.realizedPnl||0)*100)/100; const status=pnl>0?"won":pnl<0?"lost":"push";
     const stake=Math.round((p.totalBought||0)*(p.avgPrice||0)*100)/100;
@@ -1362,8 +1424,12 @@ renderSportChips();
 (async()=>{
   try{ await initFirebase(); }
   catch(e){ $("#joinPanel").hidden=false; note(e.message==="setup"?"The group database isn't set up yet.":"Couldn't connect to the group database: "+e.message); $("#notice").dataset.sticky="1"; return; }
-  const q=new URLSearchParams(location.search).get("join");
-  if(me && me.group && !q){ $("#app").hidden=false; startGroup(); }
+  const sp=new URLSearchParams(location.search);
+  const q=sp.get("join"), ug=(sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,""), un=(sp.get("name")||"").trim().slice(0,24);
+  if(ug && un && (!me || me.group!==ug || me.name!==un)){
+    try{ const g=await db.collection("groups").doc(ug).get(); if(g.exists){ me={name:un, group:ug}; ls.set(KEY+".me",me); } }catch{}
+  }
+  if(me && me.group && !q){ rememberInUrl(); $("#app").hidden=false; startGroup(); }
   else showJoin();
 })();
 })();
