@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-HcF6PWXJhZgxpkrexwP4Oaeicdh0VL/3AN/zrgfyQxk=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-MEEASdxcWWr9fYnu2Z5nO18SJZAIXxiaeKEvIHYs4Dk=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -422,7 +422,15 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       </div>
       <div id="picksValue" style="display:flex;flex-direction:column;gap:14px">
       <div class="panel">
-        <h2>High risk, high reward</h2>
+        <h2>Player prop parlays</h2>
+        <p>Built from the Player trends edges: props where the player's hit rate on that exact line beats Polymarket's price. Injured players are skipped, and each parlay uses at most 2 legs from the same game.</p>
+        <div class="chips" id="ppLeague"></div>
+        <div class="row-end"><span class="sp" id="ppStatus" style="font-size:13px;color:var(--muted)"></span><button type="button" class="ghost small" id="ppRefresh">Refresh</button></div>
+      </div>
+      <div class="list" id="propParlays"></div>
+      <div class="section-head"><h2>Team longshots</h2></div>
+      <div class="panel">
+        <h2>Team longshots: high risk, high reward</h2>
         <p>The app compares DraftKings' odds with two independent estimates: ESPN's win-probability model and the Polymarket price for the same game. When those estimates say a team wins more often than the odds imply, that's a value spot. Small parlays are built from those spots. These are estimates, not sure things. Longshots lose most of the time, even when the price is good.</p>
         <div class="row-end"><span class="sp" id="picksStatus" style="font-size:13px;color:var(--muted)"></span><button type="button" class="primary" id="findPicks">Find today's value</button></div>
       </div>
@@ -1620,9 +1628,12 @@ function renderPicks(){
       ps.spots.slice(0,15).map(s=>`<tr><td class="name">${esc(s.team)}<div class="statline">vs ${esc(s.opp)} · ${esc(LEAGUES[s.league].label)}</div></td><td>${amS(s.ml)}</td><td>${pctS(s.fair)}</td><td>${pctS(s.espn)}</td><td>${pctS(s.poly)}</td><td class="pos">+${Math.round(s.edge*100)}</td></tr>`).join("")+"</tbody>";
   }
   const model=slips.filter(s=>s.source==="model"); const t=tally(model); const openN=model.filter(s=>s.status==="open").length;
+  const mp=model.filter(s=>s.modelKind==="props"), mt=model.filter(s=>s.modelKind!=="props"), tp=tally(mp), tt=tally(mt);
   $("#modelRecord").innerHTML=`<div class="cat"><span class="k">Record</span><span class="v">${t.w}-${t.l}</span><span class="s">${openN} still open</span></div>
     <div class="cat"><span class="k">Profit ($10 per pick)</span><span class="v ${t.profit>0?"pos":t.profit<0?"neg":""}">${t.profit>0?"+":""}${money(t.profit)}</span><span class="s">ROI ${pctS(t.roi)}</span></div>
-    <div class="cat"><span class="k">Legs hit</span><span class="v">${pctS(t.legPct)}</span><span class="s">${t.legsW} of ${t.legsT}</span></div>`;
+    <div class="cat"><span class="k">Legs hit</span><span class="v">${pctS(t.legPct)}</span><span class="s">${t.legsW} of ${t.legsT}</span></div>
+    <div class="cat"><span class="k">Prop parlays</span><span class="v">${tp.w}-${tp.l}</span><span class="s"><span class="${tp.profit>0?"pos":tp.profit<0?"neg":""}">${tp.profit>0?"+":""}${money(tp.profit)}</span> · legs ${pctS(tp.legPct)}</span></div>
+    <div class="cat"><span class="k">Team longshots</span><span class="v">${tt.w}-${tt.l}</span><span class="s"><span class="${tt.profit>0?"pos":tt.profit<0?"neg":""}">${tt.profit>0?"+":""}${money(tt.profit)}</span> · legs ${pctS(tt.legPct)}</span></div>`;
 }
 $("#parlayList").addEventListener("click",e=>{
   const i=e.target.dataset.tail; if(i==null||!picksState) return; const p=picksState.parlays[+i];
@@ -2093,6 +2104,75 @@ function renderNews(){
 let nSearchT; $("#nSearch").addEventListener("input",e=>{ clearTimeout(nSearchT); nSearchT=setTimeout(()=>{ nf.q=e.target.value.trim(); renderNews(); },200); });
 $("#nLoad").onclick=()=>loadNews(true);
 
+/* ---------- Player prop parlays (built from Player trends) ---------- */
+let ppLeague=ls.get(KEY+".ppLeague","nba");
+function propCandidates(ts){
+  const best=new Map();
+  for(const x of ts?.items||[]){
+    if(x.edge<0.05 || x.edge>0.35 || x.wide || x.S.W.l10.n<5 || x.price<0.15 || x.price>0.92) continue;   // skip thin markets and too-good-to-be-true gaps
+    if(x.inj && x.inj.cls!=="ok") continue;
+    const k=norm(x.player); if(!best.has(k) || best.get(k).edge<x.edge) best.set(k,x);
+  }
+  return [...best.values()];
+}
+function buildPropParlays(ts){
+  const c=propCandidates(ts); const out=[]; const seen=new Set();
+  const make=(pool,n,seedSkip)=>{ const legs=[], games={};
+    for(const x of pool.slice(seedSkip)){ if(legs.length>=n) break; const g=x.game.id; if((games[g]||0)>=2) continue; if(legs.some(l=>norm(l.player)===norm(x.player))) continue; legs.push(x); games[g]=(games[g]||0)+1; }
+    if(legs.length<n) return null;
+    const price=legs.reduce((m,x)=>m*x.price,1), prob=legs.reduce((m,x)=>m*x.S.p,1), dec=1/price;
+    return {legs, price, prob, dec, ev:prob*dec-1};
+  };
+  const T=[
+    {name:"Steady 2-leg", blurb:"Two of the most reliable lines on the board.", n:2, pool:[...c].filter(x=>x.S.p>=0.62 && x.price>=0.5).sort((a,b)=>b.S.p-a.S.p||b.edge-a.edge)},
+    {name:"Value 3-leg", blurb:"The three biggest edges, spread across games.", n:3, pool:[...c].sort((a,b)=>b.edge-a.edge)},
+    {name:"Big swing 4-leg", blurb:"Bigger payout. Still positive by the estimate, but expect it to miss more often than not.", n:4, pool:[...c].sort((a,b)=>(b.edge/b.price)-(a.edge/a.price))},
+  ];
+  for(const t of T) for(let skip=0; skip<3; skip++){
+    const p=make(t.pool,t.n,skip); if(!p || p.ev<=0.05) continue;
+    const key=p.legs.map(l=>l.slug).sort().join("|"); if(seen.has(key)) continue; seen.add(key);
+    out.push({...t, ...p, alt:skip>0}); if(out.filter(o=>o.name===t.name).length>=2) break;
+  }
+  return out;
+}
+function legLine(x){ const ln=Number(x.line); return Number.isInteger(ln+0.5)? (x.side==="over"? `${ln+0.5}+ ${x.label}` : `${ln-0.5} or fewer ${x.label}`) : `${x.side} ${ln} ${x.label}`; }
+function renderPropParlays(){
+  chipRow($("#ppLeague"),TREND_LEAGUES.map(l=>[l,LEAGUES[l].label]),ppLeague,"pp");
+  const ts=trendCacheByLg.get(ppLeague);
+  if(!ts || Date.now()-ts.at>15*60000){
+    $("#propParlays").innerHTML=`<div class="empty"><b>Checking ${esc(LEAGUES[ppLeague].label)} props…</b>Pulling Player trends data.</div>`; $("#ppStatus").textContent="";
+    if(!trendBusy) scanTrends(ppLeague).then(()=>{ if(pickMode==="value") renderPropParlays(); });
+    return;
+  }
+  const list=buildPropParlays(ts); ts.pp=list;
+  $("#ppStatus").textContent=`${propCandidates(ts).length} props with an edge · updated ${ago(ts.at)}`;
+  $("#propParlays").innerHTML = list.length ? list.map((p,i)=>`<article class="slip"><div class="slip-h"><div class="ttl">${esc(p.name)}${p.alt?' <span class="tag">ALT</span>':""}<small style="display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px">${esc(p.blurb)}</small></div>
+      <div class="right"><span class="pill won">${p.dec.toFixed(1)}x</span></div></div>
+      <div class="legs">${p.legs.map(x=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(x.player)}</div><div class="leg-bet">${esc(legLine(x))} · ${esc(x.game.name||"")}</div></div>
+        <div class="leg-num"><div class="cur">${Math.round(x.price*100)}¢</div><div class="of">est. ${Math.round(x.S.p*100)}%</div></div></div>
+        <div class="statline">L10 ${x.S.W.l10.h}/${x.S.W.l10.n} · season ${x.S.W.season.n?x.S.W.season.h+"/"+x.S.W.season.n:"–"} · <b class="pos">+${Math.round(x.edge*100)} pts</b>${x.S.hot&&x.side==="over"?" · 🔥 trending up":""}</div></div>`).join("")}</div>
+      <div class="slip-f"><span class="statline" style="align-self:center">Costs ${Math.round(p.price*100)}¢ per $1 payout (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}% · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
+    + `<p class="fine">Estimates treat legs as independent. Two legs from the same game can move together. Polymarket prices a combo on its own, so check the real combo price before you buy.</p>`
+    : `<div class="empty"><b>No prop parlays right now</b>${esc(ts.note || "Not enough props beat their prices today. Check back closer to tip-off, when lines move.")}</div>`;
+  if(list.length) logPropModel(ppLeague,list);
+}
+$("#ppLeague").addEventListener("click",e=>{ const k=e.target.dataset.pp; if(!k) return; ppLeague=k; ls.set(KEY+".ppLeague",k); renderPropParlays(); });
+$("#ppRefresh").onclick=()=>{ trendCacheByLg.delete(ppLeague); renderPropParlays(); };
+$("#propParlays").addEventListener("click",e=>{ const i=e.target.dataset.ppadd; if(i==null) return; const p=trendCacheByLg.get(ppLeague)?.pp?.[+i]; if(!p) return;
+  editingId=null; $("#saveSlip").textContent="Post slip";
+  drafts=p.legs.map(x=>({league:ppLeague, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||"", market:x.label, line:x.line}));
+  ["stake","payout"].forEach(id=>$("#"+id).value=""); $("#odds").value=decToAm(p.dec); $("#previewImg").hidden=true;
+  document.querySelector('[data-tab="live"]')?.click(); showReview(p.name+" from Value parlays"); $("#review").scrollIntoView({behavior:"smooth"}); });
+async function logPropModel(lg,list){
+  const day=etDay().replace(/-/g,"");
+  for(const [i,p] of list.filter(x=>!x.alt).slice(0,2).entries()){
+    const id=`mprop_${day}_${lg}_${i+1}`; if(slips.some(s=>s.id===id)) continue;
+    try{ const ref=gref().collection("slips").doc(id); if((await ref.get()).exists) continue;
+      await ref.set({uid, name:"Model", source:"model", modelKind:"props", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open",
+        legs:p.legs.map(x=>({league:lg, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||null, market:x.label, line:x.line, gameId:x.game.id, result:null}))}); }catch{}
+  }
+}
+
 /* ---------- Player trends (stat-based props) ---------- */
 const TREND_LEAGUES=["nba","wnba","nfl","ncaafb","ncaamb","nhl","mlb"];
 const PMUS_LEAGUE={nba:"nba",wnba:"wnba",nfl:"nfl",ncaafb:"cfb",ncaamb:"cbb",mlb:"mlb",nhl:"nhl"};
@@ -2109,7 +2189,7 @@ let trendState=null; const trendCacheByLg=new Map(); const logCache=new Map(), r
 function renderPickMode(){
   chipRow($("#pickMode"),[["trends","Player trends"],["news","Injuries & news"],["value","Value parlays"]],pickMode,"pm");
   $("#picksTrends").hidden=pickMode!=="trends"; $("#picksValue").hidden=pickMode!=="value"; $("#picksNews").hidden=pickMode!=="news";
-  if(pickMode==="trends") renderTrends(); if(pickMode==="news") renderNews();
+  if(pickMode==="trends") renderTrends(); if(pickMode==="news") renderNews(); if(pickMode==="value") renderPropParlays();
 }
 $("#pickMode").addEventListener("click",e=>{ const k=e.target.dataset.pm; if(!k) return; pickMode=k; ls.set(KEY+".pickMode",k); renderPickMode(); });
 async function pool(items,n,fn){ const out=[]; let i=0; await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{ while(i<items.length){ const k=i++; out[k]=await fn(items[k],k).catch(()=>null); } })); return out; }
@@ -2206,8 +2286,8 @@ function propFromMarket(m){
   const spread=(py+(pn>0?pn:1-py))-1;
   return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, wide:spread>0.12};
 }
-async function scanTrends(){
-  if(trendBusy) return; trendBusy=true; const lg=tf.league; $("#trendList").innerHTML=`<div class="empty"><b>Loading ${esc(LEAGUES[lg].label)} players…</b>Pulling today's games and game logs from ESPN.</div>`; const st=$("#tStatus"); $("#tScan").disabled=true;
+async function scanTrends(lgArg){
+  if(trendBusy) return; trendBusy=true; const lg=lgArg||tf.league; const stEl=$("#tStatus"), ppEl=$("#ppStatus"); if(lg===tf.league) $("#trendList").innerHTML=`<div class="empty"><b>Loading ${esc(LEAGUES[lg].label)} players…</b>Pulling today's games and game logs from ESPN.</div>`; const st={set textContent(v){ if(lg===tf.league) stEl.textContent=v; if(lg===ppLeague) ppEl.textContent=v; }}; $("#tScan").disabled=true;
   try{
     st.textContent="Loading today's games…";
     const today=etDay(); const games=(await loadBoard(lg,today.replace(/-/g,"")).catch(()=>[])).filter(g=>etDay(g.date)===today && g.state!=="post");
