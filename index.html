@@ -40,7 +40,7 @@ h1 span{color:var(--accent)}
 .groupbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .groupbar b{color:var(--ink);font-weight:600}
 .code{font:700 13px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--ink)}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
 .tabs button{border:none;min-height:40px;border-radius:9px;font:600 14px var(--body);background:none;color:var(--muted)}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
@@ -161,6 +161,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     <div class="groupbar">
       <span>You're <b id="meName"></b></span><span>·</span><span>Group <span class="code" id="groupCode"></span></span>
       <span class="sp"></span>
+      <button type="button" class="ghost" id="polyBtn">Connect Polymarket</button>
       <button type="button" class="ghost" id="inviteBtn">Invite friends</button>
       <button type="button" class="ghost" id="leaveBtn">Switch</button>
     </div>
@@ -168,8 +169,21 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="live" id="tab-live">Live</button>
       <button role="tab" aria-selected="false" data-tab="history" id="tab-history">History</button>
-      <button role="tab" aria-selected="false" data-tab="board" id="tab-board">Leaderboard</button>
+      <button role="tab" aria-selected="false" data-tab="picks" id="tab-picks">Picks</button>
+      <button role="tab" aria-selected="false" data-tab="board" id="tab-board">Board</button>
     </div>
+
+    <section class="panel" id="polyPanel" hidden>
+      <h2>Connect Polymarket</h2>
+      <p>Paste your Polymarket wallet address. On Polymarket, open your profile and copy the address that starts with 0x. It's public, read-only, and no password is involved. Your positions will show up here and settle on their own.</p>
+      <label class="f">Wallet address<input id="polyAddr" autocomplete="off" spellcheck="false" placeholder="0x…"></label>
+      <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--muted)"><input type="checkbox" id="polyAll" style="width:auto"> Also import non-sports markets</label>
+      <div class="row-end">
+        <button type="button" class="ghost" id="polyDisconnect">Disconnect</button>
+        <button type="button" class="ghost" id="polyCancel">Cancel</button>
+        <button type="button" class="primary" id="polySave">Save</button>
+      </div>
+    </section>
 
     <!-- LIVE -->
     <section id="view-live" style="display:flex;flex-direction:column;gap:14px">
@@ -206,6 +220,21 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="chips" id="histWho"></div>
       <div class="chips" id="histCat"></div>
       <div class="list" id="histList" style="gap:8px"></div>
+    </section>
+
+    <!-- PICKS -->
+    <section id="view-picks" hidden style="flex-direction:column;gap:14px">
+      <div class="panel">
+        <h2>High risk, high reward</h2>
+        <p>The app compares DraftKings' odds with two independent estimates: ESPN's win-probability model and the Polymarket price for the same game. When those estimates say a team wins more often than the odds imply, that's a value spot. Small parlays are built from those spots. These are estimates, not sure things. Longshots lose most of the time, even when the price is good.</p>
+        <div class="row-end"><span class="sp" id="picksStatus" style="font-size:13px;color:var(--muted)"></span><button type="button" class="primary" id="findPicks">Find today's value</button></div>
+      </div>
+      <div class="section-head"><h2>Suggested parlays</h2></div>
+      <div class="list" id="parlayList"><div class="empty"><b>Nothing scanned yet</b>Tap “Find today's value” to check today's games.</div></div>
+      <div class="section-head"><h2>Value spots</h2></div>
+      <div class="tablewrap"><table id="spotTable"><tbody><tr><td style="text-align:left;color:var(--muted)">Single sides where the estimate beats the price show here.</td></tr></tbody></table></div>
+      <div class="section-head"><h2>Model's track record</h2></div>
+      <div class="cat-grid" id="modelRecord"></div>
     </section>
 
     <!-- LEADERBOARD -->
@@ -407,6 +436,7 @@ function findPlayer(players,name){
 // Evaluate one leg. Returns {cur, result ("won"/"lost"/"push"/undefined), locked, ...}
 function evaluateLeg(leg, game, players){
   const st={game, live:game?.state==="in", final:!!game?.final, cur:null};
+  if(leg.kind==="poly"){ st.poly=true; return st; }
   if(leg.kind==="manual" || sportOf(leg.league)==="other"){ st.missing="Mark this leg by hand"; return st; }
   if(!game){ st.missing="Finding the game"; return st; }
   if(leg.kind==="prop"){
@@ -469,11 +499,65 @@ function oddsToPayout(stake, odds){
   const profit = o>0 ? s*o/100 : s*100/Math.abs(o);
   return Math.round((s+profit)*100)/100;
 }
+/* ---- Value picks math ---- */
+const amToDec = a => { a=Number(a); if(!a) return null; return a>0 ? 1+a/100 : 1+100/Math.abs(a); };
+const decToAm = d => d>=2 ? "+"+Math.round((d-1)*100) : "-"+Math.round(100/(d-1));
+const impl = a => { const d=amToDec(a); return d?1/d:null; };
+// For each side of a game: book fair %, model % (avg of available), edge and EV per $1.
+function valueSides(g){
+  const out=[];
+  const ia=impl(g.mlA), ih=impl(g.mlH); if(ia==null||ih==null) return out;
+  const fairA=ia/(ia+ih), fairH=ih/(ia+ih);
+  for(const [side,team,ml,fair] of [["A",g.away,g.mlA,fairA],["H",g.home,g.mlH,fairH]]){
+    const est=[]; const espn = side==="A"?g.espnA:g.espnH; const poly = side==="A"?g.polyA:g.polyH;
+    if(espn!=null) est.push(espn); if(poly!=null) est.push(poly);
+    if(!est.length) continue;
+    const p=est.reduce((s,x)=>s+x,0)/est.length;
+    const dec=amToDec(ml);
+    out.push({gameId:g.id, league:g.league, team, opp: side==="A"?g.home:g.away, ml, dec, fair, espn, poly, p, edge:p-fair, ev:p*dec-1, start:g.date, label:g.name});
+  }
+  return out;
+}
+// Small longshot parlays from positive-edge sides in different games.
+function buildParlays(spots, {minDec=3.5, max=3}={}){
+  const pool=spots.filter(s=>s.edge>=0.02 && s.ev>0).sort((a,b)=>b.ev-a.ev).slice(0,8);
+  const res=[];
+  const add=legs=>{ if(new Set(legs.map(l=>l.gameId)).size!==legs.length) return;
+    const dec=legs.reduce((m,l)=>m*l.dec,1), p=legs.reduce((m,l)=>m*l.p,1); if(dec<minDec) return;
+    res.push({legs, dec, p, ev:p*dec-1}); };
+  for(let i=0;i<pool.length;i++) for(let j=i+1;j<pool.length;j++){ add([pool[i],pool[j]]); for(let k=j+1;k<pool.length;k++) add([pool[i],pool[j],pool[k]]); }
+  res.sort((a,b)=>b.ev-a.ev);
+  const picked=[], used=new Map();
+  for(const r of res){ if(picked.length>=max) break; if(r.legs.some(l=>(used.get(l.team)||0)>=2)) continue; picked.push(r); r.legs.forEach(l=>used.set(l.team,(used.get(l.team)||0)+1)); }
+  return picked;
+}
+const POLY_ABBR = {nba:{gs:"gsw",ny:"nyk",sa:"sas",no:"nop",utah:"uta",wsh:"was"}, nfl:{wsh:"was"}, nhl:{}, mlb:{}, wnba:{}};
+function polySlugs(league, g){
+  const day=new Date(g.date).toLocaleDateString("en-CA",{timeZone:"America/New_York"});
+  const m=POLY_ABBR[league]||{}; const a=String(g.awayAbbr||"").toLowerCase(), h=String(g.homeAbbr||"").toLowerCase();
+  const s=new Set([`${league}-${m[a]||a}-${m[h]||h}-${day}`, `${league}-${a}-${h}-${day}`]);
+  return [...s];
+}
+// Polymarket market slug -> category
+function polyCategory(slug){
+  const s=String(slug||"").toLowerCase();
+  if(/^(nba|wnba|cbb|ncaab|euroleague)-/.test(s)) return "Basketball";
+  if(/^(nfl|cfb|ncaaf)-/.test(s)) return "Football";
+  if(/^mlb-/.test(s)) return "Baseball";
+  if(/^nhl-/.test(s)) return "Hockey";
+  if(/^(epl|ucl|uel|lal|laliga|sea|seriea|bun|bundesliga|fl1|ligue1|mls|mex|uef|fifa|wc|soccer|efl|ere|por)-/.test(s)) return "Soccer";
+  if(/^(atp|wta|tennis)-/.test(s)) return "Tennis";
+  if(/^(ufc|mma|boxing)-/.test(s)) return "Fighting";
+  if(/^(f1|nascar|golf|pga)-/.test(s)) return "Racing & golf";
+  return null; // not a sports market
+}
+
 function slipCategory(slip){
-  const cats=[...new Set((slip.legs||[]).map(l=>catOf(l.league)))];
+  const cats=[...new Set((slip.legs||[]).map(l=>l.cat||catOf(l.league)))];
   return cats.length===1?cats[0]:"Mixed";
 }
 function profitOf(slip){
+  if(slip.pnl!=null && slip.status!=="open") return Number(slip.pnl);
   const st=Number(slip.stake)||0, po=Number(slip.payout)||0;
   if(slip.status==="won") return po? po-st : 0;
   if(slip.status==="lost") return -st;
@@ -546,7 +630,7 @@ function parseSlip(text, league, roster){
   const seen=new Set();
   return legs.filter(l=>{const k=(l.player||l.team)+"|"+l.market+"|"+l.line; if(seen.has(k)) return false; seen.add(k); return true;});
 }
-if(typeof module!=="undefined") module.exports={LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
+if(typeof module!=="undefined") module.exports={amToDec,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -587,7 +671,7 @@ function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
   gref().collection("members").doc(uid).set({name:me.name, joinedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{});
-  unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); renderAll(); }, e=>note("Couldn't load your group: "+e.message)));
+  unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); $("#polyBtn").textContent=members[uid]?.polyAddress?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); }, e=>note("Couldn't load your group: "+e.message)));
   unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(400).onSnapshot(s=>{
     slips=s.docs.map(d=>({id:d.id,...d.data()}));
     renderAll(); refresh();
@@ -629,7 +713,7 @@ $("#inviteBtn").onclick=async()=>{
 document.querySelector(".tabs").addEventListener("click",e=>{
   const t=e.target.dataset.tab; if(!t) return; tab=t;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
-  ["live","history","board"].forEach(v=>{const el=$("#view-"+v); el.hidden=v!==t; if(v===t) el.style.display="flex";});
+  ["live","history","picks","board"].forEach(v=>{const el=$("#view-"+v); el.hidden=v!==t; if(v===t) el.style.display="flex";});
   renderAll();
 });
 const chipRow=(el,items,cur,attr)=>{ el.innerHTML=items.map(([k,l])=>`<button type="button" class="chip" data-${attr}="${esc(k)}" aria-pressed="${k===cur}">${esc(l)}</button>`).join(""); };
@@ -718,8 +802,22 @@ function legBet(l){
   if(l.kind==="manual") return esc(l.market||"");
   return `<b>${esc(l.team)}</b> to win`;
 }
-const legTitle=l=> l.kind==="prop"? l.player : l.kind==="total"||l.kind==="draw" ? ([l.team,l.opponent].filter(Boolean).join(" vs ")||"Game") : l.kind==="manual" ? (l.player||l.team||"Other bet") : l.team;
+const legTitle=l=> l.kind==="poly"? l.team : l.kind==="prop"? l.player : l.kind==="total"||l.kind==="draw" ? ([l.team,l.opponent].filter(Boolean).join(" vs ")||"Game") : l.kind==="manual" ? (l.player||l.team||"Other bet") : l.team;
+function polyLegHTML(s,l){
+  const live=polyLive[l.key+"_"+s.uid];
+  const res=l.result||(s.status!=="open"?s.status:null);
+  const price= live? live.curPrice : null;
+  const pill = res==="won"?["won","Won"]:res==="lost"?["lost","Lost"]:res==="push"?["wait","Even"]:["live","Open"];
+  const val = live? `Worth ${money(live.currentValue)} now (${live.cashPnl>=0?"+":""}${money(live.cashPnl)})` : (s.status==="open"?"Live price loads when the owner's address is connected":"");
+  return `<div class="leg ${res||""}">
+    <div class="leg-top"><div><div class="leg-name">${esc(l.team)}</div><div class="leg-bet">${esc(l.market||"")}</div></div>
+    ${price!=null&&!res?`<div class="leg-num"><div class="cur">${Math.round(price*100)}¢</div><div class="of">chance now</div></div>`:""}</div>
+    ${price!=null&&!res?`<div class="bar" aria-hidden="true"><div class="fill" style="width:${(price*100).toFixed(1)}%"></div></div>`:""}
+    <div class="meta"><span class="pill ${pill[0]}">${pill[1]}</span><span>Polymarket · ${esc(l.cat||"Other")}</span>${val?`<span>${esc(val)}</span>`:""}<span class="sp"></span>${l.slug?`<a href="https://polymarket.com/event/${encodeURIComponent(l.slug)}" target="_blank" rel="noopener">Market</a>`:""}</div>
+  </div>`;
+}
 function legHTML(s,l,i){
+  if(l.kind==="poly") return polyLegHTML(s,l);
   const st = l.result ? {...evaluateLeg(l,gameOf(l),boxes[l.gameId]), result:l.result, cur: (evaluateLeg(l,gameOf(l),boxes[l.gameId]).cur ?? l.final ?? null)} : evaluateLeg(l,gameOf(l),boxes[l.gameId]);
   const res=st.result;
   const pill = res==="won"?["won","Hit"]:res==="lost"?["lost","Miss"]:res==="push"?["wait","Void"]:st.live?["live","Live"]:["wait","Pending"];
@@ -748,7 +846,7 @@ function slipHTML(s){
       <div class="money">${s.stake?`<b>${money(+s.stake)}</b>`:""}${s.payout?` → <b>${money(+s.payout)}</b>`:""}${s.odds?` · ${esc(s.odds)}`:""}</div>
       <span class="pill ${label[0]}">${label[1]}</span></div>
     <div class="legs">${s.legs.map((l,i)=>legHTML(s,l,i)).join("")}</div>
-    ${mine?`<div class="slip-f"><button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
+    ${mine&&s.source!=="polymarket"?`<div class="slip-f"><button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
   </article>`;
 }
 function renderLive(){
@@ -803,7 +901,158 @@ function renderBoard(){
   $("#catGrid").innerHTML = cards.length ? cards.map((x,i)=>`<div class="cat"><span class="k">${esc(x.c)}${i===0?' <span class="tag">BEST</span>':""}</span><span class="v">${pct(x.t.pct)}</span><span class="s">${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""} · <span class="${x.t.profit>0?"pos":x.t.profit<0?"neg":""}">${x.t.profit>0?"+":""}${money(x.t.profit)}</span></span></div>`).join("")
     : `<div class="empty" style="grid-column:1/-1"><b>No results yet</b>Win rates by sport show up after the first slips settle.</div>`;
 }
-function renderAll(){ if(!me||$("#app").hidden) return; if(tab==="live") renderLive(); else if(tab==="history") renderHistory(); else renderBoard(); }
+function renderAll(){ if(!me||$("#app").hidden) return; if(tab==="live") renderLive(); else if(tab==="history") renderHistory(); else if(tab==="picks") renderPicks(); else renderBoard(); }
+
+/* ---------- Value picks ---------- */
+const PICK_LEAGUES=["nba","nfl","ncaafb","ncaamb","wnba","ncaawb","nhl","mlb"];
+let picksState=ls.get(KEY+".picks",null); // {day, spots, parlays, at}
+const etDay = d => new Date(d||Date.now()).toLocaleDateString("en-CA",{timeZone:"America/New_York"});
+async function polyMoneyline(league,g){
+  for(const slug of polySlugs(league,g)){
+    try{
+      const ev=(await getJSON("https://gamma-api.polymarket.com/events?slug="+encodeURIComponent(slug)))[0]; if(!ev) continue;
+      const m=(ev.markets||[]).find(x=>x.sportsMarketType==="moneyline" && !x.closed) || (ev.markets||[]).find(x=>x.question===ev.title);
+      if(!m) continue;
+      const outs=JSON.parse(m.outcomes||"[]"), prices=JSON.parse(m.outcomePrices||"[]").map(Number);
+      const find=team=>{ const i=outs.findIndex(o=>{const n=norm(o); return n && (norm(team.nick)===n || norm(team.name).includes(n));}); return i>=0?prices[i]:null; };
+      const pa=find(g.awayT), ph=find(g.homeT);
+      if(pa!=null && ph!=null && pa+ph>0.5) return {pa:pa/(pa+ph), ph:ph/(pa+ph)};
+    }catch{}
+  }
+  return null;
+}
+async function scanLeagueOdds(lg){
+  const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard").catch(()=>null); if(!d) return [];
+  const soon=Date.now()+30*3600e3;
+  const evs=(d.events||[]).filter(e=>e.status?.type?.state==="pre" && Date.parse(e.date)<soon);
+  const games=await Promise.all(evs.map(async e=>{
+    const comps=e.competitions?.[0]?.competitors||[];
+    const A=comps.find(c=>c.homeAway==="away")?.team, H=comps.find(c=>c.homeAway==="home")?.team; if(!A||!H) return null;
+    const s=await getJSON(ESPN+LEAGUES[lg].path+"/summary?event="+e.id).catch(()=>null); if(!s) return null;
+    const pc=(s.pickcenter||[]).find(p=>p.homeTeamOdds?.moneyLine!=null && p.awayTeamOdds?.moneyLine!=null); if(!pc) return null;
+    const pr=s.predictor; const pct=v=>{const n=parseFloat(v); return isNaN(n)?null:n/100;};
+    const g={id:e.id, league:lg, name:e.shortName, date:e.date, away:A.displayName, home:H.displayName, awayAbbr:A.abbreviation, homeAbbr:H.abbreviation,
+      awayT:{name:A.displayName,nick:A.name}, homeT:{name:H.displayName,nick:H.name},
+      mlA:pc.awayTeamOdds.moneyLine, mlH:pc.homeTeamOdds.moneyLine, espnA:pct(pr?.awayTeam?.gameProjection), espnH:pct(pr?.homeTeam?.gameProjection), polyA:null, polyH:null};
+    const pm=await polyMoneyline(lg,g); if(pm){ g.polyA=pm.pa; g.polyH=pm.ph; }
+    return g;
+  }));
+  return games.filter(Boolean);
+}
+async function findPicks(){
+  const btn=$("#findPicks"); btn.disabled=true; $("#picksStatus").textContent="Checking today's games…";
+  try{
+    const all=[];
+    for(const lg of PICK_LEAGUES){ $("#picksStatus").textContent=`Checking ${LEAGUES[lg].label}…`; all.push(...await scanLeagueOdds(lg)); }
+    const spots=all.flatMap(valueSides).filter(s=>s.edge>0).sort((a,b)=>b.ev-a.ev);
+    const parlays=buildParlays(spots,{minDec:3.5,max:3});
+    picksState={day:etDay(), at:Date.now(), games:all.length, spots, parlays};
+    ls.set(KEY+".picks",picksState);
+    $("#picksStatus").textContent=`Checked ${all.length} games just now`;
+    renderPicks(); logModel(parlays.slice(0,2));
+  }catch(e){ $("#picksStatus").textContent="Couldn't finish the scan. Try again in a minute."; }
+  finally{ btn.disabled=false; }
+}
+$("#findPicks").onclick=findPicks;
+async function logModel(parlays){
+  const day=etDay().replace(/-/g,"");
+  for(const [i,p] of parlays.entries()){
+    const id=`model_${day}_${i+1}`;
+    if(slips.some(s=>s.id===id)) continue;
+    try{
+      const ref=gref().collection("slips").doc(id); const ex=await ref.get(); if(ex.exists) continue;
+      await ref.set({uid, name:"Model", source:"model", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open",
+        legs:p.legs.map(l=>({league:l.league, kind:"moneyline", side:"over", team:l.team, player:null, market:null, line:null, gameId:l.gameId, result:null}))});
+    }catch{}
+  }
+}
+const pctS = x => x==null?"–":Math.round(x*100)+"%";
+const amS = a => (a>0?"+":"")+a;
+function renderPicks(){
+  const ps=picksState;
+  if(ps && ps.day!==etDay()) { $("#picksStatus").textContent="Last scan was an earlier day. Scan again for today."; }
+  else if(ps) $("#picksStatus").textContent=`Checked ${ps.games} games ${Math.max(0,Math.round((Date.now()-ps.at)/60000))} min ago`;
+  if(ps && ps.parlays?.length){
+    $("#parlayList").innerHTML=ps.parlays.map((p,i)=>`<article class="slip"><div class="slip-h"><div><span class="who">${p.legs.length}-leg longshot</span> <span class="tag">${i<2?"TRACKED":"IDEA"}</span></div>
+      <div class="money">Pays <b>${decToAm(p.dec)}</b> · $10 → <b>${money(10*p.dec)}</b></div></div>
+      <div class="legs">${p.legs.map(l=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(l.team)}</div><div class="leg-bet"><b>To win</b> vs ${esc(l.opp)} · ${esc(LEAGUES[l.league].label)} · ${new Date(l.start).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div></div><div class="leg-num"><div class="cur">${amS(l.ml)}</div><div class="of">DraftKings</div></div></div>
+        <div class="statline">Odds imply ${pctS(l.fair)} · ESPN model ${pctS(l.espn)} · Polymarket ${pctS(l.poly)} · <b class="pos">+${Math.round(l.edge*100)} pts</b></div></div>`).join("")}</div>
+      <div class="slip-f"><span class="statline" style="align-self:center">Estimated chance all hit: ${(p.p*100).toFixed(1)}% · Expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}% per bet</span><span class="sp"></span><button type="button" class="ghost" data-tail="${i}">Tail this</button></div></article>`).join("");
+  } else if(ps){ $("#parlayList").innerHTML=`<div class="empty"><b>No good longshots right now</b>None of today's prices beat the estimates by enough. That happens. Check again closer to game time, when lines move.</div>`; }
+  if(ps && ps.spots?.length){
+    $("#spotTable").innerHTML=`<thead><tr><th>Team</th><th>Odds</th><th>Implied</th><th>ESPN</th><th>Poly</th><th>Edge</th></tr></thead><tbody>`+
+      ps.spots.slice(0,15).map(s=>`<tr><td class="name">${esc(s.team)}<div class="statline">vs ${esc(s.opp)} · ${esc(LEAGUES[s.league].label)}</div></td><td>${amS(s.ml)}</td><td>${pctS(s.fair)}</td><td>${pctS(s.espn)}</td><td>${pctS(s.poly)}</td><td class="pos">+${Math.round(s.edge*100)}</td></tr>`).join("")+"</tbody>";
+  }
+  const model=slips.filter(s=>s.source==="model"); const t=tally(model); const openN=model.filter(s=>s.status==="open").length;
+  $("#modelRecord").innerHTML=`<div class="cat"><span class="k">Record</span><span class="v">${t.w}-${t.l}</span><span class="s">${openN} still open</span></div>
+    <div class="cat"><span class="k">Profit ($10 per pick)</span><span class="v ${t.profit>0?"pos":t.profit<0?"neg":""}">${t.profit>0?"+":""}${money(t.profit)}</span><span class="s">ROI ${pctS(t.roi)}</span></div>
+    <div class="cat"><span class="k">Legs hit</span><span class="v">${pctS(t.legPct)}</span><span class="s">${t.legsW} of ${t.legsT}</span></div>`;
+}
+$("#parlayList").addEventListener("click",e=>{
+  const i=e.target.dataset.tail; if(i==null||!picksState) return; const p=picksState.parlays[+i];
+  drafts=p.legs.map(l=>({league:l.league, kind:"moneyline", team:l.team, side:"over"}));
+  $("#stake").value=10; $("#odds").value=decToAm(p.dec); $("#payout").value=Math.round(10*p.dec*100)/100; $("#previewImg").hidden=true;
+  document.querySelector('[data-tab="live"]').click(); showReview("Tail this parlay. Check the odds on your app first"); $("#review").scrollIntoView({behavior:"smooth"});
+});
+
+/* ---------- Polymarket ---------- */
+const polyLive={}; // key -> live position
+const polyKey=(cid,idx)=>String(cid).slice(2,14)+"_"+idx;
+$("#polyBtn").onclick=()=>{ const m=members[uid]||{}; $("#polyAddr").value=m.polyAddress||""; $("#polyAll").checked=!!m.polyAll; $("#polyPanel").hidden=false; };
+$("#polyCancel").onclick=()=>$("#polyPanel").hidden=true;
+$("#polySave").onclick=async()=>{
+  const m=$("#polyAddr").value.match(/0x[a-fA-F0-9]{40}/);
+  if(!m){ note("That doesn't look like a Polymarket wallet address. It starts with 0x and has 42 characters."); return; }
+  try{
+    const test=await getJSON("https://data-api.polymarket.com/positions?user="+m[0]+"&limit=1");
+    if(!Array.isArray(test)) throw new Error("bad");
+  }catch{ note("Couldn't reach Polymarket with that address. Check it and try again."); return; }
+  await gref().collection("members").doc(uid).set({polyAddress:m[0].toLowerCase(), polyAll:$("#polyAll").checked},{merge:true});
+  note(); $("#polyPanel").hidden=true; syncPoly(true);
+};
+$("#polyDisconnect").onclick=async()=>{ await gref().collection("members").doc(uid).set({polyAddress:null},{merge:true}); $("#polyPanel").hidden=true; };
+let polyBusy=false, polyLast=0;
+async function syncPoly(force){
+  if(polyBusy || (!force && Date.now()-polyLast<55000)) return; polyBusy=true; polyLast=Date.now();
+  try{
+    // live prices for everyone who connected
+    for(const [mid,m] of Object.entries(members)){
+      if(!m.polyAddress) continue;
+      const pos=await getJSON("https://data-api.polymarket.com/positions?user="+m.polyAddress+"&limit=200&sizeThreshold=1").catch(()=>null);
+      if(!pos) continue;
+      pos.forEach(p=>polyLive[polyKey(p.conditionId,p.outcomeIndex)+"_"+mid]=p);
+      if(mid===uid) await importPoly(pos, m);
+    }
+  }finally{ polyBusy=false; renderAll(); }
+}
+async function importPoly(open, m){
+  const closed=await getJSON("https://data-api.polymarket.com/closed-positions?user="+m.polyAddress+"&limit=50").catch(()=>[]);
+  const keep=p=>m.polyAll || polyCategory(p.eventSlug||p.slug);
+  const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="polymarket").map(s=>[s.id,s]));
+  const leg=(p,result)=>({league:"other", kind:"poly", cat:polyCategory(p.eventSlug||p.slug)||"Other", team:p.outcome, market:p.title, slug:p.eventSlug||p.slug||null, key:polyKey(p.conditionId,p.outcomeIndex), result});
+  for(const p of open.filter(keep)){
+    const id="pm_"+uid.slice(0,8)+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
+    const resolved=p.redeemable && (p.curPrice>=0.99 || p.curPrice<=0.01);
+    const status= resolved ? (p.curPrice>=0.5?"won":"lost") : "open";
+    const pnl= resolved ? Math.round(((status==="won"?p.size:0)-p.initialValue)*100)/100 : null;
+    if(!ex){
+      await col.doc(id).set({uid, name:me.name, source:"polymarket", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(p.initialValue*100)/100, payout:Math.round(p.size*100)/100,
+        odds:p.avgPrice>0&&p.avgPrice<1?decToAm(1/p.avgPrice):null, status, pnl, legs:[leg(p,status==="open"?null:status)], ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
+    } else if(ex.status==="open" && status!=="open"){
+      await col.doc(id).update({status, pnl, legs:[leg(p,status)], settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+    }
+  }
+  for(const p of (closed||[]).filter(keep)){
+    const id="pm_"+uid.slice(0,8)+"_"+polyKey(p.conditionId,p.outcomeIndex); const ex=have.get(id);
+    if(ex && ex.status!=="open") continue;
+    const pnl=Math.round((p.realizedPnl||0)*100)/100; const status=pnl>0?"won":pnl<0?"lost":"push";
+    const stake=Math.round((p.totalBought||0)*(p.avgPrice||0)*100)/100;
+    const data={status, pnl, legs:[leg(p,status)], settledAt:firebase.firestore.FieldValue.serverTimestamp()};
+    if(ex) await col.doc(id).update(data).catch(()=>{});
+    else await col.doc(id).set({uid, name:me.name, source:"polymarket", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:Math.round((p.totalBought||0)*100)/100, odds:p.avgPrice>0&&p.avgPrice<1?decToAm(1/p.avgPrice):null, ...data}).catch(()=>{});
+  }
+}
+setInterval(()=>{ if(!document.hidden && db && me) syncPoly(false); },20000);
 
 /* ---------- Slip actions ---------- */
 document.body.addEventListener("click",async e=>{
