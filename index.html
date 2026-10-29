@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-ZrC70+Rm0H07eIGFfTAXqNLlNemBbG/6q9PwYfDkYgc=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-iYXPZwt/jFpuT3ks87g245gtEJTynMo5TNgQpqOFVyc=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -107,6 +107,15 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .slip-f{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;background:var(--sunk);border-top:1px solid var(--line)}
 .empty{border:1.5px dashed var(--line);border-radius:14px;padding:22px 16px;text-align:center;color:var(--muted)}
 .empty b{display:block;color:var(--ink);font-family:var(--display);font-size:20px;text-transform:uppercase;margin-bottom:4px}
+.hfilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hfilters .f{margin:0}.hfilters .hsearch{grid-column:1/-1}
+@media(min-width:720px){.hfilters{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.hmore>summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent,#c4531a);list-style:none}.hmore>summary::-webkit-details-marker{display:none}.hmore>summary:after{content:" ▾"}.hmore[open]>summary:after{content:" ▴"}
+.hsum{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted)}.hsum b{color:var(--ink,inherit)}
+details.hist{display:block;padding:0}details.hist>summary{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 12px;align-items:center;padding:12px 14px;list-style:none;cursor:pointer}details.hist>summary::-webkit-details-marker{display:none}
+details.hist .chev{color:var(--muted);font-size:12px;transition:transform .15s}details.hist[open] .chev{transform:rotate(180deg)}
+.hlegs{border-top:1px solid var(--line);padding:8px 14px 12px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.hlegs .lg{display:grid;grid-template-columns:18px 1fr;gap:8px}.hlegs .lg .m{font-weight:700}.hlegs .won .m{color:var(--win)}.hlegs .lost .m{color:var(--loss)}.hlegs .push .m,.hlegs .none .m{color:var(--muted)}
+.hlegs .meta3{color:var(--muted);font-size:12.5px;margin-top:4px}
 .hist{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 .hist .r{font-family:var(--display);font-weight:700;font-size:20px;width:28px;text-align:center}
 .hist .r.won{color:var(--win)}.hist .r.lost{color:var(--loss)}.hist .r.push{color:var(--muted)}
@@ -175,6 +184,11 @@ details.slip[open] .chev{transform:rotate(180deg)}
 .owner{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .mem{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .mem:last-child{border-bottom:none}.mem .sp{flex:1}
+.pwmeter{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.pwmeter i{display:block;height:100%;width:0;background:var(--loss);transition:width .2s,background .2s}
+.pwrules{margin:0;padding:0;list-style:none;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:3px}.pwrules li:before{content:"○ ";}.pwrules li.ok{color:var(--win)}.pwrules li.ok:before{content:"✓ "}
+.fine{font-size:12.5px;color:var(--muted);margin:0}
+.switch-mode{margin:0;font-size:14px;color:var(--muted);text-align:center}.linkbtn{background:none;border:0;padding:0;color:var(--accent,#c4531a);font-weight:600;text-decoration:underline;cursor:pointer;width:auto;min-height:0;font-size:14px}
+.acct-line{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
 .or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
 button.google{width:100%}
 .mem .pending{color:var(--accent,#c4531a);font-size:12px;font-weight:600}
@@ -197,17 +211,40 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
   <!-- Join screen -->
   <section class="panel" id="authPanel" hidden>
-    <h2>Sign in</h2>
-    <p>Your account keeps you in your group on every device. If you've used the app on this phone before, your slips and history carry over.</p>
+    <h2 id="authTitle">Sign in</h2>
+    <p id="authIntro">Welcome back. If you've used the app on this phone before, your slips and history carry over.</p>
     <label class="f">Email<input id="authEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com"></label>
-    <label class="f">Password<input id="authPass" type="password" autocomplete="current-password" placeholder="At least 8 characters"></label>
+    <label class="f">Password<input id="authPass" type="password" autocomplete="current-password" placeholder="Your password"></label>
+    <div id="signupExtras" hidden style="display:flex;flex-direction:column;gap:10px">
+      <div class="pwmeter" aria-hidden="true"><i id="pwBar"></i></div>
+      <ul class="pwrules" id="pwRules">
+        <li data-r="len">At least 8 characters</li>
+        <li data-r="mix">At least 3 of: lowercase, uppercase, number, symbol (or 14+ characters)</li>
+        <li data-r="match">Both passwords match</li>
+      </ul>
+      <label class="f">Confirm password<input id="authPass2" type="password" autocomplete="new-password" placeholder="Type it again"></label>
+      <p class="fine">Use a password you don't use anywhere else. We check it against known leaked passwords. Only a scrambled fragment is sent, never your password.</p>
+    </div>
+    <label class="toggle"><input type="checkbox" id="showPw"> Show password</label>
     <div class="row-end">
       <button type="button" class="ghost" id="authForgot">Forgot password?</button>
-      <button type="button" id="authCreate">Create account</button>
       <button type="button" class="primary" id="authSignIn">Sign in</button>
+      <button type="button" class="primary" id="authCreate" hidden>Create account</button>
     </div>
+    <p class="switch-mode"><span id="authSwitchText">New here?</span> <button type="button" class="linkbtn" id="authSwitch">Create an account</button></p>
     <div class="or"><span>or</span></div>
     <button type="button" id="authGoogle" class="google">Continue with Google</button>
+  </section>
+
+  <section class="panel" id="verifyPanel" hidden>
+    <h2>Check your email</h2>
+    <p id="verifyText">We sent a link to your email. Tap it to confirm it's you, then come back here.</p>
+    <p class="fine">Don't see it? Check spam or promotions. The email comes from noreply@live-bet-tracker-b4f3f.firebaseapp.com.</p>
+    <div class="row-end">
+      <button type="button" class="ghost" id="verifySignOut">Sign out</button>
+      <button type="button" class="ghost" id="verifyResend">Resend email</button>
+      <button type="button" class="primary" id="verifyDone">I've confirmed. Continue</button>
+    </div>
   </section>
 
   <section class="panel" id="pendingPanel" hidden>
@@ -246,7 +283,6 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <button type="button" class="ghost" id="polyBtn">Connect Polymarket</button>
       <button type="button" class="ghost" id="membersBtn">Members</button>
       <button type="button" class="ghost" id="inviteBtn">Invite friends</button>
-      <button type="button" class="ghost" id="leaveBtn">Switch</button>
     </div>
     <section class="panel" id="notifPanel" hidden><div class="section-head"><h2>Reactions</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
     <section class="panel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div></section>
@@ -318,9 +354,20 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
     <!-- HISTORY -->
     <section id="view-history" hidden style="flex-direction:column;gap:12px">
-      <div class="chips" id="histWho"></div>
-      <div class="chips" id="histCat"></div>
-      <div class="row-end"><button type="button" class="small" id="exportCsv">Export to spreadsheet (CSV)</button></div>
+      <div class="hfilters">
+        <label class="f">Who<select class="pick" id="hWho"></select></label>
+        <label class="f">Sport<select class="pick" id="hCat"></select></label>
+        <label class="f">When<select class="pick" id="hWhen"><option value="all">All time</option><option value="today">Today</option><option value="yday">Yesterday</option><option value="week">This week</option><option value="7">Last 7 days</option><option value="month">This month</option><option value="30">Last 30 days</option></select></label>
+        <label class="f">Sort<select class="pick" id="hSort"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="bigwin">Biggest win</option><option value="bigloss">Biggest loss</option><option value="stake">Biggest stake</option><option value="legs">Most legs</option></select></label>
+        <label class="f hsearch">Search<input id="hSearch" type="search" placeholder="Player, team or market" autocomplete="off"></label>
+      </div>
+      <details class="hmore" id="hMore"><summary id="hMoreSum">More filters</summary><div class="hfilters" style="margin-top:8px">
+        <label class="f">Result<select class="pick" id="hRes"><option value="all">All results</option><option value="won">Wins</option><option value="lost">Losses</option><option value="push">Pushes</option></select></label>
+        <label class="f">Type<select class="pick" id="hSrc"><option value="all">All bets</option><option value="pmus">Polymarket US</option><option value="polymarket">Polymarket.com</option><option value="manual">Added by hand</option><option value="model">Model picks</option></select></label>
+        <label class="f">Legs<select class="pick" id="hLegs"><option value="all">Any size</option><option value="1">Singles</option><option value="2-3">2–3 legs</option><option value="4-6">4–6 legs</option><option value="7+">7+ legs</option></select></label>
+      </div></details>
+      <div class="hsum" id="hSum"></div>
+      <div class="row-end"><button type="button" class="ghost small" id="hReset">Reset filters</button><button type="button" class="small" id="exportCsv">Export to spreadsheet (CSV)</button></div>
       <div class="list" id="histList" style="gap:8px"></div>
     </section>
 
@@ -347,11 +394,29 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="tablewrap"><table id="meAccountCats"></table></div>
       <div class="section-head"><h2>Your tracked slips</h2></div>
       <div class="cat-grid" id="meSlips"></div>
+      <div class="section-head"><h2>Account</h2></div>
+      <div class="panel" style="gap:12px">
+        <div class="acct-line"><span>Signed in as <b id="acctEmail"></b></span><span class="pill" id="acctVerified"></span></div>
+        <div id="pwChangeBox" style="display:flex;flex-direction:column;gap:10px">
+          <div class="grid6">
+            <label class="f c2">Current password<input id="pwOld" type="password" autocomplete="current-password"></label>
+            <label class="f c2">New password<input id="pwNew" type="password" autocomplete="new-password"></label>
+            <label class="f c2">Confirm new<input id="pwNew2" type="password" autocomplete="new-password"></label>
+          </div>
+          <div class="row-end"><button type="button" class="small" id="pwChangeBtn">Change password</button></div>
+        </div>
+        <div class="row-end">
+          <button type="button" class="small" id="acctResend" hidden>Resend verification email</button>
+          <button type="button" class="small" id="leaveBtn">Switch group</button>
+          <button type="button" class="small" id="acctSignOut">Sign out</button>
+          <button type="button" class="small" id="signOutBtn">Sign out &amp; forget my Polymarket key</button>
+        </div>
+      </div>
       <div class="section-head"><h2>Settings</h2></div>
       <div class="panel" style="gap:14px">
         <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
         <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
-        <div class="row-end"><button type="button" class="small" id="signOutBtn">Sign out &amp; forget my Polymarket key</button><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
+        <div class="row-end"><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
       </div>
     </section>
 
@@ -775,6 +840,8 @@ let scanLeague = ls.get(KEY+".league","nba");
 let uid = null, db = null, unsub = [];
 let slips = [], members = {};
 let tab = "live", whoLive = "all", histWho = "all", histCat = "all", boardWho = "all";
+const HF_DEFAULT={who:"all",cat:"all",res:"all",when:"all",src:"all",legs:"all",sort:"new",q:""};
+let hf={...HF_DEFAULT, ...ls.get(KEY+".hf",{}), q:""};
 let liveView="person", sortBy=ls.get(KEY+".sort","close"), boardRange="all", editingId=null, groupDoc=null;
 const openSlips=new Set(ls.get(KEY+".open",[]));
 let reactions=[], notifs=[]; const seenNotifs=new Set(ls.get(KEY+".seenN",[]));
@@ -810,7 +877,7 @@ const gref = () => db.collection("groups").doc(me.group);
 function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
-  ["authPanel","joinPanel","pendingPanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false;
+  ["authPanel","joinPanel","pendingPanel","verifyPanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false;
   db.collection("users").doc(uid).set({lastGroup:me.group, groups:firebase.firestore.FieldValue.arrayUnion(me.group)},{merge:true}).catch(()=>{});
   if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
   unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); renderMembers(); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
@@ -831,13 +898,15 @@ function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?
 function genCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; const r=crypto.getRandomValues(new Uint8Array(6)); r.forEach(x=>c+=a[x%a.length]); return c; }
 
 /* ---------- Accounts ---------- */
-function showOnly(id){ ["authPanel","joinPanel","pendingPanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
-function showAuth(){ showOnly("authPanel"); }
+function showOnly(id){ ["authPanel","joinPanel","pendingPanel","verifyPanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
+function showAuth(){ showOnly("authPanel"); setAuthMode(firebase.auth().currentUser?.isAnonymous ? "signup" : "signin"); }
 function authMsg(e){
   const c=e?.code||"";
   return c==="auth/invalid-credential"||c==="auth/wrong-password"||c==="auth/user-not-found"||c==="auth/invalid-login-credentials" ? "That email and password don't match. Check them, or tap “Forgot password?”."
     : c==="auth/email-already-in-use"||c==="auth/credential-already-in-use" ? "There's already an account with that email. Tap Sign in instead."
     : c==="auth/weak-password" ? "Pick a longer password (at least 8 characters)."
+    : c==="auth/password-does-not-meet-requirements" ? "Your password needs at least 8 characters."
+    : c==="auth/requires-recent-login" ? "For security, sign out and back in, then try again."
     : c==="auth/invalid-email" ? "That email address doesn't look right."
     : c==="auth/too-many-requests" ? "Too many tries. Wait a few minutes and try again."
     : c==="auth/popup-blocked"||c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request" ? "The Google window closed before finishing. Try again, or use email and password."
@@ -854,21 +923,60 @@ async function secondaryUid(signIn){
   try{ const r=await signIn(app2.auth()); return r.user.uid; } finally{ app2.auth().signOut().catch(()=>{}); }
 }
 async function withButtons(fn){ const bs=["authSignIn","authCreate","authGoogle"].map(id=>$("#"+id)); bs.forEach(b=>b.disabled=true); try{ await fn(); }catch(e){ note(authMsg(e)); } finally{ bs.forEach(b=>b.disabled=false); } }
-const creds=()=>{ const email=$("#authEmail").value.trim(), pw=$("#authPass").value; if(!email||!pw){ note("Enter your email and a password."); return null; } return {email,pw}; };
+/* ---- Password rules + leaked-password check ---- */
+function pwCheck(pw,pw2){
+  const kinds=[/[a-z]/,/[A-Z]/,/[0-9]/,/[^A-Za-z0-9]/].filter(r=>r.test(pw)).length;
+  const r={len:pw.length>=8, mix:kinds>=3||pw.length>=14, match:!!pw && pw===pw2};
+  const score=Math.min(4,(pw.length>=8)+(pw.length>=12)+(kinds>=3)+(kinds>=4||pw.length>=16));
+  return {...r, ok:r.len&&r.mix&&r.match, score};
+}
+async function pwLeaked(pw){
+  try{
+    const h=[...new Uint8Array(await crypto.subtle.digest("SHA-1",new TextEncoder().encode(pw)))].map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
+    const r=await fetch("https://api.pwnedpasswords.com/range/"+h.slice(0,5),{headers:{"Add-Padding":"true"}});
+    if(!r.ok) return 0;
+    const line=(await r.text()).split("\n").find(l=>l.startsWith(h.slice(5)));
+    return line? Number(line.split(":")[1])||0 : 0;
+  }catch{ return 0; }   // if the check can't run, don't block sign-up
+}
+function paintPw(){
+  const c=pwCheck($("#authPass").value,$("#authPass2").value);
+  document.querySelectorAll("#pwRules li").forEach(li=>li.classList.toggle("ok",!!c[li.dataset.r]));
+  const bar=$("#pwBar"); bar.style.width=(c.score*25)+"%"; bar.style.background=c.score>=3?"var(--win)":c.score>=2?"#d4a017":"var(--loss)";
+}
+let authMode="signin";
+function setAuthMode(m){
+  authMode=m; const up=m==="signup";
+  $("#authTitle").textContent= up?"Create your account":"Sign in";
+  $("#authIntro").textContent= up?"One account works on every device. If you've used the app on this phone before, your slips and history carry over.":"Welcome back. If you've used the app on this phone before, your slips and history carry over.";
+  $("#signupExtras").hidden=!up; $("#authCreate").hidden=!up; $("#authSignIn").hidden=up; $("#authForgot").hidden=up;
+  $("#authPass").autocomplete= up?"new-password":"current-password"; $("#authPass").placeholder= up?"Create a password":"Your password";
+  $("#authSwitchText").textContent= up?"Already have an account?":"New here?"; $("#authSwitch").textContent= up?"Sign in":"Create an account";
+  note(); paintPw();
+}
+$("#authSwitch").onclick=()=>setAuthMode(authMode==="signup"?"signin":"signup");
+$("#authPass").addEventListener("input",paintPw); $("#authPass2").addEventListener("input",paintPw);
+$("#showPw").addEventListener("change",e=>{ const t=e.target.checked?"text":"password"; ["authPass","authPass2"].forEach(id=>$("#"+id).type=t); });
+const validEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 $("#authCreate").onclick=()=>withButtons(async()=>{
-  const c=creds(); if(!c) return; if(c.pw.length<8){ note("Pick a longer password (at least 8 characters)."); return; }
+  const email=$("#authEmail").value.trim(), pw=$("#authPass").value, c=pwCheck(pw,$("#authPass2").value);
+  if(!validEmail(email)){ note("Enter a valid email address."); return; }
+  if(!c.len||!c.mix){ note("Your password needs at least 8 characters and 3 of: lowercase, uppercase, number, symbol (or 14+ characters)."); return; }
+  if(!c.match){ note("The two passwords don't match."); return; }
+  const seen=await pwLeaked(pw);
+  if(seen){ note(`That password has shown up in ${seen.toLocaleString()} data leaks, so it isn't safe. Pick one you don't use anywhere else.`); return; }
   const cur=firebase.auth().currentUser;
-  if(cur && cur.isAnonymous){ await cur.linkWithCredential(firebase.auth.EmailAuthProvider.credential(c.email,c.pw)); }
-  else await firebase.auth().createUserWithEmailAndPassword(c.email,c.pw);
-  firebase.auth().currentUser.sendEmailVerification().catch(()=>{});
-  note(); await afterSignIn(null);
+  if(cur && cur.isAnonymous){ await cur.linkWithCredential(firebase.auth.EmailAuthProvider.credential(email,pw)); }
+  else await firebase.auth().createUserWithEmailAndPassword(email,pw);
+  await firebase.auth().currentUser.sendEmailVerification().catch(()=>{});
+  $("#authPass").value=""; $("#authPass2").value=""; note(); await afterSignIn(null);
 });
 $("#authSignIn").onclick=()=>withButtons(async()=>{
-  const c=creds(); if(!c) return;
+  const email=$("#authEmail").value.trim(), pw=$("#authPass").value; if(!email||!pw){ note("Enter your email and password."); return; }
   const cur=firebase.auth().currentUser; let oldUid=null;
-  if(cur && cur.isAnonymous){ oldUid=cur.uid; const nu=await secondaryUid(a=>a.signInWithEmailAndPassword(c.email,c.pw)); await linkOldLogin(oldUid,nu); }
-  await firebase.auth().signInWithEmailAndPassword(c.email,c.pw);
-  note(); await afterSignIn(oldUid);
+  if(cur && cur.isAnonymous){ oldUid=cur.uid; const nu=await secondaryUid(a=>a.signInWithEmailAndPassword(email,pw)); await linkOldLogin(oldUid,nu); }
+  await firebase.auth().signInWithEmailAndPassword(email,pw);
+  $("#authPass").value=""; note(); await afterSignIn(oldUid);
 });
 $("#authGoogle").onclick=()=>withButtons(async()=>{
   const prov=new firebase.auth.GoogleAuthProvider(); prov.setCustomParameters({prompt:"select_account"});
@@ -886,9 +994,59 @@ $("#authGoogle").onclick=()=>withButtons(async()=>{
 $("#authForgot").onclick=async()=>{ const email=$("#authEmail").value.trim(); if(!email){ note("Type your email above first, then tap “Forgot password?”."); return; }
   try{ await firebase.auth().sendPasswordResetEmail(email); note("If there's an account for "+email+", a reset link is on its way. Check spam too."); }catch(e){ note(authMsg(e)); } };
 
+/* ---- Email verification gate ---- */
+let verifyOldUid=null;
+function showVerify(oldUid){
+  verifyOldUid=oldUid||verifyOldUid; try{ if(verifyOldUid) localStorage.setItem(KEY+".oldUid",verifyOldUid); }catch{}
+  showOnly("verifyPanel"); $("#verifyText").textContent=`We sent a link to ${authUser.email}. Tap it to confirm it's you, then come back and tap Continue.`;
+}
+$("#verifyDone").onclick=async()=>{
+  const b=$("#verifyDone"); b.disabled=true;
+  try{ await firebase.auth().currentUser.reload(); authUser=firebase.auth().currentUser;
+    if(!authUser.emailVerified){ note("Not confirmed yet. Tap the link in the email first (check spam), then try again."); return; }
+    await authUser.getIdToken(true); note(); let o=verifyOldUid; try{ o=o||localStorage.getItem(KEY+".oldUid"); localStorage.removeItem(KEY+".oldUid"); }catch{} await afterSignIn(o);
+  }catch(e){ note(authMsg(e)); } finally{ b.disabled=false; }
+};
+let lastResend=0;
+async function resendVerify(){
+  if(Date.now()-lastResend<60000){ note("Give it a minute before sending another email."); return; }
+  try{ await firebase.auth().currentUser.sendEmailVerification(); lastResend=Date.now(); note("Sent. Check your inbox and spam."); }catch(e){ note(authMsg(e)); }
+}
+$("#verifyResend").onclick=resendVerify;
+$("#verifySignOut").onclick=()=>signOutAll(false);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && !$("#verifyPanel").hidden) firebase.auth().currentUser?.reload().then(()=>{ if(firebase.auth().currentUser?.emailVerified) $("#verifyDone").click(); }).catch(()=>{}); });
+
+/* ---- Account section (Me tab) ---- */
+function renderAccount(){
+  const u=firebase.auth().currentUser; if(!u) return;
+  const google=u.providerData.some(p=>p.providerId==="google.com"), pwUser=u.providerData.some(p=>p.providerId==="password");
+  $("#acctEmail").textContent=u.email||"";
+  const v=$("#acctVerified"); v.textContent=u.emailVerified?"Verified":"Not verified"; v.className="pill "+(u.emailVerified?"won":"lost");
+  $("#acctResend").hidden=u.emailVerified; $("#pwChangeBox").hidden=!pwUser;
+  if(google && !pwUser) $("#acctEmail").textContent=(u.email||"")+" (Google)";
+}
+$("#acctResend").onclick=resendVerify;
+$("#acctSignOut").onclick=()=>signOutAll(false);
+$("#pwChangeBtn").onclick=async()=>{
+  const u=firebase.auth().currentUser, old=$("#pwOld").value, nw=$("#pwNew").value, c=pwCheck(nw,$("#pwNew2").value);
+  if(!old){ note("Enter your current password."); return; }
+  if(!c.len||!c.mix){ note("New password needs at least 8 characters and 3 of: lowercase, uppercase, number, symbol (or 14+ characters)."); return; }
+  if(!c.match){ note("The new passwords don't match."); return; }
+  if(nw===old){ note("Pick a new password that's different from the current one."); return; }
+  const btn=$("#pwChangeBtn"); btn.disabled=true;
+  try{
+    const seen=await pwLeaked(nw); if(seen){ note(`That password has shown up in ${seen.toLocaleString()} data leaks. Pick a different one.`); return; }
+    await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,old));
+    await u.updatePassword(nw); ["pwOld","pwNew","pwNew2"].forEach(id=>$("#"+id).value=""); toast("Password changed.");
+  }catch(e){ note(e.code==="auth/invalid-credential"||e.code==="auth/wrong-password"||e.code==="auth/invalid-login-credentials"?"Your current password isn't right.":authMsg(e)); }
+  finally{ btn.disabled=false; }
+};
+
 let pendingUnsub=null;
 async function afterSignIn(oldUid){
   authUser=firebase.auth().currentUser; uid=authUser.uid;
+  try{ await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION); sessionStorage.setItem(KEY+".session","1"); }catch{}
+  if(!authUser.emailVerified){ showVerify(oldUid); return; }
   let udoc={}; try{ udoc=(await db.collection("users").doc(uid).get()).data()||{}; }catch{}
   const sp=new URLSearchParams(location.search);
   const urlGroup=(sp.get("join")||sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
@@ -931,7 +1089,7 @@ async function signOutAll(forgetKey){
   try{ unsub.forEach(f=>f()); unsub=[]; }catch{}
   if(forgetKey){ ["pmus","pmhist","pmhistAt","pmflow","pmSign"].forEach(k=>{ try{ localStorage.removeItem(KEY+"."+k); }catch{} }); pmUnlocked=null; }
   try{ localStorage.removeItem(KEY+".me"); }catch{}
-  me=null; await firebase.auth().signOut().catch(()=>{});
+  me=null; try{ sessionStorage.removeItem(KEY+".session"); }catch{} await firebase.auth().signOut().catch(()=>{});
   try{ history.replaceState(null,"",location.pathname); }catch{}
   location.reload();
 }
@@ -995,8 +1153,12 @@ $("#liveView").addEventListener("click",e=>{const k=e.target.dataset.lv; if(!k) 
 $("#expandAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=true; openSlips.add(d.dataset.sid);}); ls.set(KEY+".open",[...openSlips]); };
 $("#collapseAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=false;}); openSlips.clear(); ls.set(KEY+".open",[]); };
 $("#liveList").addEventListener("toggle",e=>{ const d=e.target; if(!d.matches?.("details.slip")) return; if(d.open) openSlips.add(d.dataset.sid); else openSlips.delete(d.dataset.sid); ls.set(KEY+".open",[...openSlips].slice(-200)); },true);
-$("#histWho").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==null) return; histWho=k; renderHistory();});
-$("#histCat").addEventListener("click",e=>{const k=e.target.dataset.cat; if(k==null) return; histCat=k; renderHistory();});
+const HF_IDS={who:"hWho",cat:"hCat",res:"hRes",when:"hWhen",src:"hSrc",legs:"hLegs",sort:"hSort"};
+Object.entries(HF_IDS).forEach(([k,id])=>$("#"+id).addEventListener("change",e=>{ hf[k]=e.target.value; const {q,...keep}=hf; ls.set(KEY+".hf",keep); renderHistory(); }));
+let hSearchT; $("#hSearch").addEventListener("input",e=>{ clearTimeout(hSearchT); hSearchT=setTimeout(()=>{ hf.q=e.target.value.trim(); renderHistory(); },200); });
+$("#hReset").onclick=()=>{ hf={...HF_DEFAULT}; ls.set(KEY+".hf",{}); $("#hSearch").value=""; renderHistory(); };
+const openHist=new Set();
+$("#histList").addEventListener("toggle",e=>{ const d=e.target; if(!d.matches?.("details.hist")) return; d.open?openHist.add(d.dataset.sid):openHist.delete(d.dataset.sid); },true);
 $("#boardWho").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==null) return; boardWho=k; renderBoard();});
 
 /* ---------- Live data from ESPN ---------- */
@@ -1209,20 +1371,54 @@ function gamesHTML(open){
 }
 
 /* ---------- Render: history ---------- */
-function renderHistory(){
-  const ppl=people();
-  chipRow($("#histWho"),[["all","Everyone"],...ppl],histWho,"who");
-  const cats=[...new Set(vis().map(slipCategory))];
-  chipRow($("#histCat"),[["all","All sports"],...cats.map(c=>[c,c])],histCat,"cat");
+function histStart(w){ const d=new Date(); d.setHours(0,0,0,0);
+  if(w==="today") return [d.getTime(),Infinity]; if(w==="yday"){ const e=d.getTime(); d.setDate(d.getDate()-1); return [d.getTime(),e]; }
+  if(w==="week"){ d.setDate(d.getDate()-((d.getDay()+6)%7)); return [d.getTime(),Infinity]; } if(w==="month"){ d.setDate(1); return [d.getTime(),Infinity]; }
+  if(w==="7"||w==="30"){ return [Date.now()-Number(w)*864e5,Infinity]; } return [0,Infinity]; }
+const srcOf=s=> s.source==="pmus"?"pmus":s.source==="polymarket"?"polymarket":s.source==="model"?"model":"manual";
+function histFiltered(){
   let done=vis().filter(s=>s.status!=="open");
-  if(histWho!=="all") done=done.filter(s=>norm(s.name)===histWho);
-  if(histCat!=="all") done=done.filter(s=>slipCategory(s)===histCat);
-  $("#histList").innerHTML = done.length ? done.map(s=>{
+  if(hf.who==="me") done=done.filter(s=>s.uid===uid||norm(s.name)===norm(me.name)); else if(hf.who!=="all") done=done.filter(s=>norm(s.name)===hf.who);
+  if(hf.cat!=="all") done=done.filter(s=>slipCategory(s)===hf.cat);
+  if(hf.res!=="all") done=done.filter(s=>s.status===hf.res);
+  if(hf.when!=="all"){ const [a,b]=histStart(hf.when); done=done.filter(s=>{ const t=settledAt(s); return t>=a&&t<b; }); }
+  if(hf.src!=="all") done=done.filter(s=>srcOf(s)===hf.src);
+  if(hf.legs!=="all"){ const n=s=>(s.legs||[]).length; done=done.filter(s=> hf.legs==="1"?n(s)===1 : hf.legs==="2-3"?n(s)>=2&&n(s)<=3 : hf.legs==="4-6"?n(s)>=4&&n(s)<=6 : n(s)>=7); }
+  if(hf.q){ const q=norm(hf.q); done=done.filter(s=>norm(s.name+" "+(s.legs||[]).map(l=>[legTitle(l),l.player,l.team,l.market].filter(Boolean).join(" ")).join(" ")).includes(q)); }
+  const key={new:s=>-settledAt(s), old:s=>settledAt(s), bigwin:s=>-profitOf(s), bigloss:s=>profitOf(s), stake:s=>-(Number(s.stake)||0), legs:s=>-(s.legs||[]).length}[hf.sort]||(s=>-settledAt(s));
+  return done.sort((a,b)=>key(a)-key(b)||settledAt(b)-settledAt(a));
+}
+function renderHistory(){
+  const ppl=people(); const meK=norm(me.name);
+  const opt=(arr,cur)=>arr.map(([v,l])=>`<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(l)}</option>`).join("");
+  if(hf.who!=="all"&&hf.who!=="me"&&!ppl.some(([k])=>k===hf.who)) hf.who="all";
+  $("#hWho").innerHTML=opt([["all","Everyone"],["me","Just me"],...ppl.filter(([k])=>k!==meK)],hf.who);
+  const cats=[...new Set(vis().filter(s=>s.status!=="open").map(slipCategory))].sort();
+  if(hf.cat!=="all"&&!cats.includes(hf.cat)) hf.cat="all";
+  $("#hCat").innerHTML=opt([["all","All sports"],...cats.map(c=>[c,c])],hf.cat);
+  Object.entries(HF_IDS).forEach(([k,id])=>{ if(k!=="who"&&k!=="cat") $("#"+id).value=hf[k]; });
+  const done=histFiltered();
+  // summary of what's shown
+  const t=tally(done); const onlyVisibleMoney=done.every(s=>showMoney(s.name));
+  const active=Object.entries(hf).filter(([k,v])=>k!=="sort"&&v&&v!=="all").length;
+  $("#hSum").innerHTML = done.length ? `<span><b>${done.length}</b> slip${done.length===1?"":"s"}</span><span>Record <b>${t.w}-${t.l}${t.p?"-"+t.p:""}</b>${t.pct!=null?` (${Math.round(t.pct*100)}%)`:""}</span>`
+    + (onlyVisibleMoney?`<span>Net <b class="${t.profit>0?"pos":t.profit<0?"neg":""}">${t.profit>0?"+":""}${money(t.profit)}</b></span><span>Staked <b>${money(t.staked)}</b></span>`:"")
+    + (t.roi!=null?`<span>ROI <b>${Math.round(t.roi*100)}%</b></span>`:"") + (t.legPct!=null?`<span>Legs hit <b>${Math.round(t.legPct*100)}%</b></span>`:"")
+    + (active?`<span>${active} filter${active===1?"":"s"} on</span>`:"") : "";
+  $("#hReset").hidden=!active;
+  const moreOn=["res","src","legs"].filter(k=>hf[k]!=="all").length; $("#hMoreSum").textContent= moreOn?`More filters (${moreOn} on)`:"More filters";
+  $("#histList").innerHTML = done.length ? done.slice(0,300).map(s=>{
     const p=profitOf(s); const r=s.status==="won"?"W":s.status==="lost"?"L":"P";
-    const when=(s.settledAt||s.createdAt)?.toDate? (s.settledAt||s.createdAt).toDate().toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
-    const legs=s.legs.map(l=>(l.result==="won"?"✓ ":l.result==="lost"?"✗ ":"· ")+legTitle(l)).join("  ");
-    return `<div class="hist"><div class="r ${s.status}">${r}</div><div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${esc(when)} · ${esc(legs)}</span></div><div class="p ${p>0?"pos":p<0?"neg":""}">${moneyAs(s.name,p,true)}</div></div>`;
-  }).join("") : `<div class="empty"><b>No settled slips yet</b>Slips land here once every leg is decided.</div>`;
+    const d=(s.settledAt||s.createdAt)?.toDate?.(); const when=d? d.toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
+    const hits=(s.legs||[]).filter(l=>l.result==="won").length;
+    const legs=(s.legs||[]).map(l=>{ const c=l.result||"none"; return `<div class="lg ${c}"><span class="m">${c==="won"?"✓":c==="lost"?"✗":c==="push"?"–":"·"}</span><span>${esc(legTitle(l))}${l.final!=null?` <span class="meta3">(${esc(String(l.final))})</span>`:""}</span></div>`; }).join("");
+    const src={pmus:"Polymarket US",polymarket:"Polymarket.com",model:"Model pick",manual:"Added by hand"}[srcOf(s)];
+    return `<details class="hist" data-sid="${esc(s.id)}" ${openHist.has(s.id)?"open":""}><summary><div class="r ${s.status}">${r}</div>
+      <div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${esc(when)} · ${hits}/${s.legs.length} legs hit${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
+      <div class="p ${p>0?"pos":p<0?"neg":""}">${moneyAs(s.name,p,true)}</div><span class="chev" aria-hidden="true">▼</span></summary>
+      <div class="hlegs">${legs}<div class="meta3">${esc(src)}${s.odds?` · odds ${esc(s.odds)}`:""}${s.payout&&showMoney(s.name)?` · paid ${money(+s.payout)}`:""}${d?` · ${d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}`:""}</div></div></details>`;
+  }).join("") + (done.length>300?`<div class="empty">Showing the first 300. Narrow the filters to see more.</div>`:"")
+  : `<div class="empty"><b>${vis().some(s=>s.status!=="open")?"Nothing matches these filters":"No settled slips yet"}</b>${vis().some(s=>s.status!=="open")?"Try widening the filters or tap Reset filters.":"Slips land here once every leg is decided."}</div>`;
 }
 
 /* ---------- Render: leaderboard ---------- */
@@ -1842,6 +2038,7 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 function statCard(k,v,sub,cls){ return `<div class="cat"><span class="k">${esc(k)}</span><span class="v ${cls||""}">${v}</span><span class="s">${sub||""}</span></div>`; }
 const signed=n=>(n>0?"+":"")+money(n);
 function renderMe(){
+  renderAccount();
   const h=ls.get(KEY+".pmhist",null);
   const st=ls.get(KEY+".pmhistAt",0);
   $("#pmHistStatus").textContent = pmLocked() ? "Locked. Enter your PIN to refresh." : !rawPm() ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
@@ -1908,7 +2105,7 @@ function toCsv(list){
   return [head,...rows].map(r=>r.map(q).join(",")).join("\n");
 }
 function download(name,text){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type:"text/csv"})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
-$("#exportCsv").onclick=()=>{ let done=vis().filter(s=>s.status!=="open"); if(histWho!=="all") done=done.filter(s=>norm(s.name)===histWho); if(histCat!=="all") done=done.filter(s=>slipCategory(s)===histCat); download(`bets-${me.group}.csv`,toCsv(done)); };
+$("#exportCsv").onclick=()=>download(`bets-${me.group}.csv`,toCsv(histFiltered()));
 $("#exportMine").onclick=()=>download(`my-bets.csv`,toCsv(slips.filter(s=>s.uid===uid||norm(s.name)===norm(me.name))));
 
 /* ---------- Review / entry ---------- */
@@ -2012,6 +2209,8 @@ renderSportChips();
 (async()=>{
   try{ await initFirebase(); }
   catch(e){ showOnly("authPanel"); note(e.message==="setup"?"The group database isn't set up yet.":"Couldn't connect to the group database: "+e.message); $("#notice").dataset.sticky="1"; return; }
+  let live=false; try{ live=sessionStorage.getItem(KEY+".session")==="1"; }catch{}
+  if(isAccount(authUser) && !live){ await firebase.auth().signOut().catch(()=>{}); authUser=null; uid=null; }   // sign in fresh every time the app is opened
   if(!isAccount(authUser)){ showAuth(); return; }
   await afterSignIn(null);
 })();
