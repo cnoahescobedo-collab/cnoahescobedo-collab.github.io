@@ -763,7 +763,10 @@ async function refresh(){
         if(l.result || l.gameId || !LEAGUES[l.league]?.path) continue;
         const games=boards[l.league]||[];
         let g=null;
-        if(l.abbrA&&l.abbrH){ const has=(x,a)=>x.teams.some(t=>String(t.abbr||"").toLowerCase()===a); g=games.find(x=>has(x,l.abbrA)&&has(x,l.abbrH))||null; }
+        if(l.abbrA&&l.abbrH){
+          const AL={utah:"uta",wsh:"was",gs:"gsw",ny:"nyk",sa:"sas",no:"nop",la:"lar"};
+          const eq=(e,p)=>{ e=String(e||"").toLowerCase(); return e===p || AL[e]===p || AL[p]===e || (e.length>2&&p.length>2&&(e.startsWith(p)||p.startsWith(e))); };
+          const has=(x,a)=>x.teams.some(t=>eq(t.abbr,a)); g=games.find(x=>has(x,l.abbrA)&&has(x,l.abbrH))||null; }
         if(g){ l.gameId=g.id; changed=true; continue; }
         if(l.kind==="prop"){
           const t=l.team; const hint=t?games.find(x=>teamMatch(x,t)):null;
@@ -1079,14 +1082,14 @@ async function pmusGet(path, key){
 let pmusBusy=false, pmusLast=0;
 const PM_LEAGUE={nba:"nba",wnba:"wnba",nfl:"nfl",cfb:"ncaafb",ncaaf:"ncaafb",cbb:"ncaamb",ncaab:"ncaamb",mlb:"mlb",nhl:"nhl",epl:"epl",ucl:"ucl",mls:"mls",lal:"laliga",laliga:"laliga",sea:"seriea",bun:"bund",fl1:"ligue1",mex:"ligamx",atp:"atp",wta:"wta"};
 function pmSlugInfo(slug){
-  const m=String(slug||"").toLowerCase().match(/^(?:[a-z0-9]{2,5}-)?(nba|wnba|nfl|cfb|ncaaf|cbb|ncaab|mlb|nhl|epl|ucl|mls|lal|laliga|sea|bun|fl1|mex|atp|wta)-([a-z0-9]+)-([a-z0-9]+)-(\d{4}-\d{2}-\d{2})/);
+  const m=String(slug||"").toLowerCase().match(/^(?:[a-z0-9]{2,8}-)?(nba|wnba|nfl|cfb|ncaaf|cbb|ncaab|mlb|nhl|epl|ucl|mls|lal|laliga|sea|bun|fl1|mex|atp|wta)-([a-z0-9]+)-([a-z0-9]+)-(\d{4}-\d{2}-\d{2})/);
   return m?{league:PM_LEAGUE[m[1]], a:m[2], h:m[3], date:m[4]}:null;
 }
 async function pmMarket(sym){
-  const ck=KEY+".mkt."+sym; const c=ls.get(ck,null); if(c) return c;
+  const ck=KEY+".mkt3."+sym; const c=ls.get(ck,null); if(c) return c;
   const r=await getJSON("https://gateway.polymarket.us/v1/market/slug/"+encodeURIComponent(sym)).catch(()=>null);
   const m=r?.market||r; if(!m || !m.slug) return null;
-  const out={slug:m.slug, q:m.question||"", short:m.titleShort||m.title||"", type:String(m.sportsMarketType||m.sportsMarketTypeV2||m.marketType||"").toLowerCase(),
+  const out={slug:m.slug, q:m.question||"", short:m.titleShort||m.title||"", title:m.title||"", line:(m.line!=null?Number(m.line):null), type:String(m.sportsMarketType||m.sportsMarketTypeV2||m.marketType||"").toLowerCase(),
     sides:(m.marketSides||[]).map(x=>({d:x.description||"", long:!!x.long, team:(x.team?.abbreviation||"").toLowerCase(), teamName:x.team?.safeName||x.team?.name||""}))};
   ls.set(ck,out); return out;
 }
@@ -1111,34 +1114,46 @@ function pmToLeg(mkt, side, fallbackTitle){
   const info=pmSlugInfo(mkt?.slug);
   const sides=mkt?.sides||[]; const buy=side!=="SIDE_SELL";
   const yes=sides.find(x=>x.long)||sides[0]; const no=sides.find(x=>!x.long)||sides[1];
-  const picked= buy? yes : (no||{d:"No "+(yes?.d||"")});
-  const title=(mkt?.short||mkt?.q||fallbackTitle||"").trim();
-  const text=[...new Set([mkt?.short||mkt?.q, picked?.d].filter(Boolean))].join(" · ");
-  const type=mkt?.type||"";
-  const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw:text, result:null};
+  const picked= buy? yes : (no||{d:"No"});
+  const title=(mkt?.short||mkt?.title||mkt?.q||fallbackTitle||"").trim();
+  const raw=title+(picked?.d&&!/^(yes)$/i.test(picked.d)?` · ${picked.d}`:"");
+  const type=mkt?.type||""; const q=mkt?.q||""; const slug=String(mkt?.slug||"").toLowerCase();
+  const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw, result:null};
   if(!info || !LEAGUES[info.league]) return base;
-  const low=[mkt?.short, mkt?.q, picked?.d].filter(Boolean).join(" · ").toLowerCase();
-  const g={league:info.league, abbrA:info.a, abbrH:info.h, date:info.date, raw:text, result:null, gameId:null};
-  const num=(low.match(/([+\-−]?\d+(?:\.\d+)?)\s*\+?/)||[])[1];
-  const isOver = /\bover\b|\bo\s?\d/.test((picked?.d||"").toLowerCase()) || (!/\bunder\b/.test((picked?.d||"").toLowerCase()) && buy);
-  const teamName = picked?.teamName || picked?.d;
-  const mk=marketFor(info.league, low);
-  const hasPlayer = /player|prop/.test(type) || (mk && !/total|spread|winner|moneyline/.test(type) && /[A-Z][a-z]+ [A-Z][a-z]+/.test(mkt?.short||mkt?.q||""));
-  if(/winner|moneyline/.test(type) || (!num && picked?.team && !hasPlayer)){
+  const g={league:info.league, abbrA:info.a, abbrH:info.h, date:info.date, raw, result:null, gameId:null};
+  const fullGame = !/(first|second|third|fourth)_(half|quarter)|_half|quarter|team_total|race|margin|overtime/.test(type);
+  const L = mkt?.line!=null ? Number(mkt.line) : null;
+
+  // Moneyline: "Who will win…", sides are the two teams
+  if(/winner|moneyline/.test(type) && fullGame){
     return {...g, kind:"moneyline", team: buy? (yes?.teamName||yes?.d) : (no?.teamName||no?.d)};
   }
-  if(/spread/.test(type) || (picked?.team && /[+\-−]\d/.test(low) && !hasPlayer)){
-    const ln=Number(String((low.match(/([+\-−]\d+(?:\.\d+)?)/)||[])[1]||0).replace("−","-"));
-    return {...g, kind:"spread", team:teamName, line:ln, side:"over"};
+  // Player props: slug like astatc-nba-sa-uta-2026-10-28-ast-defox-gte4, title "De'Aaron Fox 4+ Ast"
+  if(/player/.test(type) || /-(pts|reb|ast|pra|pr|pa|ra|3pm|threes|stl|blk|sb)-[a-z]+-gte\d/.test(slug)){
+    const statText = type.replace(/^[a-z]+_player_/,"").replace(/_/g," ") + " " + title;
+    const mk=marketFor(info.league, statText.toLowerCase());
+    const nm=(title.match(/^(.+?)\s+\d+(?:\.\d+)?\s*\+/)||[])[1] || (q.match(/Will (.+?) record/)||[])[1] || "";
+    const thr = L ?? Number((title.match(/(\d+(?:\.\d+)?)\s*\+/)||[])[1]);
+    if(mk && nm && !isNaN(thr)){
+      return {...g, kind:"prop", player:nm.trim(), market:mk.label, line: Number.isInteger(thr)? thr-0.5 : thr, side: buy?"over":"under"};
+    }
+    return {...base, league:info.league, cat:catOf(info.league)};
   }
-  if(hasPlayer && mk){
-    const src=(mkt?.short||mkt?.q||"");
-    const nm=(src.match(/([A-Z][a-zA-Z.'’\-]+(?:\s+[A-Z][a-zA-Z.'’\-]+){1,2})/)||[])[1]||"";
-    let line=num!=null?Number(String(num).replace("−","-")):null; if(line!=null && /\d\+/.test(low) && !String(num).includes(".")) line-=0.5;
-    return {...g, kind:"prop", player:nm, market:mk.label, line, side:isOver?"over":"under"};
+  // Full-game spread: "Will the SA Spurs cover 10.5 vs the UTA Jazz…", slug …-pos-10pt5 / -neg-
+  if(/spread/.test(type) && fullGame){
+    const m=q.match(/Will the\s+([A-Z]{2,4})\s+(.+?)\s+cover\s+([\d.]+)\s+vs\.?\s+the\s+([A-Z]{2,4})\s+(.+?)\s+in\b/i);
+    const n = L ?? (m? Number(m[3]) : null);
+    if(m && n!=null){
+      const sign = /-neg-/.test(slug) ? -1 : 1;
+      return buy ? {...g, kind:"spread", team:m[2].trim(), line: sign*n, side:"over"}
+                 : {...g, kind:"spread", team:m[5].trim(), line: -sign*n, side:"over"};
+    }
+    return {...base, league:info.league, cat:catOf(info.league)};
   }
-  if(/total|over|under/.test(type+" "+low) && num!=null){
-    return {...g, kind:"total", team:null, line:Number(String(num).replace("−","-")), side:isOver?"over":"under"};
+  // Full-game total: "Will the total … be more than 208.5?"
+  if(/total/.test(type) && fullGame && !/team_total/.test(type)){
+    const n = L ?? Number((q.match(/more than\s+([\d.]+)/i)||[])[1]);
+    if(!isNaN(n)) return {...g, kind:"total", team:null, line:n, side: buy?"over":"under"};
   }
   return {...base, league:info.league, cat:catOf(info.league)};
 }
@@ -1172,8 +1187,8 @@ async function syncPmus(force){
         return legs;
       };
       const goodLegs=l=>l.length>1||l[0]?.kind!=="pmus"||!/^(crossd|caoc)-/i.test(slug);
-      if(ex && (ex.legsV||0)<2 && ex.status==="open"){
-        const legs=await buildLegs(); await col.doc(id).update({legs, legsV:goodLegs(legs)?2:1}).catch(()=>{}); continue;
+      if(ex && (ex.legsV||0)<3 && ex.status==="open"){
+        const legs=await buildLegs(); await col.doc(id).update({legs, legsV:goodLegs(legs)?3:1}).catch(()=>{}); continue;
       }
       if(!ex){
         if(net===0 && !settled) continue;
@@ -1182,7 +1197,7 @@ async function syncPmus(force){
         if(!sportsy && !all) continue;
         if(status!=="open") legs=legs.map(l=>({...l,result:l.result||status}));
         await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100,
-          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?2:1, ...live,
+          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?3:1, ...live,
           ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
       } else if(status!=="open" && (ex.status==="open" || ex.pnl!==pnl)){
         await col.doc(id).update({status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
