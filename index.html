@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-ZrC70+Rm0H07eIGFfTAXqNLlNemBbG/6q9PwYfDkYgc=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -174,6 +175,9 @@ details.slip[open] .chev{transform:rotate(180deg)}
 .owner{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .mem{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .mem:last-child{border-bottom:none}.mem .sp{flex:1}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+button.google{width:100%}
+.mem .pending{color:var(--accent,#c4531a);font-size:12px;font-weight:600}
 .toggle{display:flex;gap:10px;align-items:center;font-size:14px}.toggle input{width:20px;height:20px;flex:none;appearance:auto;-webkit-appearance:checkbox;accent-color:var(--accent,#c4531a);padding:0;margin:0}
 footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (max-width:440px){.c2{grid-column:span 3}.c3{grid-column:span 6}}
@@ -192,9 +196,39 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
   <div class="notice" id="notice" hidden></div>
 
   <!-- Join screen -->
+  <section class="panel" id="authPanel" hidden>
+    <h2>Sign in</h2>
+    <p>Your account keeps you in your group on every device. If you've used the app on this phone before, your slips and history carry over.</p>
+    <label class="f">Email<input id="authEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="you@example.com"></label>
+    <label class="f">Password<input id="authPass" type="password" autocomplete="current-password" placeholder="At least 8 characters"></label>
+    <div class="row-end">
+      <button type="button" class="ghost" id="authForgot">Forgot password?</button>
+      <button type="button" id="authCreate">Create account</button>
+      <button type="button" class="primary" id="authSignIn">Sign in</button>
+    </div>
+    <div class="or"><span>or</span></div>
+    <button type="button" id="authGoogle" class="google">Continue with Google</button>
+  </section>
+
+  <section class="panel" id="pendingPanel" hidden>
+    <h2>Waiting for approval</h2>
+    <p id="pendingText">The group owner needs to approve you. This page updates on its own as soon as they do.</p>
+    <div class="row-end">
+      <button type="button" class="ghost" id="pendingOther">Use a different group</button>
+      <button type="button" class="ghost" id="pendingSignOut">Sign out</button>
+    </div>
+  </section>
+
+  <section class="panel" id="unlockPanel" hidden>
+    <h2>Unlock Polymarket</h2>
+    <p>Your Polymarket key on this device is locked with a PIN. Enter it to keep your bets syncing.</p>
+    <label class="f">PIN<input id="unlockPin" type="password" inputmode="numeric" autocomplete="off"></label>
+    <div class="row-end"><button type="button" class="ghost" id="unlockLater">Later</button><button type="button" class="primary" id="unlockBtn">Unlock</button></div>
+  </section>
+
   <section class="panel" id="joinPanel" hidden>
     <h2>Join your group</h2>
-    <p>Everyone in a group sees each other's slips live. Pick the name your friends know you by.</p>
+    <p>Everyone in a group sees each other's slips live. Pick the name your friends know you by. Joining an existing group needs the owner's approval.</p>
     <label class="f">Your name<input id="joinName" maxlength="24" autocomplete="nickname" placeholder="e.g. Noah"></label>
     <label class="f">Group code<input id="joinCode" maxlength="12" autocapitalize="characters" autocomplete="off" placeholder="Have a code? Enter it here"></label>
     <div class="row-end">
@@ -230,9 +264,10 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <label class="f">Which Polymarket do you use?<select id="pmKind"><option value="us">Polymarket US (the US app)</option><option value="global">Polymarket.com (crypto wallet)</option></select></label>
       <div id="pmUsBox" style="display:flex;flex-direction:column;gap:10px">
         <p>Create a key at <b>polymarket.us/developer</b>. Sign in the same way you do in the app, tap create key, and copy both values. The secret key is only shown once.</p>
-        <p><b>Your key stays on this phone.</b> It isn't sent to your friends or to the group database. This app only uses it to read your positions and never places trades. If you ever want to cut off access, delete the key on polymarket.us/developer.</p>
+        <p><b>Your key stays on this phone.</b> It isn't sent to your friends or to the group database. This app only uses it to read your positions and never places trades. If Polymarket offers a read-only key, use that. To cut off access anytime, delete the key on polymarket.us/developer.</p>
         <label class="f">Key ID<input id="pmKeyId" autocomplete="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-…"></label>
         <label class="f">Secret key<input id="pmSecret" type="password" autocomplete="off" spellcheck="false" placeholder="Paste the secret key"></label>
+        <label class="f">PIN to lock the key (optional, recommended)<input id="pmPin" type="password" inputmode="numeric" autocomplete="new-password" placeholder="4+ digits. You'll enter it when you open the app"></label>
       </div>
       <div id="pmGlobalBox" hidden style="display:flex;flex-direction:column;gap:10px">
         <p>Paste your wallet address from your Polymarket.com profile. It starts with 0x. It's public and read-only.</p>
@@ -316,7 +351,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="panel" style="gap:14px">
         <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
         <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
-        <div class="row-end"><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
+        <div class="row-end"><button type="button" class="small" id="signOutBtn">Sign out &amp; forget my Polymarket key</button><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
       </div>
     </section>
 
@@ -334,7 +369,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
   <div class="toast" id="toast" hidden></div>
   <footer>
-    <span>Live data from ESPN, refreshed every 20 seconds while open. Slips are shared only with people who have your group code.</span>
+    <span>Live data from ESPN, refreshed every 20 seconds while open. Slips are shared only with approved members of your group.</span>
   </footer>
 </div>
 
@@ -720,11 +755,12 @@ function parseSlip(text, league, roster){
 if(typeof module!=="undefined") module.exports={amToDec,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl-fast.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" defer></script>
+<script src="fb-app.js?v=10.12.2"></script>
+<script src="fb-appcheck.js?v=10.12.2"></script>
+<script src="fb-auth.js?v=10.12.2"></script>
+<script src="fb-firestore.js?v=10.12.2"></script>
+<script src="nacl-fast.min.js?v=1.0.3"></script>
+<script src="tesseract.min.js?v=5.1.1" defer></script>
 <script>
 /* ===== App ===== */
 (() => {
@@ -743,7 +779,7 @@ let liveView="person", sortBy=ls.get(KEY+".sort","close"), boardRange="all", edi
 const openSlips=new Set(ls.get(KEY+".open",[]));
 let reactions=[], notifs=[]; const seenNotifs=new Set(ls.get(KEY+".seenN",[]));
 const myKey=()=> (me?.key) || norm(me?.name||"").replace(/ /g,"");
-const removedNames=()=>new Set(Object.values(members).filter(m=>m.removed).map(m=>norm(m.name)));
+const removedNames=()=>{ const all=new Map(); Object.values(members).forEach(m=>{ const k=norm(m.name); const v=all.get(k)||{n:0,r:0}; v.n++; if(m.removed) v.r++; all.set(k,v); }); return new Set([...all].filter(([,v])=>v.n&&v.r===v.n).map(([k])=>k)); };
 const vis=()=>{ const r=removedNames(); return slips.filter(s=>!r.has(norm(s.name))); };
 const hiddenNames=()=>new Set(Object.values(members).filter(m=>m.hideMoney).map(m=>norm(m.name)));
 const showMoney=name=> norm(name)===norm(me?.name) || !hiddenNames().has(norm(name));
@@ -756,20 +792,28 @@ function note(msg){const n=$("#notice"); n.textContent=msg||""; n.hidden=!msg;}
 async function getJSON(url){ const r=await fetch(url,{cache:"no-store"}); if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }
 
 /* ---------- Firebase ---------- */
+const APPCHECK_SITE_KEY = ""; // reCAPTCHA v3 site key; App Check turns on once this is filled in
+let authUser=null;
 async function initFirebase(){
   if(typeof FIREBASE_CONFIG!=="object" || !FIREBASE_CONFIG?.apiKey || !window.firebase){ throw new Error("setup"); }
   firebase.initializeApp(FIREBASE_CONFIG);
+  try{ if(APPCHECK_SITE_KEY && firebase.appCheck) firebase.appCheck().activate(APPCHECK_SITE_KEY, true); }catch(e){ console.warn("App Check", e); }
   db = firebase.firestore();
-  const cred = await firebase.auth().signInAnonymously();
-  uid = cred.user.uid;
+  authUser = await new Promise(res=>{ const off=firebase.auth().onAuthStateChanged(u=>{ off(); res(u); }); });
+  uid = authUser?.uid || null;
 }
+const isAccount = u => !!u && !u.isAnonymous;
+const nameKey = n => String(n||"").trim().toLowerCase();
+const cleanName = n => String(n||"").replace(/[\/\\#?\[\]]/g,"").replace(/\s+/g," ").trim().slice(0,24);
 const gref = () => db.collection("groups").doc(me.group);
 
 function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
-  gref().collection("members").doc(uid).set({name:me.name, joinedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{});
-  unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
+  ["authPanel","joinPanel","pendingPanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false;
+  db.collection("users").doc(uid).set({lastGroup:me.group, groups:firebase.firestore.FieldValue.arrayUnion(me.group)},{merge:true}).catch(()=>{});
+  if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
+  unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); renderMembers(); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
   gref().get().then(d=>{ groupDoc=d.data()||null; }).catch(()=>{});
   unsub.push(gref().collection("reactions").limit(2000).onSnapshot(q=>{ reactions=q.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{}));
   unsub.push(gref().collection("notifs").where("toName","==",me.name).limit(100).onSnapshot(q=>{
@@ -786,28 +830,146 @@ function startGroup(){
 function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?group="+encodeURIComponent(me.group)+"&name="+encodeURIComponent(me.name)); }catch{} }
 function genCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; const r=crypto.getRandomValues(new Uint8Array(6)); r.forEach(x=>c+=a[x%a.length]); return c; }
 
+/* ---------- Accounts ---------- */
+function showOnly(id){ ["authPanel","joinPanel","pendingPanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
+function showAuth(){ showOnly("authPanel"); }
+function authMsg(e){
+  const c=e?.code||"";
+  return c==="auth/invalid-credential"||c==="auth/wrong-password"||c==="auth/user-not-found"||c==="auth/invalid-login-credentials" ? "That email and password don't match. Check them, or tap “Forgot password?”."
+    : c==="auth/email-already-in-use"||c==="auth/credential-already-in-use" ? "There's already an account with that email. Tap Sign in instead."
+    : c==="auth/weak-password" ? "Pick a longer password (at least 8 characters)."
+    : c==="auth/invalid-email" ? "That email address doesn't look right."
+    : c==="auth/too-many-requests" ? "Too many tries. Wait a few minutes and try again."
+    : c==="auth/popup-blocked"||c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request" ? "The Google window closed before finishing. Try again, or use email and password."
+    : c==="auth/operation-not-supported-in-this-environment"||c==="auth/unauthorized-domain" ? "Google sign-in isn't available here. Use email and password instead."
+    : "Couldn't sign in: "+(e?.message||e);
+}
+// When this device has an old (pre-account) login, point it at the new account so old slips and ownership carry over.
+async function linkOldLogin(oldUid, newUid){
+  if(!oldUid || !me?.group || oldUid===newUid) return;
+  try{ await db.collection("groups").doc(me.group).collection("members").doc(oldUid).update({linkedTo:newUid}); }catch{}
+}
+async function secondaryUid(signIn){
+  const app2 = firebase.apps.find(a=>a.name==="acct") || firebase.initializeApp(FIREBASE_CONFIG,"acct");
+  try{ const r=await signIn(app2.auth()); return r.user.uid; } finally{ app2.auth().signOut().catch(()=>{}); }
+}
+async function withButtons(fn){ const bs=["authSignIn","authCreate","authGoogle"].map(id=>$("#"+id)); bs.forEach(b=>b.disabled=true); try{ await fn(); }catch(e){ note(authMsg(e)); } finally{ bs.forEach(b=>b.disabled=false); } }
+const creds=()=>{ const email=$("#authEmail").value.trim(), pw=$("#authPass").value; if(!email||!pw){ note("Enter your email and a password."); return null; } return {email,pw}; };
+$("#authCreate").onclick=()=>withButtons(async()=>{
+  const c=creds(); if(!c) return; if(c.pw.length<8){ note("Pick a longer password (at least 8 characters)."); return; }
+  const cur=firebase.auth().currentUser;
+  if(cur && cur.isAnonymous){ await cur.linkWithCredential(firebase.auth.EmailAuthProvider.credential(c.email,c.pw)); }
+  else await firebase.auth().createUserWithEmailAndPassword(c.email,c.pw);
+  firebase.auth().currentUser.sendEmailVerification().catch(()=>{});
+  note(); await afterSignIn(null);
+});
+$("#authSignIn").onclick=()=>withButtons(async()=>{
+  const c=creds(); if(!c) return;
+  const cur=firebase.auth().currentUser; let oldUid=null;
+  if(cur && cur.isAnonymous){ oldUid=cur.uid; const nu=await secondaryUid(a=>a.signInWithEmailAndPassword(c.email,c.pw)); await linkOldLogin(oldUid,nu); }
+  await firebase.auth().signInWithEmailAndPassword(c.email,c.pw);
+  note(); await afterSignIn(oldUid);
+});
+$("#authGoogle").onclick=()=>withButtons(async()=>{
+  const prov=new firebase.auth.GoogleAuthProvider(); prov.setCustomParameters({prompt:"select_account"});
+  const cur=firebase.auth().currentUser; let oldUid=null;
+  if(cur && cur.isAnonymous){
+    try{ await cur.linkWithPopup(prov); }
+    catch(e){
+      if(e.code!=="auth/credential-already-in-use" || !e.credential) throw e;
+      oldUid=cur.uid; const nu=await secondaryUid(a=>a.signInWithCredential(e.credential)); await linkOldLogin(oldUid,nu);
+      await firebase.auth().signInWithCredential(e.credential);
+    }
+  } else await firebase.auth().signInWithPopup(prov);
+  note(); await afterSignIn(oldUid);
+});
+$("#authForgot").onclick=async()=>{ const email=$("#authEmail").value.trim(); if(!email){ note("Type your email above first, then tap “Forgot password?”."); return; }
+  try{ await firebase.auth().sendPasswordResetEmail(email); note("If there's an account for "+email+", a reset link is on its way. Check spam too."); }catch(e){ note(authMsg(e)); } };
+
+let pendingUnsub=null;
+async function afterSignIn(oldUid){
+  authUser=firebase.auth().currentUser; uid=authUser.uid;
+  let udoc={}; try{ udoc=(await db.collection("users").doc(uid).get()).data()||{}; }catch{}
+  const sp=new URLSearchParams(location.search);
+  const urlGroup=(sp.get("join")||sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  const group = sp.get("join") ? urlGroup : (me?.group || udoc.lastGroup || urlGroup);
+  if(!group){ showJoin(); return; }
+  await openGroup(group, oldUid);
+}
+async function openGroup(group, oldUid){
+  const g=db.collection("groups").doc(group);
+  let mdoc=null; try{ mdoc=await g.collection("members").doc(uid).get(); }catch{}
+  if(!mdoc?.exists && oldUid){
+    // Carry an old login on this device over to the account
+    try{
+      const old=(await g.collection("members").doc(oldUid).get()).data();
+      if(old && !old.removed){
+        const name=cleanName(old.name); const b=db.batch();
+        b.set(g.collection("names").doc(nameKey(name)),{uid});
+        b.set(g.collection("members").doc(uid),{name, status:"approved", fromUid:oldUid, joinedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await b.commit(); mdoc=await g.collection("members").doc(uid).get();
+      }
+    }catch(e){ console.warn("carry-over",e); }
+  }
+  if(!mdoc?.exists){ me={...(me||{}), group}; showJoin(group); return; }
+  const m=mdoc.data();
+  if(m.removed){ me=null; ls.set(KEY+".me",null); showJoin(); note("You're no longer in group "+group+". Join or start another group."); return; }
+  me={name:m.name, group, key:(me&&me.group===group&&me.key)||norm(m.name).replace(/ /g,"")}; ls.set(KEY+".me",me); rememberInUrl();
+  if(m.status==="pending"){ showPending(group); return; }
+  startGroup();
+}
+function showPending(group){
+  showOnly("pendingPanel"); $("#pendingText").textContent=`You asked to join group ${group} as ${me.name}. The group owner needs to approve you. This page updates on its own as soon as they do.`;
+  if(pendingUnsub) pendingUnsub();
+  pendingUnsub=db.collection("groups").doc(group).collection("members").doc(uid).onSnapshot(d=>{ const m=d.data(); if(!m) return;
+    if(m.removed){ pendingUnsub(); pendingUnsub=null; showJoin(); note("The owner didn't approve this request."); }
+    else if(m.status!=="pending"){ pendingUnsub(); pendingUnsub=null; startGroup(); } },()=>{});
+}
+$("#pendingOther").onclick=()=>{ if(pendingUnsub){pendingUnsub();pendingUnsub=null;} me=null; ls.set(KEY+".me",null); showJoin(); };
+$("#pendingSignOut").onclick=()=>signOutAll(false);
+async function signOutAll(forgetKey){
+  try{ unsub.forEach(f=>f()); unsub=[]; }catch{}
+  if(forgetKey){ ["pmus","pmhist","pmhistAt","pmflow","pmSign"].forEach(k=>{ try{ localStorage.removeItem(KEY+"."+k); }catch{} }); pmUnlocked=null; }
+  try{ localStorage.removeItem(KEY+".me"); }catch{}
+  me=null; await firebase.auth().signOut().catch(()=>{});
+  try{ history.replaceState(null,"",location.pathname); }catch{}
+  location.reload();
+}
+
 /* ---------- Join ---------- */
-function showJoin(){
-  $("#joinPanel").hidden=false; $("#app").hidden=true;
-  const q=new URLSearchParams(location.search).get("join"); if(q) $("#joinCode").value=q.toUpperCase();
-  if(me?.name) $("#joinName").value=me.name;
+function showJoin(code){
+  showOnly("joinPanel");
+  const q=code || new URLSearchParams(location.search).get("join"); if(q) $("#joinCode").value=q.toUpperCase();
+  if(me?.name) $("#joinName").value=me.name; else if(authUser?.displayName) $("#joinName").value=cleanName(authUser.displayName);
 }
 async function enter(name, code, create){
-  name=name.trim().slice(0,24); code=code.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  name=cleanName(name); code=code.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
   if(!name){ note("Add your name first."); return; }
   if(!create && code.length<4){ note("Enter the group code a friend sent you, or start a new group."); return; }
   if(create) code=genCode();
+  const g=db.collection("groups").doc(code);
   try{
-    if(create) await db.collection("groups").doc(code).set({createdAt:firebase.firestore.FieldValue.serverTimestamp(), createdBy:uid});
-    else { const g=await db.collection("groups").doc(code).get(); if(!g.exists){ note("No group with code "+code+". Check the code and try again."); return; } }
-  }catch(e){ note("Couldn't reach the group database: "+e.message); return; }
-  me={name,group:code,key:norm(name).replace(/ /g,"")}; ls.set(KEY+".me",me); note();
-  rememberInUrl();
-  $("#joinPanel").hidden=true; $("#app").hidden=false; startGroup();
+    if(create){
+      await g.set({createdAt:firebase.firestore.FieldValue.serverTimestamp(), createdBy:uid});
+      const b=db.batch(); b.set(g.collection("names").doc(nameKey(name)),{uid});
+      b.set(g.collection("members").doc(uid),{name, status:"approved", joinedAt:firebase.firestore.FieldValue.serverTimestamp()}); await b.commit();
+    } else {
+      const gd=await g.get(); if(!gd.exists){ note("No group with code "+code+". Check the code and try again."); return; }
+      const ex=await g.collection("members").doc(uid).get().catch(()=>null);
+      if(!ex?.exists){
+        const nd=await g.collection("names").doc(nameKey(name)).get().catch(()=>null);
+        if(nd?.exists && nd.data().uid!==uid){ note(`“${name}” is already taken in that group. Pick another name.`); return; }
+        const b=db.batch(); b.set(g.collection("names").doc(nameKey(name)),{uid});
+        b.set(g.collection("members").doc(uid),{name, status:"pending", joinedAt:firebase.firestore.FieldValue.serverTimestamp()}); await b.commit();
+      }
+    }
+  }catch(e){ note("Couldn't reach the group: "+e.message); return; }
+  note(); me={name,group:code,key:norm(name).replace(/ /g,"")}; ls.set(KEY+".me",me);
+  await openGroup(code,null);
 }
 $("#createGroup").onclick=()=>enter($("#joinName").value,"",true);
 $("#joinGroup").onclick=()=>enter($("#joinName").value,$("#joinCode").value,false);
-$("#leaveBtn").onclick=()=>{ unsub.forEach(f=>f()); unsub=[]; slips=[]; try{ history.replaceState(null,"",location.pathname); }catch{} showJoin(); };
+$("#leaveBtn").onclick=()=>{ unsub.forEach(f=>f()); unsub=[]; slips=[]; me=null; ls.set(KEY+".me",null); try{ history.replaceState(null,"",location.pathname); }catch{} showJoin(); };
 $("#inviteBtn").onclick=async()=>{
   const url=location.origin+location.pathname+"?join="+me.group;
   const text=`Join my bet tracker group (code ${me.group}): ${url}`;
@@ -826,7 +988,7 @@ document.querySelector(".tabs").addEventListener("click",e=>{
 const chipRow=(el,items,cur,attr)=>{ el.innerHTML=items.map(([k,l])=>`<button type="button" class="chip" data-${attr}="${esc(k)}" aria-pressed="${k===cur}">${esc(l)}</button>`).join(""); };
 function renderSportChips(){ chipRow($("#sports"),Object.entries(LEAGUES).map(([k,v])=>[k,v.label]),scanLeague,"lg"); }
 $("#sports").addEventListener("click",e=>{const k=e.target.dataset.lg; if(!k) return; scanLeague=k; ls.set(KEY+".league",k); renderSportChips();});
-const people=()=>{ const r=removedNames(); const m=new Map(); for(const s of slips){ const k=norm(s.name); if(!r.has(k)&&!m.has(k)) m.set(k,s.name); } for(const v of Object.values(members)){ const k=norm(v.name); if(!v.removed&&!r.has(k)&&!m.has(k)) m.set(k,v.name);} return [...m.entries()]; };
+const people=()=>{ const r=removedNames(); const m=new Map(); for(const s of slips){ const k=norm(s.name); if(!r.has(k)&&!m.has(k)) m.set(k,s.name); } for(const v of Object.values(members)){ const k=norm(v.name); if(!v.removed&&v.status!=="pending"&&!r.has(k)&&!m.has(k)) m.set(k,v.name);} return [...m.entries()]; };
 $("#whoSel").addEventListener("change",e=>{ whoLive=e.target.value; renderLive(); });
 $("#sortSel").addEventListener("change",e=>{ sortBy=e.target.value; ls.set(KEY+".sort",sortBy); renderLive(); });
 $("#liveView").addEventListener("click",e=>{const k=e.target.dataset.lv; if(!k) return; liveView=k; renderLive();});
@@ -1227,14 +1389,15 @@ const polyLive={}; // key -> live position
 const polyKey=(cid,idx)=>String(cid).slice(2,14)+"_"+idx;
 const pmShow=()=>{ const us=$("#pmKind").value==="us"; $("#pmUsBox").hidden=!us; $("#pmGlobalBox").hidden=us; if(us) $("#pmUsBox").style.display="flex"; else $("#pmGlobalBox").style.display="flex"; };
 $("#pmKind").addEventListener("change",pmShow);
-$("#polyBtn").onclick=()=>{ const m=members[uid]||{}; const k=ls.get(KEY+".pmus",null);
+$("#polyBtn").onclick=()=>{ const m=members[uid]||{}; const k=rawPm(); $("#pmPin").value="";
   $("#pmKind").value = m.polyAddress&&!k ? "global" : "us"; $("#polyAddr").value=m.polyAddress||""; $("#pmKeyId").value=k?.keyId||""; $("#pmSecret").value=k?"••••••••":"";
   $("#polyAll").checked=!!m.polyAll; pmShow(); $("#polyPanel").hidden=false; };
 $("#polyCancel").onclick=()=>$("#polyPanel").hidden=true;
 $("#polySave").onclick=async()=>{
   if($("#pmKind").value==="us"){
     const keyId=$("#pmKeyId").value.trim(); let secret=$("#pmSecret").value.trim();
-    const prev=ls.get(KEY+".pmus",null); if(secret.startsWith("••") && prev) secret=prev.secret;
+    const prev=getPmKey(); if(secret.startsWith("••")){ if(prev) secret=prev.secret; else { note("Unlock your saved key first, or paste the secret key again."); return; } }
+    const pin=$("#pmPin").value.trim(); if(pin && pin.length<4){ note("Use a PIN of at least 4 digits, or leave it blank."); return; }
     if(!keyId || !secret){ note("Add both the Key ID and the secret key from polymarket.us/developer."); return; }
     try{ await pmusGet("/v1/portfolio/positions",{keyId,secret}); }
     catch(e){
@@ -1245,7 +1408,7 @@ $("#polySave").onclick=async()=>{
         : d.includes("timestamp") ? "This device's clock is off. Turn on automatic date and time in your phone settings, then try again."
         : "Polymarket US didn't accept the key"+(e.detail?` (${e.detail})`:"")+". If your account isn't identity-verified yet, finish that in the app first.";
       note(msg); return; }
-    ls.set(KEY+".pmus",{keyId,secret});
+    if(pin){ ls.set(KEY+".pmus",{keyId, enc:await lockSecret(secret,pin)}); pmUnlocked={keyId,secret}; } else { ls.set(KEY+".pmus",{keyId,secret}); pmUnlocked=null; }
     await gref().collection("members").doc(uid).set({pmus:true, polyAll:$("#polyAll").checked},{merge:true});
     note(); $("#polyPanel").hidden=true; syncPmus(true); return;
   }
@@ -1258,7 +1421,7 @@ $("#polySave").onclick=async()=>{
   await gref().collection("members").doc(uid).set({polyAddress:m[0].toLowerCase(), polyAll:$("#polyAll").checked},{merge:true});
   note(); $("#polyPanel").hidden=true; syncPoly(true);
 };
-$("#polyDisconnect").onclick=async()=>{ try{localStorage.removeItem(KEY+".pmus")}catch{} await gref().collection("members").doc(uid).set({polyAddress:null,pmus:false},{merge:true}); $("#polyPanel").hidden=true; };
+$("#polyDisconnect").onclick=async()=>{ pmUnlocked=null; ["pmus","pmhist","pmhistAt","pmflow"].forEach(k=>{ try{localStorage.removeItem(KEY+"."+k)}catch{} }); await gref().collection("members").doc(uid).set({polyAddress:null,pmus:false},{merge:true}); $("#polyPanel").hidden=true; };
 
 /* ---- Polymarket US (signed, key stays on this device) ---- */
 const b64d=b=>Uint8Array.from(atob(b.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
@@ -1283,6 +1446,33 @@ async function pmusGet(path, key){
   return r.json();
 }
 let pmusBusy=false, pmusLast=0;
+/* ---- Polymarket key at rest: optional PIN (PBKDF2 + AES-GCM). Decrypted key lives only in memory. ---- */
+let pmUnlocked=null;
+const rawPm=()=>ls.get(KEY+".pmus",null);
+function getPmKey(){ const k=rawPm(); if(!k) return null; if(k.secret) return k; if(k.enc) return pmUnlocked; return null; }
+const pmLocked=()=>{ const k=rawPm(); return !!(k&&k.enc&&!pmUnlocked); };
+async function pinKey(pin, salt){
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pin),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function lockSecret(secret,pin){
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},await pinKey(pin,salt),new TextEncoder().encode(secret));
+  return {ct:b64e(new Uint8Array(ct)), iv:b64e(iv), salt:b64e(salt)};
+}
+async function unlockSecret(enc,pin){
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64d(enc.iv)},await pinKey(pin,b64d(enc.salt)),b64d(enc.ct));
+  return new TextDecoder().decode(pt);
+}
+let pinTries=0;
+function askUnlock(){ if(!pmLocked() || !$("#unlockPanel").hidden) return; if(sessionStorage.getItem(KEY+".unlockLater")) return; $("#unlockPanel").hidden=false; }
+$("#unlockLater").onclick=()=>{ $("#unlockPanel").hidden=true; try{ sessionStorage.setItem(KEY+".unlockLater","1"); }catch{} };
+$("#unlockBtn").onclick=async()=>{
+  const k=rawPm(); const pin=$("#unlockPin").value; if(!k?.enc||!pin) return;
+  if(pinTries>=5){ note("Too many wrong PINs. Close and reopen the app to try again, or reconnect Polymarket."); return; }
+  try{ pmUnlocked={keyId:k.keyId, secret:await unlockSecret(k.enc,pin)}; pinTries=0; $("#unlockPin").value=""; $("#unlockPanel").hidden=true; note(); syncPmus(true); pmBackfill(false); }
+  catch{ pinTries++; note("That PIN didn't work."+(pinTries>=3?` ${5-pinTries} tries left.`:"")); }
+};
 const PM_LEAGUE={nba:"nba",wnba:"wnba",nfl:"nfl",cfb:"ncaafb",ncaaf:"ncaafb",cbb:"ncaamb",ncaab:"ncaamb",mlb:"mlb",nhl:"nhl",epl:"epl",ucl:"ucl",mls:"mls",lal:"laliga",laliga:"laliga",sea:"seriea",bun:"bund",fl1:"ligue1",mex:"ligamx",atp:"atp",wta:"wta"};
 function pmSlugInfo(slug){
   const m=String(slug||"").toLowerCase().match(/^(?:[a-z0-9]{2,8}-)?(nba|wnba|nfl|cfb|ncaaf|cbb|ncaab|mlb|nhl|epl|ucl|mls|lal|laliga|sea|bun|fl1|mex|atp|wta)-([a-z0-9]+)-([a-z0-9]+)-(\d{4}-\d{2}-\d{2})/);
@@ -1399,7 +1589,7 @@ const pmSlipId=slug=>("pu_"+myKey()+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").sl
 // Full account history from activities: one summary per market, kept on this device; settled sports markets become slips.
 let pmHistBusy=false;
 async function pmBackfill(force){
-  const key=ls.get(KEY+".pmus",null); if(!key || pmHistBusy || !db || !me) return;
+  const key=getPmKey(); if(!key){ askUnlock(); return; } if(pmHistBusy || !db || !me) return;
   if(!force && Date.now()-ls.get(KEY+".pmhistAt",0) < 10*60000) return;
   pmHistBusy=true; if(tab==="me") $("#pmHistStatus").textContent="Reading your Polymarket history…";
   try{
@@ -1493,7 +1683,7 @@ async function pmBackfill(force){
 setInterval(()=>{ if(!document.hidden && db && me) pmBackfill(false); },60000);
 
 async function syncPmus(force){
-  const key=ls.get(KEY+".pmus",null); if(!key || pmusBusy || (!force && Date.now()-pmusLast<60000)) return;
+  const key=getPmKey(); if(!key){ askUnlock(); return; } if(pmusBusy || (!force && Date.now()-pmusLast<60000)) return;
   pmusBusy=true; pmusLast=Date.now();
   try{
     const res={positions:await pmPositionsAll(key)};
@@ -1622,19 +1812,31 @@ $("#alertsBtn").onclick=async()=>{ if(!window.Notification){ note("This browser 
   if(r==="granted") toast("You'll get an alert when someone reacts, while the app is open."); };
 
 /* ---------- Members ---------- */
-const isOwner=()=> groupDoc?.createdBy===uid;
+const isOwner=()=> !!groupDoc && (groupDoc.createdBy===uid || members[groupDoc.createdBy]?.linkedTo===uid);
+const ownerKey=()=>{ const c=groupDoc?.createdBy; if(!c) return ""; const m=members[c]; if(m?.linkedTo && members[m.linkedTo]) return norm(members[m.linkedTo].name); return norm(m?.name||""); };
 function renderMembers(){
   const own=isOwner();
-  $("#membersNote").textContent = own ? "You started this group, so you can remove people. Removed members and their slips are hidden from everyone." : "Only the person who started the group can remove members.";
-  const list=Object.entries(members).sort((a,b)=>(a[1].name||"").localeCompare(b[1].name||""));
-  $("#membersList").innerHTML=list.map(([id,m])=>`<div class="mem ${m.removed?"removed":""}"><span>${esc(m.name||"?")}${id===uid?' <span class="tag">YOU</span>':""}${groupDoc?.createdBy===id?' <span class="tag">OWNER</span>':""}${m.removed?' <span class="tag">REMOVED</span>':""}</span>
-    ${own&&id!==uid?`<button type="button" class="ghost" data-rmmem="${esc(id)}|${m.removed?0:1}">${m.removed?"Restore":"Remove"}</button>`:""}</div>`).join("");
+  $("#membersNote").textContent = own ? "You own this group. Approve new people here, or remove someone (they and their slips disappear for everyone)." : "Only the group owner can approve or remove members.";
+  const byName=new Map();
+  Object.entries(members).forEach(([id,m])=>{ const k=norm(m.name||"?"); if(!byName.has(k)) byName.set(k,{name:m.name||"?",ids:[],removed:0,pending:0}); const g=byName.get(k); g.ids.push(id); if(m.removed) g.removed++; else if(m.status==="pending") g.pending++; });
+  const list=[...byName.entries()].sort((a,b)=>(b[1].pending-a[1].pending)||a[1].name.localeCompare(b[1].name));
+  $("#membersList").innerHTML=list.map(([k,g])=>{ const isMe=k===norm(me.name), rem=g.removed===g.ids.length, pend=!rem && g.pending===g.ids.length-g.removed;
+    const btns = !own||isMe ? "" : pend ? `<button type="button" class="ghost" data-rmmem="${esc(k)}|1">Deny</button><button type="button" class="primary small" data-approve="${esc(k)}">Approve</button>`
+      : `<button type="button" class="ghost" data-rmmem="${esc(k)}|${rem?0:1}">${rem?"Restore":"Remove"}</button>`;
+    return `<div class="mem ${rem?"removed":""}"><span>${esc(g.name)}${isMe?' <span class="tag">YOU</span>':""}${k===ownerKey()?' <span class="tag">OWNER</span>':""}${rem?' <span class="tag">REMOVED</span>':""}${pend?' <span class="pending">WANTS TO JOIN</span>':""}</span><span>${btns}</span></div>`; }).join("");
+  const n=Object.values(members).filter(m=>m.status==="pending"&&!m.removed).length;
+  $("#membersBtn").textContent = own&&n ? `Members (${n} waiting)` : "Members";
 }
 $("#membersBtn").onclick=async()=>{ const p=$("#membersPanel"); p.hidden=!p.hidden; if(p.hidden) return;
   try{ groupDoc=(await gref().get()).data()||groupDoc; }catch{} renderMembers(); };
 $("#membersClose").onclick=()=>$("#membersPanel").hidden=true;
-$("#membersList").addEventListener("click",async e=>{ const v=e.target.dataset.rmmem; if(!v) return; const [id,on]=v.split("|");
-  try{ await gref().collection("members").doc(id).update({removed:on==="1"}); renderMembers(); }catch(err){ note("Couldn't update member: "+err.message); } });
+$("#membersList").addEventListener("click",async e=>{ const v=e.target.dataset.rmmem; if(!v) return; const [k,on]=v.split("|");
+  try{ const ids=Object.entries(members).filter(([,m])=>norm(m.name||"?")===k).map(([id])=>id);
+    for(const id of ids) await gref().collection("members").doc(id).update({removed:on==="1"}); renderMembers(); }
+  catch(err){ note("Couldn't update member: "+err.message); } });
+$("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.approve; if(!k) return;
+  try{ const ids=Object.entries(members).filter(([,m])=>norm(m.name||"?")===k && m.status==="pending").map(([id])=>id);
+    for(const id of ids) await gref().collection("members").doc(id).update({status:"approved"}); toast("Approved."); renderMembers(); }catch(err){ note("Couldn't update member: "+err.message); } });
 
 /* ---------- Me tab ---------- */
 function statCard(k,v,sub,cls){ return `<div class="cat"><span class="k">${esc(k)}</span><span class="v ${cls||""}">${v}</span><span class="s">${sub||""}</span></div>`; }
@@ -1642,7 +1844,7 @@ const signed=n=>(n>0?"+":"")+money(n);
 function renderMe(){
   const h=ls.get(KEY+".pmhist",null);
   const st=ls.get(KEY+".pmhistAt",0);
-  $("#pmHistStatus").textContent = !ls.get(KEY+".pmus",null) ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
+  $("#pmHistStatus").textContent = pmLocked() ? "Locked. Enter your PIN to refresh." : !rawPm() ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
   if(h && Object.keys(h).length){
     const rows=Object.values(h).filter(x=>x.settled);
     const net=rows.reduce((m,x)=>m+x.pnl,0), staked=rows.reduce((m,x)=>m+x.stake,0);
@@ -1678,16 +1880,23 @@ function renderMe(){
 }
 $("#hideMoney").addEventListener("change",async e=>{ try{ await gref().collection("members").doc(uid).set({hideMoney:e.target.checked},{merge:true}); toast(e.target.checked?"Your dollar amounts are hidden from the group.":"Your dollar amounts are visible to the group."); }catch(err){ note("Couldn't save: "+err.message); } });
 $("#renameBtn").onclick=async()=>{
-  const nn=$("#renameInput").value.trim().slice(0,24); if(!nn||nn===me.name) return;
-  if(people().some(([k])=>k===norm(nn))){ note("Someone in the group already uses that name."); return; }
+  const nn=cleanName($("#renameInput").value); if(!nn||nn===me.name) return;
+  if(nameKey(nn)!==nameKey(me.name) && people().some(([k])=>k===norm(nn))){ note("Someone in the group already uses that name."); return; }
   const old=me.name; $("#renameBtn").disabled=true;
   try{
-    await gref().collection("members").doc(uid).set({name:nn},{merge:true});
-    const mine=slips.filter(s=>s.uid===uid || norm(s.name)===norm(old));
-    for(let i=0;i<mine.length;i+=400){ const b=db.batch(); mine.slice(i,i+400).filter(s=>s.uid===uid).forEach(s=>b.update(gref().collection("slips").doc(s.id),{name:nn})); await b.commit(); }
+    const g=gref();
+    if(nameKey(nn)!==nameKey(old)){
+      const nd=await g.collection("names").doc(nameKey(nn)).get(); if(nd.exists && nd.data().uid!==uid){ note("That name is taken in this group."); return; }
+    }
+    const b=db.batch();
+    if(nameKey(nn)!==nameKey(old)){ b.set(g.collection("names").doc(nameKey(nn)),{uid}); b.delete(g.collection("names").doc(nameKey(old))); }
+    b.update(g.collection("members").doc(uid),{name:nn}); await b.commit();
+    const mine=slips.filter(s=>s.uid===uid || (norm(s.name)===norm(old) && s.source!=="model"));
+    for(let i=0;i<mine.length;i+=400){ const bb=db.batch(); mine.slice(i,i+400).forEach(s=>bb.update(g.collection("slips").doc(s.id),{name:nn})); await bb.commit().catch(()=>{}); }
     me={...me,name:nn,key:me.key||norm(old).replace(/ /g,"")}; ls.set(KEY+".me",me); rememberInUrl(); toast("You're now "+nn+"."); startGroup();
   }catch(err){ note("Couldn't rename: "+err.message); } finally{ $("#renameBtn").disabled=false; }
 };
+$("#signOutBtn").onclick=()=>{ const b=$("#signOutBtn"); if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again to sign out"; setTimeout(()=>{b.dataset.armed="";b.innerHTML="Sign out &amp; forget my Polymarket key";},3000); return; } signOutAll(true); };
 $("#pmRefresh").onclick=()=>{ ls.set(KEY+".pmhistAt",0); pmBackfill(true); };
 
 /* ---------- CSV ---------- */
@@ -1784,7 +1993,7 @@ $("#shot").addEventListener("change",async e=>{
   try{
     if(!window.Tesseract) throw new Error("ocr-missing");
     const lg=scanLeague;
-    const [names, ocr] = await Promise.all([ rosterNames(lg), Tesseract.recognize(f,"eng",{logger:m=>{ if(m.status==="recognizing text") bump(.1+.85*m.progress); }}) ]);
+    const [names, ocr] = await Promise.all([ rosterNames(lg), Tesseract.recognize(f,"eng",{workerPath:new URL("tesseract-worker.min.js?v=5.1.1",location.href).href, logger:m=>{ if(m.status==="recognizing text") bump(.1+.85*m.progress); }}) ]);
     bump(1);
     const text=ocr.data.text;
     const m=parseMoney(text);
@@ -1802,14 +2011,9 @@ $("#shot").addEventListener("change",async e=>{
 renderSportChips();
 (async()=>{
   try{ await initFirebase(); }
-  catch(e){ $("#joinPanel").hidden=false; note(e.message==="setup"?"The group database isn't set up yet.":"Couldn't connect to the group database: "+e.message); $("#notice").dataset.sticky="1"; return; }
-  const sp=new URLSearchParams(location.search);
-  const q=sp.get("join"), ug=(sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,""), un=(sp.get("name")||"").trim().slice(0,24);
-  if(ug && un && (!me || me.group!==ug || me.name!==un)){
-    try{ const g=await db.collection("groups").doc(ug).get(); if(g.exists){ me={name:un, group:ug, key:(me&&me.group===ug&&me.key)||norm(un).replace(/ /g,"")}; ls.set(KEY+".me",me); } }catch{}
-  }
-  if(me && me.group && !q){ rememberInUrl(); $("#app").hidden=false; startGroup(); }
-  else showJoin();
+  catch(e){ showOnly("authPanel"); note(e.message==="setup"?"The group database isn't set up yet.":"Couldn't connect to the group database: "+e.message); $("#notice").dataset.sticky="1"; return; }
+  if(!isAccount(authUser)){ showAuth(); return; }
+  await afterSignIn(null);
 })();
 })();
 </script>
