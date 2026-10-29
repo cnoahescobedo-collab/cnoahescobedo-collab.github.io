@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-MEEASdxcWWr9fYnu2Z5nO18SJZAIXxiaeKEvIHYs4Dk=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-U1sUxjM1eaEAiRQ/Wn+r9EACPTGNGFzxVDEBd45UUxs=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -947,8 +947,8 @@ function startGroup(){
       try{ if(window.Notification && Notification.permission==="granted") new Notification("Live Bet Tracker",{body:msg}); }catch{} });
     ls.set(KEY+".seenN",[...seenNotifs].slice(-300)); renderBell(); },()=>{}));
   unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(800).onSnapshot(s=>{
-    slips=s.docs.map(d=>({id:d.id,...d.data()}));
-    renderAll(); refresh();
+    slips=cleanSlips(s.docs.map(d=>({id:d.id,...d.data()})));
+    renderAll(); refresh(); tidyDuplicates();
   }, e=>note("Couldn't load slips: "+e.message)));
 }
 function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?group="+encodeURIComponent(me.group)+"&name="+encodeURIComponent(me.name)); }catch{} }
@@ -1282,8 +1282,35 @@ async function refresh(){
   }catch(e){ note("Couldn't reach ESPN just now. Retrying shortly."); }
   finally{ busy=false; renderAll(); }
 }
+const isPM = s => s.source==="pmus" || s.source==="polymarket";
+// A Polymarket bet is identified by person + market, whatever login saved it.
+const pmKeyOf = s => { const m=String(s.id).match(/^(pu|pm)_[^_]+_(.+)$/); return m? m[1]+"|"+norm(s.name)+"|"+m[2] : null; };
+let dupIds=[];
+function cleanSlips(raw){
+  const out=[], best=new Map(); dupIds=[];
+  const score=s=> (s.pnl!=null&&s.status!=="open"?100:0) + (s.status!=="open"?10:0) + ((s.legsV||0)) + (settledAt(s)/1e13);
+  for(const s0 of raw){
+    const s={...s0};
+    // A Polymarket slip marked settled without Polymarket's numbers was settled by ESPN: treat it as still open until Polymarket confirms.
+    if(isPM(s) && s.status!=="open" && s.pnl==null && !s.manual){ s.status="open"; s.unconfirmed=true; }
+    const k=isPM(s)? pmKeyOf(s) : null;
+    if(!k){ out.push(s); continue; }
+    const cur=best.get(k);
+    if(!cur){ best.set(k,s); continue; }
+    if(score(s)>score(cur)){ dupIds.push(cur); best.set(k,s); } else dupIds.push(s);
+  }
+  return [...out, ...best.values()].sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+}
+// Remove extra copies this person owns (other people's copies are just hidden).
+let tidyAt=0;
+function tidyDuplicates(){
+  if(Date.now()-tidyAt<60000 || !dupIds.length) return; tidyAt=Date.now();
+  const mine=x=> x.uid===uid || members[x.uid]?.linkedTo===uid;
+  dupIds.filter(mine).slice(0,50).forEach(x=>gref().collection("slips").doc(x.id).delete().catch(()=>{}));
+}
 function persistLegs(s){
   const rs=s.legs.map(l=>l.result||null);
+  if(isPM(s)){ gref().collection("slips").doc(s.id).update({legs:s.legs.map(l=>({...l}))}).catch(()=>{}); return; }   // Polymarket settles these, not ESPN
   const status = rs.includes("lost") ? "lost" : rs.every(Boolean) ? slipStatus(rs) : "open";
   const upd={legs:s.legs.map(l=>({...l}))};
   if(status!=="open" && s.status==="open"){ upd.status=status; upd.settledAt=firebase.firestore.FieldValue.serverTimestamp(); }
@@ -1372,8 +1399,9 @@ function reactBar(s){
 }
 function slipHTML(s){
   const pr=slipProgress(s);
-  const status = s.status!=="open" ? s.status : (pr.lost?"lost":"open");
+  const status = s.status!=="open" ? s.status : (pr.lost && !isPM(s) ? "lost" : "open");
   const label = status==="won"?["won","Cashed"]:status==="lost"?["lost","Busted"]:status==="push"?["wait","Push"]:[pr.live?"live":"wait",`${pr.won}/${s.legs.length} hit`];
+  if(status==="open" && isPM(s) && pr.lost) label.splice(0,2,"lost","Likely lost · waiting on Polymarket");
   const when=s.createdAt?.toDate? s.createdAt.toDate().toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
   const mine=s.uid===uid;
   const sweat = status==="open" && pr.remaining===1 && s.legs.length>1 ? "1 leg away" : status==="open" && pr.remaining===0 ? "Settling…" : "";
@@ -1391,7 +1419,7 @@ function slipHTML(s){
   </details>`;
 }
 function liveSlips(){
-  let open=vis().filter(s=>s.status==="open" && !s.legs.some(l=>l.result==="lost"));
+  let open=vis().filter(s=>s.status==="open" && (isPM(s) || !s.legs.some(l=>l.result==="lost")));
   if(whoLive==="me") open=open.filter(s=>s.uid===uid||norm(s.name)===norm(me.name));
   else if(whoLive!=="all") open=open.filter(s=>norm(s.name)===whoLive);
   const P=new Map(open.map(s=>[s.id,slipProgress(s)]));
@@ -1781,7 +1809,7 @@ function pmToLeg(mkt, side, fallbackTitle){
   }
   // Player props: slug like astatc-nba-sa-uta-2026-10-28-ast-defox-gte4, title "De'Aaron Fox 4+ Ast"
   if(/player/.test(type) || /-(pts|reb|ast|pra|pr|pa|ra|3pm|threes|stl|blk|sb)-[a-z]+-gte\d/.test(slug)){
-    const statText = type.replace(/^[a-z]+_player_/,"").replace(/_/g," ") + " " + title;
+    const statText = type.replace(/^[a-z]+_player_/,"").replace(/_/g," + ") + " " + title;   // points_rebounds_assists -> "points + rebounds + assists"
     const mk=marketFor(info.league, statText.toLowerCase());
     const nm=(title.match(/^(.+?)\s+\d+(?:\.\d+)?\s*\+/)||[])[1] || (q.match(/Will (.+?) record/)||[])[1] || "";
     const thr = L ?? Number((title.match(/(\d+(?:\.\d+)?)\s*\+/)||[])[1]);
@@ -1923,15 +1951,21 @@ async function pmBackfill(force){
       const ex= known.has(id) ? slips.find(s=>s.id===id) : mineOld.find(s=>s.id.endsWith(sfx(x.slug)));
       const status=x.pnl>0.004?"won":x.pnl<-0.004?"lost":"push";
       if(ex){
-        if(ex.status==="open" || Math.abs((ex.pnl??0)-x.pnl)>0.009) await col.doc(ex.id).update({status, pnl:x.pnl, settledAt:firebase.firestore.Timestamp.fromMillis(x.t), legs:(ex.legs||[]).map(l=>({...l,result:l.result||status}))}).catch(()=>{});
+        const needLegs=(ex.legsV||0)<4;
+        if(ex.status==="open" || ex.pnl==null || Math.abs((ex.pnl??0)-x.pnl)>0.009 || needLegs){
+          let legs=ex.legs||[];
+          if(needLegs){ const nl=await pmBuildLegs(x.slug,key,x.title,x.short).catch(()=>null); if(nl) legs=nl; }
+          legs=legs.map(l=>({...l, result: status==="won"? "won" : (needLegs? null : (l.result||null))}));
+          await col.doc(ex.id).update({status, pnl:x.pnl, settledAt:firebase.firestore.Timestamp.fromMillis(x.t), legs, legsV:4}).catch(()=>{});
+        }
         continue;
       }
       if(!all && !pmSlugInfo(x.slug) && (x.cat==="Other")) continue;
       let legs=await pmBuildLegs(x.slug,key,x.title,x.short).catch(()=>null); if(!legs) continue;
       const sportsy=legs.some(l=>l.kind!=="pmus"||l.cat!=="Other"); if(!sportsy && !all) continue;
-      legs=legs.map(l=>({...l,result:l.result||status}));
+      legs=legs.map(l=>({...l,result: status==="won"?"won":null}));
       const ts=firebase.firestore.Timestamp.fromMillis(x.t);
-      await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:3, backfill:true}).catch(()=>{});
+      await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:4, backfill:true}).catch(()=>{});
       added++;
     }
     if(added) toast(`Added ${added} past Polymarket result${added===1?"":"s"} to your history.`);
@@ -1953,15 +1987,18 @@ async function syncPmus(force){
       const net=Number(p.netPositionDecimal ?? p.netPosition ?? 0), sold=Number(p.qtySoldDecimal ?? p.qtySold ?? 0);
       const cost=Math.abs(Number(p.cost?.value||0)), realized=Number(p.realized?.value||0), upnl=Number(p.cashValue?.value||0);
       const id=pmSlipId(slug);
-      const settled = p.expired || (net===0 && sold>0);
-      const pnl=Math.round(realized*100)/100;
-      const status = settled ? (pnl>0?"won":pnl<0?"lost":"push") : "open";
+      // Expired positions may not have moved their result into "realized" yet; the unrealized part (cashValue) holds it until then.
+      let settled = p.expired || (net===0 && sold>0);
+      const pnl=Math.round((realized + (p.expired && net!==0 ? upnl : 0))*100)/100;
+      if(settled && p.expired && net!==0 && Math.abs(pnl)<0.005 && cost>0.01) settled=false;   // result not posted yet: keep it open rather than calling it a push
+      const status = settled ? (pnl>0.004?"won":pnl<-0.004?"lost":"push") : "open";
       const live={liveValue:Math.round((cost+upnl)*100)/100, livePnl:Math.round(upnl*100)/100};
       const ex=have.get(id) || mineOld.find(x=>x.id.endsWith("_"+String(slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,120)));
       const buildLegs=()=>pmBuildLegs(slug,key,md.title,net<0);
       const goodLegs=l=>l.length>1||l[0]?.kind!=="pmus"||!/^(crossd|caoc)-/i.test(slug);
-      if(ex && (ex.legsV||0)<3 && ex.status==="open"){
-        const legs=await buildLegs(); await col.doc(ex.id).update({legs, legsV:goodLegs(legs)?3:1}).catch(()=>{}); continue;
+      if(ex && (ex.legsV||0)<4){
+        let legs=await buildLegs(); if(ex.status==="won") legs=legs.map(l=>({...l,result:"won"}));
+        await col.doc(ex.id).update({legs, legsV:goodLegs(legs)?4:1}).catch(()=>{}); continue;
       }
       if(!ex){
         if(net===0 && !settled) continue;
@@ -1970,7 +2007,7 @@ async function syncPmus(force){
         if(!sportsy && !all) continue;
         if(status!=="open") legs=legs.map(l=>({...l,result:l.result||status}));
         await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100,
-          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?3:1, ...live,
+          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?4:1, ...live,
           ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
       } else if(status!=="open" && (ex.status==="open" || ex.pnl!==pnl)){
         await col.doc(ex.id).update({status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
