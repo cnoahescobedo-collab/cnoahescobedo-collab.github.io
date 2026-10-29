@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-iYXPZwt/jFpuT3ks87g245gtEJTynMo5TNgQpqOFVyc=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-b5x/T0/GrviBAP0HyyblsIEY798yYX71q0L4h5AK4HA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -110,6 +110,13 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .hfilters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hfilters .f{margin:0}.hfilters .hsearch{grid-column:1/-1}
 @media(min-width:720px){.hfilters{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .hmore>summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent,#c4531a);list-style:none}.hmore>summary::-webkit-details-marker{display:none}.hmore>summary:after{content:" ▾"}.hmore[open]>summary:after{content:" ▴"}
+.trend{background:var(--surface);border:1px solid var(--line);border-radius:12px}.trend>summary{list-style:none;cursor:pointer;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px}.trend>summary::-webkit-details-marker{display:none}
+.trend .who{font-weight:600}.trend .who small{color:var(--muted);font-weight:500}.trend .px{text-align:right;font-variant-numeric:tabular-nums}.trend .px b{display:block;font-size:18px}.trend .px span{font-size:12px;color:var(--muted)}
+.trend .edge{font-weight:700}.trend .wins{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.hr{font-size:12px;padding:3px 7px;border-radius:999px;background:var(--chip,rgba(127,127,127,.12));font-variant-numeric:tabular-nums}.hr.good{background:rgba(31,157,85,.14);color:var(--win)}.hr.bad{background:rgba(214,69,65,.12);color:var(--loss)}
+.trend .body{border-top:1px solid var(--line);padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:56px;position:relative;border-bottom:1px solid var(--line)}.bars i{flex:1;background:var(--loss);opacity:.75;border-radius:2px 2px 0 0;min-height:2px}.bars i.hit{background:var(--win)}.bars .ln{position:absolute;left:0;right:0;border-top:1px dashed var(--muted)}
+.hot{color:#d97706;font-weight:700;font-size:12px}
 .hsum{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted)}.hsum b{color:var(--ink,inherit)}
 details.hist{display:block;padding:0}details.hist>summary{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 12px;align-items:center;padding:12px 14px;list-style:none;cursor:pointer}details.hist>summary::-webkit-details-marker{display:none}
 details.hist .chev{color:var(--muted);font-size:12px;transition:transform .15s}details.hist[open] .chev{transform:rotate(180deg)}
@@ -373,6 +380,37 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
     <!-- PICKS -->
     <section id="view-picks" hidden style="flex-direction:column;gap:14px">
+      <div class="chips" id="pickMode"></div>
+      <div id="picksTrends" style="display:flex;flex-direction:column;gap:12px">
+        <div class="panel">
+          <h2>Player trends</h2>
+          <p>For each player prop on Polymarket today, the app pulls the player's game log from ESPN and checks how often they actually cleared that exact line: last 5, last 10, last 7 days, last 30 days, this season and last season. When the hit rate beats the price, it's flagged as an edge.</p>
+          <div class="hfilters">
+            <label class="f">Sport<select class="pick" id="tLeague"></select></label>
+            <label class="f">Game<select class="pick" id="tGame"><option value="all">All of today's games</option></select></label>
+            <label class="f">Stat<select class="pick" id="tStat"><option value="all">All stats</option></select></label>
+            <label class="f">Sort<select class="pick" id="tSort"><option value="edge">Biggest edge</option><option value="l10">Best last 10</option><option value="hot">Hottest (7 days vs season)</option><option value="price">Cheapest price</option></select></label>
+            <label class="f">Show<select class="pick" id="tShow"><option value="edge">Edges only</option><option value="all">All props</option></select></label>
+            <label class="f">Price range<select class="pick" id="tPrice"><option value="all">Any price</option><option value="long">Longshots (under 40¢)</option><option value="mid">40¢–70¢</option><option value="fav">Favorites (70¢+)</option></select></label>
+            <label class="f hsearch">Player<input id="tSearch" type="search" placeholder="Filter by player name" autocomplete="off"></label>
+          </div>
+          <div class="row-end"><span class="sp" id="tStatus" style="font-size:13px;color:var(--muted)"></span><button type="button" class="primary" id="tScan">Scan player props</button></div>
+        </div>
+        <div class="list" id="trendList" style="gap:8px"><div class="empty"><b>Nothing scanned yet</b>Pick a sport and tap “Scan player props.”</div></div>
+        <details class="panel hmore" id="lineCheck"><summary>Check any line yourself</summary>
+          <p style="margin-top:8px">Works for any player in today's games, even if Polymarket doesn't list the prop.</p>
+          <div class="hfilters">
+            <label class="f">Player<input id="lcPlayer" list="lcPlayers" placeholder="Start typing a name" autocomplete="off"></label><datalist id="lcPlayers"></datalist>
+            <label class="f">Stat<input id="lcStat" placeholder="points, rebounds, rec yds, shots…" autocomplete="off"></label>
+            <label class="f">Line<input id="lcLine" inputmode="decimal" placeholder="e.g. 9.5 or 10+"></label>
+            <label class="f">Side<select class="pick" id="lcSide"><option value="over">Over</option><option value="under">Under</option></select></label>
+          </div>
+          <div class="row-end"><button type="button" class="primary small" id="lcGo">Check it</button></div>
+          <div id="lcOut"></div>
+        </details>
+        <p class="fine">Past results don't guarantee future ones. Injuries, minutes and matchups matter, so use this as a starting point.</p>
+      </div>
+      <div id="picksValue" style="display:flex;flex-direction:column;gap:14px">
       <div class="panel">
         <h2>High risk, high reward</h2>
         <p>The app compares DraftKings' odds with two independent estimates: ESPN's win-probability model and the Polymarket price for the same game. When those estimates say a team wins more often than the odds imply, that's a value spot. Small parlays are built from those spots. These are estimates, not sure things. Longshots lose most of the time, even when the price is good.</p>
@@ -384,6 +422,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="tablewrap"><table id="spotTable"><tbody><tr><td style="text-align:left;color:var(--muted)">Single sides where the estimate beats the price show here.</td></tr></tbody></table></div>
       <div class="section-head"><h2>Model's track record</h2></div>
       <div class="cat-grid" id="modelRecord"></div>
+      </div>
     </section>
 
     <!-- ME (private) -->
@@ -1554,6 +1593,7 @@ async function logModel(parlays){
 const pctS = x => x==null?"–":Math.round(x*100)+"%";
 const amS = a => (a>0?"+":"")+a;
 function renderPicks(){
+  renderPickMode();
   const ps=picksState;
   if(ps && ps.day!==etDay()) { $("#picksStatus").textContent="Last scan was an earlier day. Scan again for today."; }
   else if(ps) $("#picksStatus").textContent=`Checked ${ps.games} games ${Math.max(0,Math.round((Date.now()-ps.at)/60000))} min ago`;
@@ -1963,6 +2003,201 @@ async function importPoly(open, m){
   }
 }
 setInterval(()=>{ if(!document.hidden && db && me) syncPoly(false); },20000);
+
+/* ---------- Player trends (stat-based props) ---------- */
+const TREND_LEAGUES=["nba","wnba","nfl","ncaafb","ncaamb","nhl","mlb"];
+const PMUS_LEAGUE={nba:"nba",wnba:"wnba",nfl:"nfl",ncaafb:"cfb",ncaamb:"cbb",mlb:"mlb",nhl:"nhl"};
+const ESPN_WEB="https://site.web.api.espn.com/apis/common/v3/sports/";
+let pickMode=ls.get(KEY+".pickMode","trends");
+const tf={league:ls.get(KEY+".tLeague","nba"),game:"all",stat:"all",sort:"edge",show:"edge",price:"all",q:""};
+let trendState=null; const logCache=new Map(), rosterCache=new Map(); let trendBusy=false;
+function renderPickMode(){
+  chipRow($("#pickMode"),[["trends","Player trends"],["value","Value parlays"]],pickMode,"pm");
+  $("#picksTrends").hidden=pickMode!=="trends"; $("#picksValue").hidden=pickMode!=="value";
+  if(pickMode==="trends") renderTrends();
+}
+$("#pickMode").addEventListener("click",e=>{ const k=e.target.dataset.pm; if(!k) return; pickMode=k; ls.set(KEY+".pickMode",k); renderPickMode(); });
+async function pool(items,n,fn){ const out=[]; let i=0; await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{ while(i<items.length){ const k=i++; out[k]=await fn(items[k],k).catch(()=>null); } })); return out; }
+async function teamRoster(lg,teamId){
+  const ck=lg+":"+teamId; if(rosterCache.has(ck)) return rosterCache.get(ck);
+  const d=await getJSON(ESPN+LEAGUES[lg].path+"/teams/"+teamId+"/roster").catch(()=>({}));
+  const list=(d.athletes||[]).flatMap(a=>a.items?a.items:[a]).filter(a=>a.id&&a.displayName).map(a=>({id:a.id,name:a.displayName,pos:a.position?.abbreviation||""}));
+  rosterCache.set(ck,list); return list;
+}
+function splitStats(names,vals){
+  const o={};
+  names.forEach((k,i)=>{ const raw=vals[i]; if(raw==null||raw==="") return; const ks=String(k).split("-"), vs=String(raw).split("-");
+    if(ks.length>1&&ks.length===vs.length) ks.forEach((kk,j)=>{ const n=parseFloat(vs[j]); if(!isNaN(n)) o[kk]=n; });
+    else { const n=parseFloat(raw); if(!isNaN(n)) o[k]=n; } });
+  if(o.totalRebounds!=null&&o.rebounds==null) o.rebounds=o.totalRebounds;
+  if(o.threePointFieldGoalsMade==null&&o.threePointersMade!=null) o.threePointFieldGoalsMade=o.threePointersMade;
+  return o;
+}
+function parseLog(d){
+  const meta=d.events||{}, byId=new Map();
+  for(const st of d.seasonTypes||[]){
+    if(/pre\s*season|preseason/i.test(st.displayName||"")) continue;
+    for(const c of st.categories||[]) for(const ev of c.events||[]){
+      const o=splitStats(c.names||d.names||[], ev.stats||[]); const prev=byId.get(ev.eventId);
+      if(prev) Object.assign(prev.o,o); else byId.set(ev.eventId,{id:ev.eventId,t:Date.parse(meta[ev.eventId]?.gameDate)||0,opp:meta[ev.eventId]?.opponent?.abbreviation||"",o});
+    }
+  }
+  return [...byId.values()].sort((a,b)=>b.t-a.t);
+}
+async function playerLog(lg,id){
+  const ck=lg+":"+id; const c=logCache.get(ck); if(c && Date.now()-c.at<30*60000) return c;
+  const base=ESPN_WEB+LEAGUES[lg].path+"/athletes/"+id+"/gamelog";
+  const d=await getJSON(base);
+  const cur=parseLog(d); let prev=[];
+  const opts=(d.filters||[]).find(f=>f.name==="season")?.options||[];
+  const curSeason=(d.filters||[]).find(f=>f.name==="season")?.value || opts[0]?.value;
+  const prevSeason=opts.map(o=>o.value).find(v=>String(v)!==String(curSeason)) || (curSeason? String(Number(curSeason)-1):null);
+  if(prevSeason && cur.length<25){ const pd=await getJSON(base+"?season="+prevSeason).catch(()=>null); if(pd) prev=parseLog(pd); }
+  const out={at:Date.now(),cur,prev}; logCache.set(ck,out); return out;
+}
+const statVal=(o,keys)=>{ let t=0; for(const k of keys){ const v=o[k] ?? o[String(k).split(".").pop()]; if(v==null) return null; t+=v; } return t; };
+function lineStats(log,keys,line,side){
+  const now=Date.now();
+  const vals=rows=>rows.map(r=>({v:statVal(r.o,keys),t:r.t,opp:r.opp})).filter(x=>x.v!=null);
+  const cur=vals(log.cur), prev=vals(log.prev);
+  const hit=v=> side==="under"? v<line : v>line;
+  const w=(rows)=>({n:rows.length,h:rows.filter(x=>hit(x.v)).length,avg:rows.length?rows.reduce((m,x)=>m+x.v,0)/rows.length:null});
+  const W={l5:w(cur.slice(0,5)),l10:w(cur.slice(0,10)),d7:w(cur.filter(x=>x.t>=now-7*864e5)),d30:w(cur.filter(x=>x.t>=now-30*864e5)),season:w(cur),last:w(prev)};
+  if(W.l10.n<10 && prev.length){ const mix=[...cur,...prev].slice(0,10); W.l10=w(mix); W.l10.mixed=true; }
+  if(W.l5.n<5 && prev.length){ const mix=[...cur,...prev].slice(0,5); W.l5=w(mix); W.l5.mixed=true; }
+  const wt={l10:[.35,10],season:[.25,10],last:[.15,25],l5:[.15,5],d30:[.10,6]}; let sw=0,sp=0;
+  for(const [k,[wgt,full]] of Object.entries(wt)){ const x=W[k]; if(!x.n) continue; const ww=wgt*Math.min(1,x.n/full); sw+=ww; sp+=ww*(x.h/x.n); }
+  const raw= sw? sp/sw : null; const eff=Math.min(30,W.season.n+W.last.n);
+  const p= raw==null? null : Math.min(0.97,Math.max(0.03,(raw*eff+0.5*4)/(eff+4)));   // pull small samples toward 50%
+  const recent=[...cur,...prev].slice(0,10).reverse();
+  return {W,p,eff,recent,hot: W.d7.n>=2 && W.season.avg>0 && W.d7.avg/W.season.avg>=1.25, cold: W.d7.n>=2 && W.season.avg>0 && W.d7.avg/W.season.avg<=0.75};
+}
+async function pmEventForGame(lg,g){
+  const pl=PMUS_LEAGUE[lg]; if(!pl) return null;
+  const ab=t=>({utah:"uta",wsh:"was"})[String(t.abbr||"").toLowerCase()]||String(t.abbr||"").toLowerCase();
+  const away=g.teams.find(t=>!t.home)||g.teams[0], home=g.teams.find(t=>t.home)||g.teams[1]; if(!away||!home) return null;
+  const day=etDay(g.date);
+  for(const slug of [`${pl}-${ab(away)}-${ab(home)}-${day}`,`${pl}-${ab(home)}-${ab(away)}-${day}`]){
+    const r=await getJSON("https://gateway.polymarket.us/v1/events/slug/"+slug).catch(()=>null);
+    const ev=r?.event||r; if(ev && Array.isArray(ev.markets)) return ev;
+  }
+  return null;
+}
+function propFromMarket(m){
+  if(!/player/.test(String(m.sportsMarketType||"")) || m.closed || m.active===false) return null;
+  const mk={slug:m.slug,q:m.question||"",short:m.titleShort||m.title||"",title:m.title||"",line:m.line!=null?Number(m.line):null,type:String(m.sportsMarketType||"").toLowerCase(),
+    sides:(m.marketSides||[]).map(x=>({d:x.description||"",long:!!x.long,team:"",teamName:""}))};
+  const leg=pmToLeg(mk,"SIDE_BUY",m.title); if(leg.kind!=="prop") return null;
+  const yes=(m.marketSides||[]).find(x=>x.long), no=(m.marketSides||[]).find(x=>!x.long);
+  // quote = what it costs to buy that side right now (the ask); price = the bid
+  const bidY=Number(yes?.price), bidN=Number(no?.price);
+  let py=Number(yes?.quote?.value); if(!(py>0&&py<1)) py= bidN>0&&bidN<1? 1-bidN : NaN;
+  let pn=Number(no?.quote?.value);  if(!(pn>0&&pn<1)) pn= bidY>0&&bidY<1? 1-bidY : NaN;
+  if(!(py>0&&py<1)) return null;
+  const spread=(py+(pn>0?pn:1-py))-1;
+  return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, wide:spread>0.12};
+}
+async function scanTrends(){
+  if(trendBusy) return; trendBusy=true; const lg=tf.league; const st=$("#tStatus"); $("#tScan").disabled=true;
+  try{
+    st.textContent="Loading today's games…";
+    const today=etDay(); const games=(await loadBoard(lg,today.replace(/-/g,"")).catch(()=>[])).filter(g=>etDay(g.date)===today && g.state!=="post");
+    if(!games.length){ trendState={lg,day:today,at:Date.now(),items:[],games:[],note:"No games left today in "+LEAGUES[lg].label+"."}; return; }
+    st.textContent=`Finding player props for ${games.length} game${games.length===1?"":"s"}…`;
+    const evs=await pool(games,4,g=>pmEventForGame(lg,g));
+    const props=[]; games.forEach((g,i)=>{ (evs[i]?.markets||[]).forEach(m=>{ const p=propFromMarket(m); if(p) props.push({...p,game:g}); }); });
+    // Players -> ESPN ids
+    const rosters={}; await pool(games,4,async g=>{ for(const t of g.teams) rosters[g.id+":"+t.id]=await teamRoster(lg,t.id); });
+    const findAth=(name,g)=>{ for(const t of g.teams){ const a=(rosters[g.id+":"+t.id]||[]).find(x=>sameName(x.name,name)); if(a) return {...a,team:t.abbr}; } return null; };
+    const ath=new Map(); props.forEach(p=>{ const a=findAth(p.player,p.game); if(a){ p.ath=a; ath.set(a.id,a); } });
+    const ids=[...ath.keys()]; let done=0;
+    await pool(ids,6,async id=>{ await playerLog(lg,id).catch(()=>null); done++; if(done%5===0||done===ids.length) st.textContent=`Reading game logs… ${done}/${ids.length} players`; });
+    const items=[];
+    for(const p of props){
+      if(!p.ath) continue; const log=logCache.get(lg+":"+p.ath.id); if(!log) continue;
+      const mk=marketFor(lg,p.market); if(!mk) continue;
+      const over=lineStats(log,mk.keys,Number(p.line),"over"), under=lineStats(log,mk.keys,Number(p.line),"under");
+      if(over.p==null) continue;
+      const eo=over.p-p.pYes, eu=(under.p!=null&&p.pNo>0)? under.p-p.pNo : -1;
+      const pickUnder= eu>eo && eu>0.05;
+      const S=pickUnder?under:over, price=pickUnder?p.pNo:p.pYes;
+      items.push({...p, side:pickUnder?"under":"over", price, S, edge:S.p-price, label:mk.label, keys:mk.keys});
+    }
+    trendState={lg,day:today,at:Date.now(),items,games,note: props.length? "" : "Polymarket doesn't have player props up for today's "+LEAGUES[lg].label+" games yet. Use “Check any line yourself” below."};
+    // fill line-check name list
+    $("#lcPlayers").innerHTML=Object.values(rosters).flat().map(a=>`<option value="${esc(a.name)}">`).join("");
+  }catch(e){ st.textContent="Couldn't finish the scan: "+(e.message||e); }
+  finally{ trendBusy=false; $("#tScan").disabled=false; renderTrends(); }
+}
+function hrChip(label,x,line){ if(!x||!x.n) return `<span class="hr">${label} –</span>`; const r=x.h/x.n; return `<span class="hr ${r>=.6?"good":r<=.4?"bad":""}">${label} ${x.h}/${x.n}${x.mixed?"*":""}</span>`; }
+function trendCard(it,i){
+  const S=it.S, W=S.W, ln=Number(it.line), thr=Number.isInteger(ln+0.5)? (it.side==="over"? (ln+0.5)+"+" : (ln-0.5)+" or fewer") : (it.side==="over"?"over ":"under ")+ln;
+  const trend= S.hot? (it.side==="over"?'<span class="hot">🔥 Trending up</span>':'<span class="hot" style="color:var(--loss)">⚠ Trending up</span>') : S.cold? (it.side==="under"?'<span class="hot" style="color:var(--win)">❄ Trending down</span>':'<span class="hot" style="color:var(--muted)">❄ Trending down</span>') : "";
+  const max=Math.max(ln+1,...S.recent.map(x=>x.v)); const hitF=v=> it.side==="under"? v<ln : v>ln;
+  const bars=S.recent.map(x=>`<i class="${hitF(x.v)?"hit":""}" style="height:${Math.max(4,x.v/max*100)}%" title="${x.v}${x.opp?" vs "+esc(x.opp):""}"></i>`).join("");
+  const edge=it.edge!=null? Math.round(it.edge*100):null;
+  return `<details class="trend" data-ti="${i}"><summary>
+    <div><div class="who">${esc(it.player)} <small>${esc(it.ath?.team||"")} · ${esc(it.game.name||"")}</small></div>
+      <div style="font-size:14px;margin-top:2px">${esc(it.label)} <b>${esc(thr)}</b> ${trend}</div></div>
+    <div class="px"><b>${Math.round(it.price*100)}¢</b><span>est. ${Math.round(S.p*100)}% · <span class="edge ${edge>0?"pos":edge<0?"neg":""}">${edge>0?"+":""}${edge}%</span></span></div>
+    <div class="wins">${hrChip("L5",W.l5)}${hrChip("L10",W.l10)}${hrChip("7d",W.d7)}${hrChip("30d",W.d30)}${hrChip("Season",W.season)}${hrChip("Last szn",W.last)}</div></summary>
+    <div class="body">
+      <div>Averages: season <b>${W.season.avg!=null?W.season.avg.toFixed(1):"–"}</b> · last 7 days <b>${W.d7.avg!=null?W.d7.avg.toFixed(1):"–"}</b> · last 10 <b>${W.l10.avg!=null?W.l10.avg.toFixed(1):"–"}</b> · last season <b>${W.last.avg!=null?W.last.avg.toFixed(1):"–"}</b></div>
+      <div class="bars">${bars}<span class="ln" style="bottom:${ln/max*100}%"></span></div>
+      <div class="fine">Last ${S.recent.length} games, oldest to newest. Green cleared the line. Dashed line = ${esc(String(ln))}.${(W.l10.mixed||W.l5.mixed)?" * includes last season's games.":""}</div>
+      <div class="fine">Price is what it costs to buy ${it.side==="over"?"Yes":"No"} on Polymarket right now (${Math.round(it.price*100)}% implied).${it.wide?" ⚠ Thin market: the buy and sell prices are far apart, so the price may move when you trade.":""} Estimate blends the hit rates above, weighted toward recent games.</div>
+      <div class="row-end"><button type="button" class="small" data-tadd="${i}">Add to a slip</button></div>
+    </div></details>`;
+}
+function renderTrends(){
+  const opt=(arr,cur)=>arr.map(([v,l])=>`<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(l)}</option>`).join("");
+  $("#tLeague").innerHTML=opt(TREND_LEAGUES.map(l=>[l,LEAGUES[l].label]),tf.league);
+  const ts=trendState&&trendState.lg===tf.league? trendState : null;
+  $("#tGame").innerHTML=opt([["all","All of today's games"],...(ts?.games||[]).map(g=>[g.id,g.name+(g.state==="in"?" (live)":"")])],tf.game);
+  const stats=[...new Set((ts?.items||[]).map(x=>x.label))].sort();
+  if(tf.stat!=="all"&&!stats.includes(tf.stat)) tf.stat="all";
+  $("#tStat").innerHTML=opt([["all","All stats"],...stats.map(x=>[x,x])],tf.stat);
+  ["tSort","tShow","tPrice"].forEach(id=>$("#"+id).value=tf[{tSort:"sort",tShow:"show",tPrice:"price"}[id]]);
+  if(!ts){ $("#tStatus").textContent=""; $("#trendList").innerHTML=`<div class="empty"><b>Nothing scanned yet</b>Pick a sport and tap “Scan player props.”</div>`; return; }
+  $("#tStatus").textContent=`${ts.items.length} props checked · ${Math.max(0,Math.round((Date.now()-ts.at)/60000))} min ago`;
+  let list=ts.items.filter(x=>(tf.game==="all"||x.game.id===tf.game)&&(tf.stat==="all"||x.label===tf.stat));
+  if(tf.q){ const q=norm(tf.q); list=list.filter(x=>norm(x.player).includes(q)); }
+  if(tf.price==="long") list=list.filter(x=>x.price<.4); else if(tf.price==="mid") list=list.filter(x=>x.price>=.4&&x.price<.7); else if(tf.price==="fav") list=list.filter(x=>x.price>=.7);
+  if(tf.show==="edge") list=list.filter(x=>x.edge>=0.08 && x.S.W.l10.n>=5 && x.price<0.95);
+  const key={edge:x=>-x.edge, l10:x=>-(x.S.W.l10.n? x.S.W.l10.h/x.S.W.l10.n:0), hot:x=>-((x.S.W.d7.avg||0)/((x.S.W.season.avg)||1e9)), price:x=>x.price}[tf.sort];
+  list.sort((a,b)=>key(a)-key(b));
+  trendState.view=list; const cap=trendState.cap||40;
+  $("#trendList").innerHTML = list.length ? list.slice(0,cap).map((x,i)=>trendCard(x,i)).join("") + (list.length>cap?`<button type="button" class="ghost" id="tMore">Show ${Math.min(40,list.length-cap)} more (${list.length-cap} left)</button>`:"")
+    : `<div class="empty"><b>${ts.note? "No props yet" : tf.show==="edge"?"No clear edges right now":"Nothing matches"}</b>${esc(ts.note || (tf.show==="edge"?"Switch Show to “All props” to see every line.":"Try widening the filters."))}</div>`;
+}
+["tLeague","tGame","tStat","tSort","tShow","tPrice"].forEach(id=>$("#"+id).addEventListener("change",e=>{
+  const k={tLeague:"league",tGame:"game",tStat:"stat",tSort:"sort",tShow:"show",tPrice:"price"}[id]; tf[k]=e.target.value;
+  if(k==="league"){ ls.set(KEY+".tLeague",tf.league); tf.game="all"; tf.stat="all"; } if(trendState) trendState.cap=40; renderTrends(); }));
+let tSearchT; $("#tSearch").addEventListener("input",e=>{ clearTimeout(tSearchT); tSearchT=setTimeout(()=>{ tf.q=e.target.value.trim(); renderTrends(); },200); });
+$("#tScan").onclick=scanTrends;
+$("#trendList").addEventListener("click",e=>{ if(e.target.id==="tMore"){ trendState.cap=(trendState.cap||40)+40; renderTrends(); return; } const i=e.target.dataset.tadd; if(i==null) return; const it=trendState?.view?.[+i]; if(!it) return;
+  editingId=null; $("#saveSlip").textContent="Post slip";
+  drafts=[{league:trendState.lg, kind:"prop", side:it.side, player:it.player, team:it.ath?.team||"", market:it.label, line:it.line}];
+  ["stake","odds","payout"].forEach(id=>$("#"+id).value=""); $("#previewImg").hidden=true;
+  document.querySelector('[data-tab="live"]')?.click(); showReview("New slip from Player trends"); $("#review").scrollIntoView({behavior:"smooth"}); });
+$("#lcGo").onclick=async()=>{
+  const lg=tf.league, name=$("#lcPlayer").value.trim(), stat=$("#lcStat").value.trim(); let lineTxt=$("#lcLine").value.trim(); const side=$("#lcSide").value;
+  const out=$("#lcOut"); if(!name||!stat||!lineTxt){ out.innerHTML=`<p class="fine">Fill in the player, stat and line.</p>`; return; }
+  const mk=marketFor(lg,stat); if(!mk){ out.innerHTML=`<p class="fine">“${esc(stat)}” isn't a stat I can track for ${esc(LEAGUES[lg].label)}.</p>`; return; }
+  let line=parseFloat(lineTxt); if(/\+\s*$/.test(lineTxt)) line=line-0.5; if(isNaN(line)){ out.innerHTML=`<p class="fine">Enter a number for the line, like 9.5 or 10+.</p>`; return; }
+  out.innerHTML=`<p class="fine">Looking up ${esc(name)}…</p>`;
+  try{
+    let a=null;
+    for(const [k,list] of rosterCache) if(k.startsWith(lg+":")){ a=list.find(x=>sameName(x.name,name)); if(a) break; }
+    if(!a){ const games=(await loadBoard(lg,etDay().replace(/-/g,"")).catch(()=>[])); for(const g of games){ for(const t of g.teams){ const r=await teamRoster(lg,t.id); a=r.find(x=>sameName(x.name,name)); if(a) break; } if(a) break; }
+      $("#lcPlayers").innerHTML=[...rosterCache].filter(([k])=>k.startsWith(lg+":")).flatMap(([,v])=>v).map(x=>`<option value="${esc(x.name)}">`).join(""); }
+    if(!a){ out.innerHTML=`<p class="fine">Couldn't find ${esc(name)} on a team playing today in ${esc(LEAGUES[lg].label)}.</p>`; return; }
+    const log=await playerLog(lg,a.id); const S=lineStats(log,mk.keys,line,side);
+    if(S.p==null){ out.innerHTML=`<p class="fine">No games with that stat found for ${esc(a.name)}.</p>`; return; }
+    const it={player:a.name, ath:{team:""}, game:{name:""}, label:mk.label, line, side, price:S.p, S, edge:null};
+    out.innerHTML=trendCard(it,"x").replace('<details class="trend"','<details class="trend" open').replace(/<div class="row-end"><button type="button" class="small" data-tadd="x">Add to a slip<\/button><\/div>/,"").replace(/Price is Polymarket[^<]*<\/div>/,"Hit rate estimate blends the windows above.</div>").replace(/<b>\d+¢<\/b>/,`<b>${Math.round(S.p*100)}%</b>`).replace(/est\. \d+% · <span class="edge[^"]*">[^<]*<\/span>/,"est. hit rate");
+  }catch(e){ out.innerHTML=`<p class="fine">Couldn't load stats: ${esc(e.message||String(e))}</p>`; }
+};
 
 /* ---------- Slip actions ---------- */
 document.body.addEventListener("click",async e=>{
