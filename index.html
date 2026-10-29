@@ -175,8 +175,17 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
     <section class="panel" id="polyPanel" hidden>
       <h2>Connect Polymarket</h2>
-      <p>Paste your Polymarket wallet address. On Polymarket, open your profile and copy the address that starts with 0x. It's public, read-only, and no password is involved. Your positions will show up here and settle on their own.</p>
-      <label class="f">Wallet address<input id="polyAddr" autocomplete="off" spellcheck="false" placeholder="0x…"></label>
+      <label class="f">Which Polymarket do you use?<select id="pmKind"><option value="us">Polymarket US (the US app)</option><option value="global">Polymarket.com (crypto wallet)</option></select></label>
+      <div id="pmUsBox" style="display:flex;flex-direction:column;gap:10px">
+        <p>Create a key at <b>polymarket.us/developer</b>. Sign in the same way you do in the app, tap create key, and copy both values. The secret key is only shown once.</p>
+        <p><b>Your key stays on this phone.</b> It isn't sent to your friends or to the group database. This app only uses it to read your positions and never places trades. If you ever want to cut off access, delete the key on polymarket.us/developer.</p>
+        <label class="f">Key ID<input id="pmKeyId" autocomplete="off" spellcheck="false" placeholder="xxxxxxxx-xxxx-…"></label>
+        <label class="f">Secret key<input id="pmSecret" type="password" autocomplete="off" spellcheck="false" placeholder="Paste the secret key"></label>
+      </div>
+      <div id="pmGlobalBox" hidden style="display:flex;flex-direction:column;gap:10px">
+        <p>Paste your wallet address from your Polymarket.com profile. It starts with 0x. It's public and read-only.</p>
+        <label class="f">Wallet address<input id="polyAddr" autocomplete="off" spellcheck="false" placeholder="0x…"></label>
+      </div>
       <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--muted)"><input type="checkbox" id="polyAll" style="width:auto"> Also import non-sports markets</label>
       <div class="row-end">
         <button type="button" class="ghost" id="polyDisconnect">Disconnect</button>
@@ -436,7 +445,7 @@ function findPlayer(players,name){
 // Evaluate one leg. Returns {cur, result ("won"/"lost"/"push"/undefined), locked, ...}
 function evaluateLeg(leg, game, players){
   const st={game, live:game?.state==="in", final:!!game?.final, cur:null};
-  if(leg.kind==="poly"){ st.poly=true; return st; }
+  if(leg.kind==="poly"||leg.kind==="pmus"){ st.poly=true; return st; }
   if(leg.kind==="manual" || sportOf(leg.league)==="other"){ st.missing="Mark this leg by hand"; return st; }
   if(!game){ st.missing="Finding the game"; return st; }
   if(leg.kind==="prop"){
@@ -540,7 +549,7 @@ function polySlugs(league, g){
 }
 // Polymarket market slug -> category
 function polyCategory(slug){
-  const s=String(slug||"").toLowerCase();
+  const s=String(slug||"").toLowerCase().replace(/^[a-z]{2,4}-(?=(nba|wnba|cbb|ncaab|ncaa|nfl|cfb|ncaaf|mlb|nhl|epl|ucl|uel|mls|atp|wta|ufc|f1|lal|sea|bun|fl1)-)/,"");
   if(/^(nba|wnba|cbb|ncaab|euroleague)-/.test(s)) return "Basketball";
   if(/^(nfl|cfb|ncaaf)-/.test(s)) return "Football";
   if(/^mlb-/.test(s)) return "Baseball";
@@ -636,6 +645,7 @@ if(typeof module!=="undefined") module.exports={amToDec,decToAm,valueSides,build
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.3/nacl-fast.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js" defer></script>
 <script>
 /* ===== App ===== */
@@ -671,7 +681,7 @@ function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
   gref().collection("members").doc(uid).set({name:me.name, joinedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(()=>{});
-  unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); $("#polyBtn").textContent=members[uid]?.polyAddress?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); }, e=>note("Couldn't load your group: "+e.message)));
+  unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
   unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(400).onSnapshot(s=>{
     slips=s.docs.map(d=>({id:d.id,...d.data()}));
     renderAll(); refresh();
@@ -802,22 +812,22 @@ function legBet(l){
   if(l.kind==="manual") return esc(l.market||"");
   return `<b>${esc(l.team)}</b> to win`;
 }
-const legTitle=l=> l.kind==="poly"? l.team : l.kind==="prop"? l.player : l.kind==="total"||l.kind==="draw" ? ([l.team,l.opponent].filter(Boolean).join(" vs ")||"Game") : l.kind==="manual" ? (l.player||l.team||"Other bet") : l.team;
+const legTitle=l=> (l.kind==="poly"||l.kind==="pmus")? l.team : l.kind==="prop"? l.player : l.kind==="total"||l.kind==="draw" ? ([l.team,l.opponent].filter(Boolean).join(" vs ")||"Game") : l.kind==="manual" ? (l.player||l.team||"Other bet") : l.team;
 function polyLegHTML(s,l){
-  const live=polyLive[l.key+"_"+s.uid];
+  const live= l.kind==="pmus" ? (s.liveValue!=null?{currentValue:s.liveValue,cashPnl:s.livePnl||0}:null) : polyLive[l.key+"_"+s.uid];
   const res=l.result||(s.status!=="open"?s.status:null);
-  const price= live? live.curPrice : null;
+  const price= live&&live.curPrice!=null? live.curPrice : null;
   const pill = res==="won"?["won","Won"]:res==="lost"?["lost","Lost"]:res==="push"?["wait","Even"]:["live","Open"];
   const val = live? `Worth ${money(live.currentValue)} now (${live.cashPnl>=0?"+":""}${money(live.cashPnl)})` : (s.status==="open"?"Live price loads when the owner's address is connected":"");
   return `<div class="leg ${res||""}">
     <div class="leg-top"><div><div class="leg-name">${esc(l.team)}</div><div class="leg-bet">${esc(l.market||"")}</div></div>
     ${price!=null&&!res?`<div class="leg-num"><div class="cur">${Math.round(price*100)}¢</div><div class="of">chance now</div></div>`:""}</div>
     ${price!=null&&!res?`<div class="bar" aria-hidden="true"><div class="fill" style="width:${(price*100).toFixed(1)}%"></div></div>`:""}
-    <div class="meta"><span class="pill ${pill[0]}">${pill[1]}</span><span>Polymarket · ${esc(l.cat||"Other")}</span>${val?`<span>${esc(val)}</span>`:""}<span class="sp"></span>${l.slug?`<a href="https://polymarket.com/event/${encodeURIComponent(l.slug)}" target="_blank" rel="noopener">Market</a>`:""}</div>
+    <div class="meta"><span class="pill ${pill[0]}">${pill[1]}</span><span>${l.kind==="pmus"?"Polymarket US":"Polymarket"} · ${esc(l.cat||"Other")}</span>${val?`<span>${esc(val)}</span>`:""}<span class="sp"></span>${l.slug&&l.kind==="poly"?`<a href="https://polymarket.com/event/${encodeURIComponent(l.slug)}" target="_blank" rel="noopener">Market</a>`:""}</div>
   </div>`;
 }
 function legHTML(s,l,i){
-  if(l.kind==="poly") return polyLegHTML(s,l);
+  if(l.kind==="poly"||l.kind==="pmus") return polyLegHTML(s,l);
   const st = l.result ? {...evaluateLeg(l,gameOf(l),boxes[l.gameId]), result:l.result, cur: (evaluateLeg(l,gameOf(l),boxes[l.gameId]).cur ?? l.final ?? null)} : evaluateLeg(l,gameOf(l),boxes[l.gameId]);
   const res=st.result;
   const pill = res==="won"?["won","Hit"]:res==="lost"?["lost","Miss"]:res==="push"?["wait","Void"]:st.live?["live","Live"]:["wait","Pending"];
@@ -846,7 +856,7 @@ function slipHTML(s){
       <div class="money">${s.stake?`<b>${money(+s.stake)}</b>`:""}${s.payout?` → <b>${money(+s.payout)}</b>`:""}${s.odds?` · ${esc(s.odds)}`:""}</div>
       <span class="pill ${label[0]}">${label[1]}</span></div>
     <div class="legs">${s.legs.map((l,i)=>legHTML(s,l,i)).join("")}</div>
-    ${mine&&s.source!=="polymarket"?`<div class="slip-f"><button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
+    ${mine&&s.source!=="polymarket"&&s.source!=="pmus"?`<div class="slip-f"><button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
   </article>`;
 }
 function renderLive(){
@@ -998,9 +1008,23 @@ $("#parlayList").addEventListener("click",e=>{
 /* ---------- Polymarket ---------- */
 const polyLive={}; // key -> live position
 const polyKey=(cid,idx)=>String(cid).slice(2,14)+"_"+idx;
-$("#polyBtn").onclick=()=>{ const m=members[uid]||{}; $("#polyAddr").value=m.polyAddress||""; $("#polyAll").checked=!!m.polyAll; $("#polyPanel").hidden=false; };
+const pmShow=()=>{ const us=$("#pmKind").value==="us"; $("#pmUsBox").hidden=!us; $("#pmGlobalBox").hidden=us; if(us) $("#pmUsBox").style.display="flex"; else $("#pmGlobalBox").style.display="flex"; };
+$("#pmKind").addEventListener("change",pmShow);
+$("#polyBtn").onclick=()=>{ const m=members[uid]||{}; const k=ls.get(KEY+".pmus",null);
+  $("#pmKind").value = m.polyAddress&&!k ? "global" : "us"; $("#polyAddr").value=m.polyAddress||""; $("#pmKeyId").value=k?.keyId||""; $("#pmSecret").value=k?"••••••••":"";
+  $("#polyAll").checked=!!m.polyAll; pmShow(); $("#polyPanel").hidden=false; };
 $("#polyCancel").onclick=()=>$("#polyPanel").hidden=true;
 $("#polySave").onclick=async()=>{
+  if($("#pmKind").value==="us"){
+    const keyId=$("#pmKeyId").value.trim(); let secret=$("#pmSecret").value.trim();
+    const prev=ls.get(KEY+".pmus",null); if(secret.startsWith("••") && prev) secret=prev.secret;
+    if(!keyId || !secret){ note("Add both the Key ID and the secret key from polymarket.us/developer."); return; }
+    try{ await pmusGet("/v1/portfolio/positions",{keyId,secret}); }
+    catch(e){ note(e.message==="401"?"Polymarket US didn't accept that key. Check you copied the Key ID and the full secret key.":"Couldn't reach Polymarket US: "+e.message); return; }
+    ls.set(KEY+".pmus",{keyId,secret});
+    await gref().collection("members").doc(uid).set({pmus:true, polyAll:$("#polyAll").checked},{merge:true});
+    note(); $("#polyPanel").hidden=true; syncPmus(true); return;
+  }
   const m=$("#polyAddr").value.match(/0x[a-fA-F0-9]{40}/);
   if(!m){ note("That doesn't look like a Polymarket wallet address. It starts with 0x and has 42 characters."); return; }
   try{
@@ -1010,7 +1034,57 @@ $("#polySave").onclick=async()=>{
   await gref().collection("members").doc(uid).set({polyAddress:m[0].toLowerCase(), polyAll:$("#polyAll").checked},{merge:true});
   note(); $("#polyPanel").hidden=true; syncPoly(true);
 };
-$("#polyDisconnect").onclick=async()=>{ await gref().collection("members").doc(uid).set({polyAddress:null},{merge:true}); $("#polyPanel").hidden=true; };
+$("#polyDisconnect").onclick=async()=>{ try{localStorage.removeItem(KEY+".pmus")}catch{} await gref().collection("members").doc(uid).set({polyAddress:null,pmus:false},{merge:true}); $("#polyPanel").hidden=true; };
+
+/* ---- Polymarket US (signed, key stays on this device) ---- */
+const b64d=b=>Uint8Array.from(atob(b.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
+const b64e=u=>btoa(String.fromCharCode(...u));
+async function pmusGet(path, key){
+  if(!window.nacl) throw new Error("signing library didn't load");
+  const seed=b64d(key.secret).slice(0,32); if(seed.length!==32) throw new Error("401");
+  const kp=nacl.sign.keyPair.fromSeed(seed);
+  const ts=String(Date.now());
+  const sig=b64e(nacl.sign.detached(new TextEncoder().encode(ts+"GET"+path), kp.secretKey));
+  const r=await fetch("https://api.polymarket.us"+path,{headers:{"X-PM-Access-Key":key.keyId,"X-PM-Timestamp":ts,"X-PM-Signature":sig}});
+  if(r.status===401||r.status===403) throw new Error("401");
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+let pmusBusy=false, pmusLast=0;
+async function syncPmus(force){
+  const key=ls.get(KEY+".pmus",null); if(!key || pmusBusy || (!force && Date.now()-pmusLast<60000)) return;
+  pmusBusy=true; pmusLast=Date.now();
+  try{
+    const res=await pmusGet("/v1/portfolio/positions",key);
+    const all=!!members[uid]?.polyAll;
+    const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="pmus").map(s=>[s.id,s]));
+    for(const [slug,p] of Object.entries(res.positions||{})){
+      const md=p.marketMetadata||{}; const cat=polyCategory(md.eventSlug||slug);
+      if(!cat && !all) continue;
+      const net=Number(p.netPositionDecimal ?? p.netPosition ?? 0), sold=Number(p.qtySoldDecimal ?? p.qtySold ?? 0);
+      const cost=Math.abs(Number(p.cost?.value||0)), realized=Number(p.realized?.value||0), upnl=Number(p.cashValue?.value||0);
+      const id=("pu_"+uid.slice(0,8)+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,140);
+      const settled = p.expired || (net===0 && sold>0);
+      const pnl=Math.round(realized*100)/100;
+      const status = settled ? (pnl>0?"won":pnl<0?"lost":"push") : "open";
+      const leg={league:"other", kind:"pmus", cat:cat||"Other", team:(net<0?"No: ":"")+(md.outcome||"Yes"), market:md.title||slug, slug:md.eventSlug||slug, result: status==="open"?null:status};
+      const ex=have.get(id);
+      const live={liveValue:Math.round((cost+upnl)*100)/100, livePnl:Math.round(upnl*100)/100};
+      if(!ex){
+        if(net===0 && !settled) continue;
+        await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100, payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100,
+          odds:null, status, pnl: status==="open"?null:pnl, legs:[leg], ...live, ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
+      } else if(ex.status==="open" && status!=="open"){
+        await col.doc(id).update({status, pnl, legs:[leg], settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
+      } else if(ex.status==="open" && Math.abs((ex.liveValue||0)-live.liveValue)>=0.5){
+        await col.doc(id).update(live).catch(()=>{});
+      }
+    }
+    note();
+  }catch(e){ if(e.message==="401") note("Polymarket US stopped accepting your key. Reconnect it from “Connect Polymarket”."); }
+  finally{ pmusBusy=false; renderAll(); }
+}
+setInterval(()=>{ if(!document.hidden && db && me) syncPmus(false); },20000);
 let polyBusy=false, polyLast=0;
 async function syncPoly(force){
   if(polyBusy || (!force && Date.now()-polyLast<55000)) return; polyBusy=true; polyLast=Date.now();
