@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-e3FlvcZ74frdlC55WWZhrL3eVV89A0b9ZBi4vRhn3dQ=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-MTFC0ONF1jW/0EuE/GJC3Mx6Oo2A6JU6lBaAIc09ZZE=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2348,16 +2348,17 @@ async function pmEventForGame(lg,g){
 }
 function propFromMarket(m){
   if(!/player/.test(String(m.sportsMarketType||"")) || m.closed || m.active===false) return null;
+  if(m.status && !/OPEN/i.test(String(m.status))) return null;   // only markets open for trading
   const mk={slug:m.slug,q:m.question||"",short:m.titleShort||m.title||"",title:m.title||"",line:m.line!=null?Number(m.line):null,type:String(m.sportsMarketType||"").toLowerCase(),
     sides:(m.marketSides||[]).map(x=>({d:x.description||"",long:!!x.long,team:"",teamName:""}))};
   const leg=pmToLeg(mk,"SIDE_BUY",m.title); if(leg.kind!=="prop") return null;
   const yes=(m.marketSides||[]).find(x=>x.long), no=(m.marketSides||[]).find(x=>!x.long);
-  // quote = what it costs to buy that side right now (the ask); price = the bid
-  const bidY=Number(yes?.price), bidN=Number(no?.price);
-  let py=Number(yes?.quote?.value); if(!(py>0&&py<1)) py= bidN>0&&bidN<1? 1-bidN : NaN;
-  let pn=Number(no?.quote?.value);  if(!(pn>0&&pn<1)) pn= bidY>0&&bidY<1? 1-bidY : NaN;
-  if(!(py>0&&py<1)) return null;
-  const spread=(py+(pn>0?pn:1-py))-1;
+  // quote = what it costs to buy that side right now (the ask). A side only counts if Polymarket lets you trade it and someone is selling.
+  const canBuy=side=> side && side.tradable!==false && Number(side.quote?.value)>0 && Number(side.quote?.value)<1;
+  const py= canBuy(yes)? Number(yes.quote.value) : NaN;
+  const pn= canBuy(no)?  Number(no.quote.value)  : NaN;
+  if(!(py>0) && !(pn>0)) return null;
+  const spread= py>0&&pn>0 ? (py+pn)-1 : (py>0? py-Number(yes?.price||0) : pn-Number(no?.price||0));
   return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, wide:spread>0.12};
 }
 async function scanTrends(lgArg){
@@ -2392,8 +2393,9 @@ async function scanTrends(lgArg){
       const mk=marketFor(lg,p.market); if(!mk) continue;
       const over=lineStats(log,mk.keys,Number(p.line),"over"), under=lineStats(log,mk.keys,Number(p.line),"under");
       if(over.p==null) continue;
-      const eo=over.p-p.pYes, eu=(under.p!=null&&p.pNo>0)? under.p-p.pNo : -1;
-      const pickUnder= eu>eo && eu>0.05;
+      const eo= p.pYes>0 ? over.p-p.pYes : -1, eu=(under.p!=null&&p.pNo>0)? under.p-p.pNo : -1;
+      if(eo===-1 && eu===-1) continue;
+      const pickUnder= p.pYes>0 ? (eu>eo && eu>0.05) : true;   // only offer a side Polymarket will actually sell
       const S=pickUnder?under:over, price=pickUnder?p.pNo:p.pYes;
       const inj=injFor(lg,p.player);
       const teamOut=injData? (injData.byTeam.get(String(p.game.teams.find(t=>t.abbr===p.ath.team)?.id))?.list||[]).filter(o=>o.cls==="out"&&!sameName(o.name,p.player)).map(o=>o.name) : [];
