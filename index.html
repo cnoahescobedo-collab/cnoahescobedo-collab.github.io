@@ -1361,7 +1361,7 @@ function pmToLeg(mkt, side, fallbackTitle){
   return {...base, league:info.league, cat:catOf(info.league)};
 }
 // Signed GET with a query string: try signing the full path, then the bare path; remember which works.
-let pmSignMode=ls.get(KEY+".pmSign","full");
+let pmSignMode=ls.get(KEY+".pmSign","bare");
 async function pmusQ(base, query, key){
   const full=base+(query?"?"+query:"");
   if(!query) return pmusGet(base,key);
@@ -1434,11 +1434,36 @@ async function pmBackfill(force){
       x.settled = x.resolved || !p || net===0 || !!p?.expired;
       if(p && !x.settled){ x.stake=Math.max(x.stake, Math.abs(amt(p.cost))); }
       x.title = x.title || p?.marketMetadata?.title || "";
-      x.cat = polyCategory(x.slug) || "Other";
+      x.cat = /^(crossd|caoc)-/i.test(x.slug) ? "Parlays" : (polyCategory(x.slug) || "Other");
       x.pnl=Math.round(x.pnl*100)/100; x.stake=Math.round(x.stake*100)/100;
       hist[x.slug]={stake:x.stake,pnl:x.pnl,t:x.t,settled:x.settled,cat:x.cat,title:x.title};
     }
     ls.set(KEY+".pmhist",hist); ls.set(KEY+".pmhistAt",Date.now());
+    // Money in vs. money now: deposits/withdrawals + current cash + open positions
+    try{
+      const flow={dep:0,wd:0,bonus:0,xfer:0,pendingDep:0,cash:null,open:0,at:Date.now()}; let c2="";
+      for(let i=0;i<20;i++){
+        const q="limit=100&types=ACTIVITY_TYPE_ACCOUNT_DEPOSIT&types=ACTIVITY_TYPE_ACCOUNT_ADVANCED_DEPOSIT&types=ACTIVITY_TYPE_ACCOUNT_WITHDRAWAL&types=ACTIVITY_TYPE_REFERRAL_BONUS&types=ACTIVITY_TYPE_TRANSFER"+(c2?"&cursor="+encodeURIComponent(c2):"");
+        const r=await pmusQ("/v1/portfolio/activities", q, key);
+        for(const a of r.activities||[]){
+          const ch=a.accountBalanceChange||{}; const txs=ch.transactions || (ch.amount?[ch]:[]);
+          for(const t of txs){
+            const st=String(t.status||""); if(/REJECTED/.test(st)) continue;
+            const v=amt(t.amount);
+            if(a.type==="ACTIVITY_TYPE_ACCOUNT_WITHDRAWAL") flow.wd+=Math.abs(v);
+            else if(a.type==="ACTIVITY_TYPE_REFERRAL_BONUS") flow.bonus+=Math.abs(v);
+            else if(a.type==="ACTIVITY_TYPE_TRANSFER") flow.xfer+=v;
+            else { if(/PENDING/.test(st)) flow.pendingDep+=Math.abs(v); else flow.dep+=Math.abs(v); }
+          }
+        }
+        if(r.eof || !r.nextCursor || r.nextCursor===c2) break; c2=r.nextCursor;
+      }
+      const b=await pmusGet("/v1/account/balances",key).catch(()=>null);
+      const bal=(b?.balances||[]).find(x=>!x.currency||/USD/i.test(x.currency))||b?.balances?.[0];
+      if(bal) flow.cash=Number(bal.currentBalance)||0;
+      for(const p of Object.values(pos)){ const net=Number(p.netPositionDecimal ?? p.netPosition ?? 0); if(!net||p.expired) continue; flow.open+=Math.abs(amt(p.cost))+amt(p.cashValue); }
+      ls.set(KEY+".pmflow",flow);
+    }catch(e){ ls.set(KEY+".pmflowErr",String(e.message||e)); }
     // Create slips for settled markets the group hasn't seen yet
     const all=!!members[uid]?.polyAll; const col=gref().collection("slips");
     const known=new Set(slips.filter(s=>s.source==="pmus").map(s=>s.id));
@@ -1628,6 +1653,13 @@ function renderMe(){
       + statCard("Record",`${w}-${l}`, w+l?Math.round(w/(w+l)*100)+"% of markets won":"")
       + statCard("Total won",signed(won),"Profit from winners","pos") + statCard("Total lost",money(lost),"From losers","neg")
       + statCard("Staked",money(staked), staked?"ROI "+Math.round(net/staked*100)+"%":"") + statCard("Open now",String(open.length), money(open.reduce((m,x)=>m+x.stake,0))+" in play");
+    const f=ls.get(KEY+".pmflow",null);
+    if(f && f.cash!=null){
+      const now=f.cash+f.open, inn=f.dep-f.wd, truth=now-inn-f.bonus-f.xfer;
+      $("#meAccount").innerHTML += `<div class="cat" style="grid-column:1/-1"><span class="k">True result (money in vs. money now)</span><span class="v ${truth>0?"pos":truth<0?"neg":""}">${signed(truth)}</span>
+        <span class="s">Deposited ${money(f.dep)}${f.wd?` · withdrew ${money(f.wd)}`:""}${f.bonus?` · bonuses ${money(f.bonus)}`:""} · cash now ${money(f.cash)} + open bets ${money(f.open)}${f.pendingDep?` · ${money(f.pendingDep)} deposit still pending`:""}.
+        ${Math.abs(truth-net)>=1?`The market-by-market total above is ${money(Math.abs(truth-net))} ${truth>net?"lower":"higher"} — this line is the one that matches your bank.`:"Matches the market-by-market total."}</span></div>`;
+    }
     const byCat=new Map(); rows.forEach(x=>{ const c=x.cat||"Other"; if(!byCat.has(c)) byCat.set(c,{w:0,l:0,pnl:0,stake:0}); const t=byCat.get(c); if(x.pnl>0.004) t.w++; else if(x.pnl<-0.004) t.l++; t.pnl+=x.pnl; t.stake+=x.stake; });
     $("#meAccountCats").innerHTML = `<thead><tr><th>Sport</th><th>Record</th><th>Staked</th><th>Net</th></tr></thead><tbody>`+
       [...byCat].sort((a,b)=>b[1].pnl-a[1].pnl).map(([c,t])=>`<tr><td>${esc(c)}</td><td>${t.w}-${t.l}</td><td>${money(t.stake)}</td><td class="${t.pnl>0?"pos":t.pnl<0?"neg":""}">${signed(t.pnl)}</td></tr>`).join("")+"</tbody>";
