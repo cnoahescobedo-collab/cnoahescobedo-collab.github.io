@@ -736,7 +736,12 @@ $("#histCat").addEventListener("click",e=>{const k=e.target.dataset.cat; if(k==n
 $("#boardWho").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==null) return; boardWho=k; renderBoard();});
 
 /* ---------- Live data from ESPN ---------- */
-async function loadBoard(lg){ if(!LEAGUES[lg]?.path) return []; const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard"); boards[lg]=gamesFromBoard(lg,d); return boards[lg]; }
+async function loadBoard(lg,date){
+  if(!LEAGUES[lg]?.path) return [];
+  const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard"+(date?"?dates="+date.replace(/-/g,""):""));
+  const fresh=gamesFromBoard(lg,d); const ids=new Set(fresh.map(g=>g.id));
+  boards[lg]=[...fresh, ...(boards[lg]||[]).filter(g=>!ids.has(g.id))]; return boards[lg];
+}
 async function loadBox(lg,id){ const d=await getJSON(ESPN+LEAGUES[lg].path+"/summary?event="+id); boxes[id]=boxPlayers(d); return boxes[id]; }
 const gameOf = l => (boards[l.league]||[]).find(g=>g.id===l.gameId)||null;
 
@@ -748,6 +753,9 @@ async function refresh(){
   try{
     const lgs=[...new Set(open.flatMap(s=>s.legs.filter(l=>!l.result).map(l=>l.league)))].filter(l=>LEAGUES[l]?.path);
     await Promise.all(lgs.map(l=>loadBoard(l).catch(()=>null)));
+    const today=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});
+    const dated=new Set(open.flatMap(s=>s.legs.filter(l=>!l.result&&l.date&&l.date!==today&&LEAGUES[l.league]?.path).map(l=>l.league+"|"+l.date)));
+    await Promise.all([...dated].map(k=>{const [lg,dt]=k.split("|"); return loadBoard(lg,dt).catch(()=>null);}));
     // attach games to legs that don't have one yet
     for(const s of open){
       let changed=false;
@@ -755,6 +763,8 @@ async function refresh(){
         if(l.result || l.gameId || !LEAGUES[l.league]?.path) continue;
         const games=boards[l.league]||[];
         let g=null;
+        if(l.abbrA&&l.abbrH){ const has=(x,a)=>x.teams.some(t=>String(t.abbr||"").toLowerCase()===a); g=games.find(x=>has(x,l.abbrA)&&has(x,l.abbrH))||null; }
+        if(g){ l.gameId=g.id; changed=true; continue; }
         if(l.kind==="prop"){
           const t=l.team; const hint=t?games.find(x=>teamMatch(x,t)):null;
           for(const cand of (hint?[hint,...games.filter(x=>x!==hint)]:games).filter(x=>x.state!=="pre")){
@@ -841,6 +851,7 @@ function legHTML(s,l,i){
     <div class="leg-top"><div><div class="leg-name">${esc(legTitle(l))}</div><div class="leg-bet">${legBet(l)}</div></div>
     ${l.kind!=="manual"?`<div class="leg-num"><div class="cur">${cur}</div><div class="of">${of}</div></div>`:""}</div>
     ${st.cur!=null&&st.pct!=null?`<div class="bar" aria-hidden="true"><div class="fill" style="width:${(st.pct*100).toFixed(1)}%"></div>${st.tick?`<div class="tick" style="left:${st.tick*100}%"></div>`:""}</div>`:""}
+    ${l.raw&&l.kind!=="pmus"&&l.kind!=="moneyline"?`<div class="statline">Polymarket: ${esc(l.raw.length>90?l.raw.slice(0,88)+"…":l.raw)}</div>`:""}
     ${st.detail?`<div class="statline">${esc(st.detail)}${st.pace!=null&&!res?` · on pace for ${st.pace.toFixed(1)}`:""}</div>`:""}
     <div class="meta"><span class="pill ${pill[0]}">${pill[1]}</span><span>${esc(lg?.label||"")}</span>${g?`<span>${esc(g.detail||"")}</span>`:""}${!res&&st.missing?`<span>${esc(st.missing)}</span>`:""}<span class="sp"></span>${manual}${espn?`<a href="${espn}" target="_blank" rel="noopener">ESPN</a>`:""}</div>
   </div>`;
@@ -1066,6 +1077,71 @@ async function pmusGet(path, key){
   return r.json();
 }
 let pmusBusy=false, pmusLast=0;
+const PM_LEAGUE={nba:"nba",wnba:"wnba",nfl:"nfl",cfb:"ncaafb",ncaaf:"ncaafb",cbb:"ncaamb",ncaab:"ncaamb",mlb:"mlb",nhl:"nhl",epl:"epl",ucl:"ucl",mls:"mls",lal:"laliga",laliga:"laliga",sea:"seriea",bun:"bund",fl1:"ligue1",mex:"ligamx",atp:"atp",wta:"wta"};
+function pmSlugInfo(slug){
+  const m=String(slug||"").toLowerCase().match(/^(?:[a-z0-9]{2,5}-)?(nba|wnba|nfl|cfb|ncaaf|cbb|ncaab|mlb|nhl|epl|ucl|mls|lal|laliga|sea|bun|fl1|mex|atp|wta)-([a-z0-9]+)-([a-z0-9]+)-(\d{4}-\d{2}-\d{2})/);
+  return m?{league:PM_LEAGUE[m[1]], a:m[2], h:m[3], date:m[4]}:null;
+}
+async function pmMarket(sym){
+  const ck=KEY+".mkt."+sym; const c=ls.get(ck,null); if(c) return c;
+  const r=await getJSON("https://gateway.polymarket.us/v1/market/slug/"+encodeURIComponent(sym)).catch(()=>null);
+  const m=r?.market||r; if(!m || !m.slug) return null;
+  const out={slug:m.slug, q:m.question||"", short:m.titleShort||m.title||"", type:String(m.sportsMarketType||m.sportsMarketTypeV2||m.marketType||"").toLowerCase(),
+    sides:(m.marketSides||[]).map(x=>({d:x.description||"", long:!!x.long, team:(x.team?.abbreviation||"").toLowerCase(), teamName:x.team?.safeName||x.team?.name||""}))};
+  ls.set(ck,out); return out;
+}
+async function pmComboLegs(sym,key){
+  const ck=KEY+".combo."+sym; const c=ls.get(ck,null); if(c) return c;
+  let r=null;
+  for(const path of ["/v1/combos?symbol="+encodeURIComponent(sym), "/v1/combos"]){
+    try{ r = path==="/v1/combos" ? await pmusGetSigned("/v1/combos","/v1/combos?symbol="+encodeURIComponent(sym),key) : await pmusGet(path,key); break; }catch(e){ if(e.message!=="401") break; }
+  }
+  const legs=r?.combos?.[0]?.legs?.map(l=>({symbol:l.symbol, side:l.side})) || null;
+  if(legs) ls.set(ck,legs); return legs;
+}
+async function pmusGetSigned(signPath, fetchPath, key){
+  const seed=pmSeed(key.secret); const kp=nacl.sign.keyPair.fromSeed(seed); const ts=String(Date.now());
+  const sig=b64e(nacl.sign.detached(new TextEncoder().encode(ts+"GET"+signPath), kp.secretKey));
+  const r=await fetch("https://api.polymarket.us"+fetchPath,{headers:{"X-PM-Access-Key":String(key.keyId).replace(/[\s"'`]/g,""),"X-PM-Timestamp":ts,"X-PM-Signature":sig}});
+  if(!r.ok){ const e=new Error(r.status===401||r.status===403?"401":"HTTP "+r.status); throw e; }
+  return r.json();
+}
+// Turn one Polymarket market + side into a tracker leg (ESPN-trackable when possible).
+function pmToLeg(mkt, side, fallbackTitle){
+  const info=pmSlugInfo(mkt?.slug);
+  const sides=mkt?.sides||[]; const buy=side!=="SIDE_SELL";
+  const yes=sides.find(x=>x.long)||sides[0]; const no=sides.find(x=>!x.long)||sides[1];
+  const picked= buy? yes : (no||{d:"No "+(yes?.d||"")});
+  const title=(mkt?.short||mkt?.q||fallbackTitle||"").trim();
+  const text=[...new Set([mkt?.short||mkt?.q, picked?.d].filter(Boolean))].join(" · ");
+  const type=mkt?.type||"";
+  const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw:text, result:null};
+  if(!info || !LEAGUES[info.league]) return base;
+  const low=[mkt?.short, mkt?.q, picked?.d].filter(Boolean).join(" · ").toLowerCase();
+  const g={league:info.league, abbrA:info.a, abbrH:info.h, date:info.date, raw:text, result:null, gameId:null};
+  const num=(low.match(/([+\-−]?\d+(?:\.\d+)?)\s*\+?/)||[])[1];
+  const isOver = /\bover\b|\bo\s?\d/.test((picked?.d||"").toLowerCase()) || (!/\bunder\b/.test((picked?.d||"").toLowerCase()) && buy);
+  const teamName = picked?.teamName || picked?.d;
+  const mk=marketFor(info.league, low);
+  const hasPlayer = /player|prop/.test(type) || (mk && !/total|spread|winner|moneyline/.test(type) && /[A-Z][a-z]+ [A-Z][a-z]+/.test(mkt?.short||mkt?.q||""));
+  if(/winner|moneyline/.test(type) || (!num && picked?.team && !hasPlayer)){
+    return {...g, kind:"moneyline", team: buy? (yes?.teamName||yes?.d) : (no?.teamName||no?.d)};
+  }
+  if(/spread/.test(type) || (picked?.team && /[+\-−]\d/.test(low) && !hasPlayer)){
+    const ln=Number(String((low.match(/([+\-−]\d+(?:\.\d+)?)/)||[])[1]||0).replace("−","-"));
+    return {...g, kind:"spread", team:teamName, line:ln, side:"over"};
+  }
+  if(hasPlayer && mk){
+    const src=(mkt?.short||mkt?.q||"");
+    const nm=(src.match(/([A-Z][a-zA-Z.'’\-]+(?:\s+[A-Z][a-zA-Z.'’\-]+){1,2})/)||[])[1]||"";
+    let line=num!=null?Number(String(num).replace("−","-")):null; if(line!=null && /\d\+/.test(low) && !String(num).includes(".")) line-=0.5;
+    return {...g, kind:"prop", player:nm, market:mk.label, line, side:isOver?"over":"under"};
+  }
+  if(/total|over|under/.test(type+" "+low) && num!=null){
+    return {...g, kind:"total", team:null, line:Number(String(num).replace("−","-")), side:isOver?"over":"under"};
+  }
+  return {...base, league:info.league, cat:catOf(info.league)};
+}
 async function syncPmus(force){
   const key=ls.get(KEY+".pmus",null); if(!key || pmusBusy || (!force && Date.now()-pmusLast<60000)) return;
   pmusBusy=true; pmusLast=Date.now();
@@ -1074,23 +1150,42 @@ async function syncPmus(force){
     const all=!!members[uid]?.polyAll;
     const col=gref().collection("slips"); const have=new Map(slips.filter(s=>s.source==="pmus").map(s=>[s.id,s]));
     for(const [slug,p] of Object.entries(res.positions||{})){
-      const md=p.marketMetadata||{}; const cat=polyCategory(md.eventSlug||slug);
-      if(!cat && !all) continue;
+      const md=p.marketMetadata||{};
       const net=Number(p.netPositionDecimal ?? p.netPosition ?? 0), sold=Number(p.qtySoldDecimal ?? p.qtySold ?? 0);
       const cost=Math.abs(Number(p.cost?.value||0)), realized=Number(p.realized?.value||0), upnl=Number(p.cashValue?.value||0);
       const id=("pu_"+uid.slice(0,8)+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,140);
       const settled = p.expired || (net===0 && sold>0);
       const pnl=Math.round(realized*100)/100;
       const status = settled ? (pnl>0?"won":pnl<0?"lost":"push") : "open";
-      const leg={league:"other", kind:"pmus", cat:cat||"Other", team:(net<0?"No: ":"")+(md.outcome||"Yes"), market:md.title||slug, slug:md.eventSlug||slug, result: status==="open"?null:status};
-      const ex=have.get(id);
       const live={liveValue:Math.round((cost+upnl)*100)/100, livePnl:Math.round(upnl*100)/100};
+      const ex=have.get(id);
+      const buildLegs=async()=>{
+        let legs=null; const isCombo=/^(crossd|caoc)-/i.test(slug);
+        if(isCombo){
+          const cl=await pmComboLegs(slug,key);
+          if(cl) legs=await Promise.all(cl.map(async l=>pmToLeg(await pmMarket(l.symbol), net<0?(l.side==="SIDE_BUY"?"SIDE_SELL":"SIDE_BUY"):l.side, l.symbol)));
+        } else {
+          const mk=await pmMarket(slug);
+          legs=[pmToLeg(mk||{slug, short:md.title, q:md.title, sides:[{d:md.outcome||"Yes",long:true}]}, net<0?"SIDE_SELL":"SIDE_BUY", md.title)];
+        }
+        if(!legs) legs=[{league:"other",kind:"pmus",cat:"Other",team:"Yes",market:md.title||"Combo",slug,result:null}];
+        return legs;
+      };
+      const goodLegs=l=>l.length>1||l[0]?.kind!=="pmus"||!/^(crossd|caoc)-/i.test(slug);
+      if(ex && (ex.legsV||0)<2 && ex.status==="open"){
+        const legs=await buildLegs(); await col.doc(id).update({legs, legsV:goodLegs(legs)?2:1}).catch(()=>{}); continue;
+      }
       if(!ex){
         if(net===0 && !settled) continue;
-        await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100, payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100,
-          odds:null, status, pnl: status==="open"?null:pnl, legs:[leg], ...live, ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
-      } else if(ex.status==="open" && status!=="open"){
-        await col.doc(id).update({status, pnl, legs:[leg], settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
+        let legs=await buildLegs();
+        const sportsy=legs.some(l=>l.kind!=="pmus"||l.cat!=="Other");
+        if(!sportsy && !all) continue;
+        if(status!=="open") legs=legs.map(l=>({...l,result:l.result||status}));
+        await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100,
+          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?2:1, ...live,
+          ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
+      } else if(status!=="open" && (ex.status==="open" || ex.pnl!==pnl)){
+        await col.doc(id).update({status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
       } else if(ex.status==="open" && Math.abs((ex.liveValue||0)-live.liveValue)>=0.5){
         await col.doc(id).update(live).catch(()=>{});
       }
