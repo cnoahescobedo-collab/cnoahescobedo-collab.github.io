@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-9CzZWMhUBzKIdcaTCLVod6GbBK4HRn+15bosdCioKNw=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-jlIebp+AMIMajE+47WWFCHODrtuSccIlyziecRLudtA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -133,6 +133,13 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .inj .nm{font-weight:600}.inj .cm{grid-column:2;color:var(--muted);font-size:12.5px}
 .head{font-size:13.5px;display:block;padding:4px 0;color:inherit;text-decoration:none}.head:hover{text-decoration:underline}.head small{color:var(--muted)}.head.flag{border-left:3px solid #d97706;padding-left:8px}
 .injbadge{display:inline-block;font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;margin-left:6px;vertical-align:middle}
+.modal-bg{position:fixed;inset:0;background:rgba(10,14,20,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:16px}
+@media(min-width:640px){.modal-bg{align-items:center}}
+.modal{background:var(--surface);color:var(--ink);border-radius:18px;max-width:520px;width:100%;max-height:85vh;overflow:auto;padding:20px 18px 16px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:12px}
+.modal h2{margin:0;padding-right:36px}.modal h3{margin:6px 0 2px;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.modal ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;line-height:1.4}.modal .ver{font-size:12.5px;color:var(--muted)}
+.modal-x{position:absolute;top:10px;right:8px;font-size:18px}
+.modal li.ownonly:before{content:"Owner: ";font-weight:700;color:var(--accent,#c4531a)}
 .hsum{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted)}.hsum b{color:var(--ink,inherit)}
 details.hist{display:block;padding:0}details.hist>summary{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 12px;align-items:center;padding:12px 14px;list-style:none;cursor:pointer}details.hist>summary::-webkit-details-marker{display:none}
 details.hist .chev{color:var(--muted);font-size:12px;transition:transform .15s}details.hist[open] .chev{transform:rotate(180deg)}
@@ -308,7 +315,18 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <button type="button" class="ghost" id="inviteBtn">Invite friends</button>
     </div>
     <section class="panel" id="notifPanel" hidden><div class="section-head"><h2>Reactions</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
-    <section class="panel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div></section>
+    <section class="panel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div>
+      <div id="syncOwner" hidden style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;flex-direction:column;gap:8px">
+        <h3 style="margin:0;font-size:15px">Background sync setup (owner)</h3>
+        <p class="fine" id="syncOwnerStatus"></p>
+        <div class="row-end"><button type="button" class="small" id="syncSetupBtn">Create server lock</button></div>
+        <div id="syncSecretBox" hidden style="display:flex;flex-direction:column;gap:8px">
+          <p class="fine"><b>Copy this unlock key now. It's shown only once.</b> Paste it into GitHub as the secret <b>SYNC_PRIVATE_KEY</b>. Don't send it to anyone or store it anywhere else.</p>
+          <textarea id="syncSecret" readonly rows="2" style="font-family:monospace;font-size:13px;width:100%"></textarea>
+          <div class="row-end"><button type="button" class="small" id="syncCopy">Copy unlock key</button><button type="button" class="ghost small" id="syncHide">I've saved it. Hide</button></div>
+        </div>
+      </div>
+    </section>
 
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="live" id="tab-live">Live</button>
@@ -460,6 +478,12 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="tablewrap"><table id="meAccountCats"></table></div>
       <div class="section-head"><h2>Your tracked slips</h2></div>
       <div class="cat-grid" id="meSlips"></div>
+      <div class="section-head"><h2>Background sync</h2></div>
+      <div class="panel" style="gap:10px" id="syncCard">
+        <p id="syncState" style="margin:0"></p>
+        <label class="toggle"><input type="checkbox" id="syncToggle"> Keep my Polymarket bets syncing when the app is closed</label>
+        <p class="fine" id="syncFine">Your key is locked on this phone with the group's server lock, so Firebase only stores a scrambled copy and nobody can read it in the app. Every 30 minutes the group's sync job unlocks it to <b>read</b> your positions and results. It never places trades. The group owner runs that job, so turn this on only if you trust them. You can turn it off anytime, or delete the key at polymarket.us/developer.</p>
+      </div>
       <div class="section-head"><h2>Account</h2></div>
       <div class="panel" style="gap:12px">
         <div class="acct-line"><span>Signed in as <b id="acctEmail"></b></span><span class="pill" id="acctVerified"></span></div>
@@ -482,7 +506,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="panel" style="gap:14px">
         <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
         <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
-        <div class="row-end"><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
+        <div class="row-end"><button type="button" class="small" id="wnOpen">What's new</button><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
       </div>
     </section>
 
@@ -499,6 +523,14 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
   </div>
 
   <div class="toast" id="toast" hidden></div>
+  <div class="modal-bg" id="whatsNew" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wnTitle">
+      <button type="button" class="ghost modal-x" id="wnX" aria-label="Close">✕</button>
+      <h2 id="wnTitle">What's new</h2>
+      <div id="wnBody"></div>
+      <div class="row-end"><button type="button" class="primary" id="wnOk">Got it</button></div>
+    </div>
+  </div>
   <footer>
     <span>Live data from ESPN, refreshed every 20 seconds while open. Slips are shared only with approved members of your group.</span>
   </footer>
@@ -955,7 +987,9 @@ function startGroup(){
   db.collection("users").doc(uid).set({lastGroup:me.group, groups:firebase.firestore.FieldValue.arrayUnion(me.group)},{merge:true}).catch(()=>{});
   if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
   unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); renderMembers(); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
-  gref().get().then(d=>{ groupDoc=d.data()||null; }).catch(()=>{});
+  let wnChecked=false;
+  unsub.push(gref().onSnapshot(d=>{ groupDoc=d.data()||null; if(!wnChecked){ wnChecked=true; setTimeout(maybeWhatsNew,600); } if(tab==="me") renderSync(); if(!$("#membersPanel").hidden) renderMembers(); },()=>{}));
+  unsub.push(gref().collection("vault").doc(uid).onSnapshot(d=>{ myVault=d.exists? d.data() : null; if(tab==="me") renderSync(); },()=>{ myVault=null; }));
   unsub.push(gref().collection("reactions").limit(2000).onSnapshot(q=>{ reactions=q.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{}));
   unsub.push(gref().collection("notifs").where("toName","==",me.name).limit(100).onSnapshot(q=>{
     notifs=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
@@ -2543,7 +2577,7 @@ $("#alertsBtn").onclick=async()=>{ if(!window.Notification){ note("This browser 
 const isOwner=()=> !!groupDoc && (groupDoc.createdBy===uid || members[groupDoc.createdBy]?.linkedTo===uid);
 const ownerKey=()=>{ const c=groupDoc?.createdBy; if(!c) return ""; const m=members[c]; if(m?.linkedTo && members[m.linkedTo]) return norm(members[m.linkedTo].name); return norm(m?.name||""); };
 function renderMembers(){
-  const own=isOwner();
+  const own=isOwner(); renderSyncOwner();
   $("#membersNote").textContent = own ? "You own this group. Approve new people here, or remove someone (they and their slips disappear for everyone)." : "Only the group owner can approve or remove members.";
   const byName=new Map();
   Object.entries(members).forEach(([id,m])=>{ const k=norm(m.name||"?"); if(!byName.has(k)) byName.set(k,{name:m.name||"?",ids:[],removed:0,pending:0}); const g=byName.get(k); g.ids.push(id); if(m.removed) g.removed++; else if(m.status==="pending") g.pending++; });
@@ -2557,7 +2591,7 @@ function renderMembers(){
 }
 $("#membersBtn").onclick=async()=>{ const p=$("#membersPanel"); p.hidden=!p.hidden; if(p.hidden) return;
   try{ groupDoc=(await gref().get()).data()||groupDoc; }catch{} renderMembers(); };
-$("#membersClose").onclick=()=>$("#membersPanel").hidden=true;
+$("#membersClose").onclick=()=>{ $("#membersPanel").hidden=true; $("#syncSecret").value=""; $("#syncSecretBox").hidden=true; };
 $("#membersList").addEventListener("click",async e=>{ const v=e.target.dataset.rmmem; if(!v) return; const [k,on]=v.split("|");
   try{ const ids=Object.entries(members).filter(([,m])=>norm(m.name||"?")===k).map(([id])=>id);
     for(const id of ids) await gref().collection("members").doc(id).update({removed:on==="1"}); renderMembers(); }
@@ -2566,11 +2600,92 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
   try{ const ids=Object.entries(members).filter(([,m])=>norm(m.name||"?")===k && m.status==="pending").map(([id])=>id);
     for(const id of ids) await gref().collection("members").doc(id).update({status:"approved"}); toast("Approved."); renderMembers(); }catch(err){ note("Couldn't update member: "+err.message); } });
 
+/* ---------- What's new (shown once per update) ---------- */
+// Add a new entry at the top for each release and bump APP_VERSION to match.
+const APP_VERSION=20;
+const RELEASES=[
+  {v:20, date:"Oct 31", title:"Background sync, fairer model, cleaner filters",
+   news:["<b>Background sync:</b> your Polymarket bets can now keep updating every 30 minutes, even when the app is closed. Turn it on in Me → Background sync once the group owner has set it up.",
+         "<b>Just me</b> filters no longer include the Model's picks.",
+         "Model parlay payouts now match how Polymarket actually prices combos. Older mispriced model picks are shown but no longer counted in its record.",
+         "Buttons now react when you tap them, and History shows what each win returned (for example, +$30 · returned $35)."],
+   todo:["Open <b>Me</b> and tap <b>Re-check Polymarket history</b> once, so your past results get corrected.",
+         "Then turn on <b>Background sync</b> on the Me tab if you'd like your bets to update while the app is closed.",
+         {owner:true, text:"Set up background sync: Members → <b>Create server lock</b>, then add the unlock key and the Firebase key as GitHub secrets (see the setup guide)."}]},
+];
+function showWhatsNew(sinceVer, force){
+  const list=RELEASES.filter(r=>force? r.v===APP_VERSION : r.v>sinceVer).slice(0,3); if(!list.length) return;
+  const own=isOwner();
+  const li=x=> typeof x==="string" ? `<li>${x}</li>` : (x.owner&&!own ? "" : `<li class="${x.owner?"ownonly":""}">${x.text}</li>`);
+  $("#wnBody").innerHTML=list.map(r=>`<div><div class="ver">Update ${r.v} · ${esc(r.date)}${r.title?" · "+esc(r.title):""}</div>
+    <h3>What's new</h3><ul>${r.news.map(li).join("")}</ul>${r.todo?.length?`<h3>What to do</h3><ul>${r.todo.map(li).join("")}</ul>`:""}</div>`).join("<hr style='border:0;border-top:1px solid var(--line);margin:4px 0'>");
+  $("#whatsNew").hidden=false; setTimeout(()=>$("#wnOk").focus(),50);
+}
+function closeWhatsNew(){
+  if($("#whatsNew").hidden) return; $("#whatsNew").hidden=true;
+  ls.set(KEY+".seenVersion",APP_VERSION);
+  if(uid && db) db.collection("users").doc(uid).set({seenVersion:APP_VERSION},{merge:true}).catch(()=>{});
+}
+async function maybeWhatsNew(){
+  let seen=Number(ls.get(KEY+".seenVersion",0))||0;
+  try{ const u=(await db.collection("users").doc(uid).get()).data(); seen=Math.max(seen, Number(u?.seenVersion)||0); }catch{}
+  if(seen<APP_VERSION) showWhatsNew(seen||APP_VERSION-1,false);
+}
+$("#wnOk").onclick=closeWhatsNew; $("#wnX").onclick=closeWhatsNew;
+$("#whatsNew").addEventListener("click",e=>{ if(e.target.id==="whatsNew") closeWhatsNew(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeWhatsNew(); });
+$("#wnOpen").onclick=()=>showWhatsNew(0,true);
+
+/* ---------- Background sync ---------- */
+let myVault=null;
+const agoTs=ts=>{ const t=ts?.toMillis?.(); return t? ago(t) : "never"; };
+function renderSync(){
+  const pub=groupDoc?.syncPub;
+  $("#syncToggle").checked=!!myVault;
+  if(!pub){ $("#syncState").textContent= isOwner()? "Not set up yet. Open Members to create the server lock first." : "The group owner hasn't set up background sync yet."; $("#syncToggle").disabled=true; return; }
+  $("#syncToggle").disabled=false;
+  const server= groupDoc?.syncAt ? `The group's sync job last ran ${agoTs(groupDoc.syncAt)}.` : "The group's sync job hasn't run yet.";
+  $("#syncState").textContent = myVault ? `On. ${myVault.lastError? "⚠ "+myVault.lastError : myVault.lastSync? "Your bets last synced "+agoTs(myVault.lastSync)+"." : "Waiting for the first run."} ${server}` : `Off. ${server}`;
+}
+async function sealKey(key, pubB64){
+  const eph=nacl.box.keyPair(), nonce=nacl.randomBytes(24);
+  const msg=new TextEncoder().encode(JSON.stringify({keyId:key.keyId, secret:key.secret}));
+  const ct=nacl.box(msg, nonce, b64d(pubB64), eph.secretKey);
+  return {ct:b64e(ct), nonce:b64e(nonce), epk:b64e(eph.publicKey), v:1};
+}
+$("#syncToggle").addEventListener("change",async e=>{
+  const on=e.target.checked; const ref=gref().collection("vault").doc(uid);
+  try{
+    if(!on){ await ref.delete(); toast("Background sync is off. Your key was removed from the server."); return; }
+    const key=getPmKey(); if(!key){ e.target.checked=false; note(rawPm()?"Unlock your Polymarket key with your PIN first, then try again.":"Connect Polymarket US on this phone first."); return; }
+    await ref.set({enc:await sealKey(key, groupDoc.syncPub), at:firebase.firestore.FieldValue.serverTimestamp()});
+    toast("Background sync is on. Your bets will update every 30 minutes.");
+  }catch(err){ e.target.checked=!on; note("Couldn't change background sync: "+err.message); }
+});
+// Owner: create the server lock (public half saved to the group, private half shown once)
+function renderSyncOwner(){
+  const own=isOwner(); $("#syncOwner").hidden=!own; if(!own) return;
+  const n=Object.keys(members).length;
+  $("#syncOwnerStatus").textContent = groupDoc?.syncPub ? `Server lock is set. ${groupDoc.syncAt? "Sync job last ran "+agoTs(groupDoc.syncAt)+"." : "The sync job hasn't run yet. Add both secrets in GitHub."} Creating a new lock turns background sync off for everyone until they turn it back on.`
+    : "Create the server lock, then add it to GitHub. Members can then turn on background sync from their Me tab.";
+  $("#syncSetupBtn").textContent = groupDoc?.syncPub ? "Replace server lock" : "Create server lock";
+}
+$("#syncSetupBtn").onclick=async()=>{
+  const b=$("#syncSetupBtn");
+  if(groupDoc?.syncPub && b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again to replace"; setTimeout(()=>{ b.dataset.armed=""; renderSyncOwner(); },3000); return; }
+  const kp=nacl.box.keyPair();
+  try{ await gref().update({syncPub:b64e(kp.publicKey)}); }catch(err){ note("Couldn't save the server lock: "+err.message); return; }
+  $("#syncSecret").value=b64e(kp.secretKey); $("#syncSecretBox").hidden=false; b.dataset.armed="";
+  toast("Server lock created. Copy the unlock key now.");
+};
+$("#syncCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText($("#syncSecret").value); toast("Unlock key copied."); }catch{ $("#syncSecret").select(); note("Select the key and copy it."); } };
+$("#syncHide").onclick=()=>{ $("#syncSecret").value=""; $("#syncSecretBox").hidden=true; };
+
 /* ---------- Me tab ---------- */
 function statCard(k,v,sub,cls){ return `<div class="cat"><span class="k">${esc(k)}</span><span class="v ${cls||""}">${v}</span><span class="s">${sub||""}</span></div>`; }
 const signed=n=>(n>0?"+":"")+money(n);
 function renderMe(){
-  renderAccount();
+  renderAccount(); renderSync();
   const h=ls.get(KEY+".pmhist",null);
   const st=ls.get(KEY+".pmhistAt",0);
   $("#pmHistStatus").textContent = pmLocked() ? "Locked. Enter your PIN to refresh." : !rawPm() ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
