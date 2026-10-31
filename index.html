@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-ApdvUjZQs455yn592G258n70VSu4QNgB8x964A7Txuc=' 'sha256-f9RlBLjkRwWbQei7dDBx3uHJ2ISpqFdQm68we3Rgi/o=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-ApdvUjZQs455yn592G258n70VSu4QNgB8x964A7Txuc=' 'sha256-tnrXeq7zlXGZZ+rCFiUCX8M/MjD+lwZvhFclav50FU8=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1024,6 +1024,7 @@ function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
   ["authPanel","joinPanel","pendingPanel","verifyPanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false;
+  try{ localStorage.setItem(KEY+".lastGroup",JSON.stringify({uid,group:me.group})); }catch{}
   db.collection("users").doc(uid).set({lastGroup:me.group, groups:firebase.firestore.FieldValue.arrayUnion(me.group)},{merge:true}).catch(()=>{});
   if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
   unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); renderMembers(); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
@@ -1191,20 +1192,37 @@ $("#pwChangeBtn").onclick=async()=>{
 };
 
 let pendingUnsub=null;
+// Right after sign-in the first reads can fail for a moment (sign-in token still settling, slow phone network).
+// Retry, refreshing the token, instead of treating a failed read as "not in a group".
+async function getRetry(ref){
+  let err;
+  for(let i=0;i<4;i++){
+    try{ return await ref.get(); }
+    catch(e){ err=e; if(i===0 || e?.code==="permission-denied") await firebase.auth().currentUser?.getIdToken(true).catch(()=>{}); await new Promise(r=>setTimeout(r,500*(i+1))); }
+  }
+  throw err;
+}
+function groupLoadFailed(group){
+  showOnly("joinPanel"); if(group) $("#joinCode").value=group; if(me?.name) $("#joinName").value=me.name;
+  note("Couldn't reach your group just now. Check your connection — retrying…");
+  setTimeout(()=>{ if(!$("#joinPanel").hidden && firebase.auth().currentUser){ note(); afterSignIn(null); } },4000);
+}
 async function afterSignIn(oldUid){
   authUser=firebase.auth().currentUser; uid=authUser.uid;
   try{ await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION); sessionStorage.setItem(KEY+".session","1"); }catch{}
   if(!authUser.emailVerified){ showVerify(oldUid); return; }
-  let udoc={}; try{ udoc=(await db.collection("users").doc(uid).get()).data()||{}; }catch{}
+  let udoc={}, udocFailed=false; try{ udoc=(await getRetry(db.collection("users").doc(uid))).data()||{}; }catch{ udocFailed=true; }
+  let local=null; try{ const lg=JSON.parse(localStorage.getItem(KEY+".lastGroup")||"null"); if(lg?.uid===uid) local=lg.group; }catch{}
   const sp=new URLSearchParams(location.search);
   const urlGroup=(sp.get("join")||sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  const group = sp.get("join") ? urlGroup : (me?.group || udoc.lastGroup || urlGroup);
-  if(!group){ showJoin(); return; }
+  const group = sp.get("join") ? urlGroup : (me?.group || udoc.lastGroup || local || urlGroup);
+  if(!group){ if(udocFailed) groupLoadFailed(""); else showJoin(); return; }
   await openGroup(group, oldUid);
 }
 async function openGroup(group, oldUid){
   const g=db.collection("groups").doc(group);
-  let mdoc=null; try{ mdoc=await g.collection("members").doc(uid).get(); }catch{}
+  let mdoc=null, failed=false; try{ mdoc=await getRetry(g.collection("members").doc(uid)); }catch(e){ failed=true; console.warn("member read",e); }
+  if(failed && !oldUid){ me={...(me||{}), group}; groupLoadFailed(group); return; }
   if(!mdoc?.exists && oldUid){
     // Carry an old login on this device over to the account
     try{
@@ -1275,7 +1293,7 @@ async function enter(name, code, create){
 }
 $("#createGroup").onclick=()=>enter($("#joinName").value,"",true);
 $("#joinGroup").onclick=()=>enter($("#joinName").value,$("#joinCode").value,false);
-$("#leaveBtn").onclick=()=>{ unsub.forEach(f=>f()); unsub=[]; slips=[]; me=null; ls.set(KEY+".me",null); try{ history.replaceState(null,"",location.pathname); }catch{} showJoin(); };
+$("#leaveBtn").onclick=()=>{ unsub.forEach(f=>f()); unsub=[]; slips=[]; me=null; ls.set(KEY+".me",null); try{ localStorage.removeItem(KEY+".lastGroup"); }catch{} try{ history.replaceState(null,"",location.pathname); }catch{} showJoin(); };
 $("#inviteBtn").onclick=async()=>{
   const url=location.origin+location.pathname+"?join="+me.group;
   const text=`Join my bet tracker group (code ${me.group}): ${url}`;
@@ -2798,8 +2816,11 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=21;
+const APP_VERSION=22;
 const RELEASES=[
+  {v:22, date:"Oct 31", title:"Sign-in and team fixes",
+   news:["Signing in takes you straight to your group again. No more re-entering the group code.",
+         "Fixed teams with similar names getting mixed up (like <b>Iowa</b> and <b>Iowa State</b>). Bets already linked to the wrong game fix themselves."]},
   {v:21, date:"Oct 31", title:"Recaps, alerts and smarter picks",
    news:["<b>Weekly recap</b> and <b>This week's challenges</b> at the top of the Board. Winners get a badge next to their name.",
          "<b>Your week</b> and a private <b>Leak finder</b> on the Me tab show which kinds of bets make or lose you money.",
