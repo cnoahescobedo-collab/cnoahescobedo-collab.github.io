@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-MTFC0ONF1jW/0EuE/GJC3Mx6Oo2A6JU6lBaAIc09ZZE=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-9CzZWMhUBzKIdcaTCLVod6GbBK4HRn+15bosdCioKNw=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1300,6 +1300,7 @@ async function refresh(){
   finally{ busy=false; renderAll(); }
 }
 const isPM = s => s.source==="pmus" || s.source==="polymarket";
+const isMineSlip = s => s.source!=="model" && (s.uid===uid || norm(s.name)===norm(me?.name));
 // A Polymarket bet is identified by person + market, whatever login saved it.
 const pmKeyOf = s => { const m=String(s.id).match(/^(pu|pm)_[^_]+_(.+)$/); return m? m[1]+"|"+norm(s.name)+"|"+m[2] : null; };
 let dupIds=[];
@@ -1310,6 +1311,7 @@ function cleanSlips(raw){
     const s={...s0};
     // A Polymarket slip marked settled without Polymarket's numbers was settled by ESPN: treat it as still open until Polymarket confirms.
     if(isPM(s) && s.status!=="open" && s.pnl==null && !s.manual){ s.status="open"; s.unconfirmed=true; }
+    if(s.source==="model" && s.modelKind==="props" && !s.pricingV){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; }   // priced before the fix: shown, not counted
     const k=isPM(s)? pmKeyOf(s) : null;
     if(!k){ out.push(s); continue; }
     const cur=best.get(k);
@@ -1437,7 +1439,7 @@ function slipHTML(s){
 }
 function liveSlips(){
   let open=vis().filter(s=>s.status==="open" && (isPM(s) || !s.legs.some(l=>l.result==="lost")));
-  if(whoLive==="me") open=open.filter(s=>s.uid===uid||norm(s.name)===norm(me.name));
+  if(whoLive==="me") open=open.filter(isMineSlip);
   else if(whoLive!=="all") open=open.filter(s=>norm(s.name)===whoLive);
   const P=new Map(open.map(s=>[s.id,slipProgress(s)]));
   const key={close:s=>[P.get(s.id).remaining, -P.get(s.id).close], soon:s=>[P.get(s.id).start,0], pay:s=>[-(Number(s.payout)||0),0], new:s=>[-(s.createdAt?.toMillis?.()||0),0]}[sortBy]||(()=>[0,0]);
@@ -1457,7 +1459,7 @@ function renderLive(){
   }
   if(liveView==="game"){ list.innerHTML=gamesHTML(open); return; }
   const by=new Map();
-  for(const s of open){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.uid===uid||k===norm(me.name),slips:[]}); by.get(k).slips.push(s); }
+  for(const s of open){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.source!=="model"&&(s.uid===uid||k===norm(me.name)),slips:[]}); by.get(k).slips.push(s); }
   const groups=[...by.values()].sort((a,b)=>(b.mine-a.mine)||a.name.localeCompare(b.name));
   list.innerHTML=groups.map(g=>{
     const t=tally(vis().filter(s=>norm(s.name)===norm(g.name)));
@@ -1481,7 +1483,7 @@ function histStart(w){ const d=new Date(); d.setHours(0,0,0,0);
 const srcOf=s=> s.source==="pmus"?"pmus":s.source==="polymarket"?"polymarket":s.source==="model"?"model":"manual";
 function histFiltered(){
   let done=vis().filter(s=>s.status!=="open");
-  if(hf.who==="me") done=done.filter(s=>s.uid===uid||norm(s.name)===norm(me.name)); else if(hf.who!=="all") done=done.filter(s=>norm(s.name)===hf.who);
+  if(hf.who==="me") done=done.filter(isMineSlip); else if(hf.who!=="all") done=done.filter(s=>norm(s.name)===hf.who);
   if(hf.cat!=="all") done=done.filter(s=>slipCategory(s)===hf.cat);
   if(hf.res!=="all") done=done.filter(s=>s.status===hf.res);
   if(hf.when!=="all"){ const [a,b]=histStart(hf.when); done=done.filter(s=>{ const t=settledAt(s); return t>=a&&t<b; }); }
@@ -1511,14 +1513,14 @@ function renderHistory(){
   $("#hReset").hidden=!active;
   const moreOn=["res","src","legs"].filter(k=>hf[k]!=="all").length; $("#hMoreSum").textContent= moreOn?`More filters (${moreOn} on)`:"More filters";
   $("#histList").innerHTML = done.length ? done.slice(0,300).map(s=>{
-    const p=profitOf(s); const r=s.status==="won"?"W":s.status==="lost"?"L":"P";
+    const p=profitOf(s); const r=s.status==="won"?"W":s.status==="lost"?"L":s.status==="void"?"–":"P";
     const d=(s.settledAt||s.createdAt)?.toDate?.(); const when=d? d.toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
     const hits=(s.legs||[]).filter(l=>l.result==="won").length;
     const legs=(s.legs||[]).map(l=>{ const c=l.result||"none"; return `<div class="lg ${c}"><span class="m">${c==="won"?"✓":c==="lost"?"✗":c==="push"?"–":"·"}</span><span>${esc(legTitle(l))}${l.final!=null?` <span class="meta3">(${esc(String(l.final))})</span>`:""}</span></div>`; }).join("");
     const src={pmus:"Polymarket US",polymarket:"Polymarket.com",model:"Model pick",manual:"Added by hand"}[srcOf(s)];
     return `<details class="hist" data-sid="${esc(s.id)}" ${openHist.has(s.id)?"open":""}><summary><div class="r ${s.status}">${r}</div>
-      <div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${esc(when)} · ${hits}/${s.legs.length} legs hit${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
-      <div class="p ${p>0?"pos":p<0?"neg":""}">${moneyAs(s.name,p,true)}${s.status==="won"&&showMoney(s.name)&&s.stake?`<small style="display:block;font-weight:500;font-size:11.5px;color:var(--muted)">returned ${money(Number(s.stake)+p)}</small>`:""}</div><span class="chev" aria-hidden="true">▼</span></summary>
+      <div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${s.oldPricing?`Old pricing, not counted (was ${esc(s.realStatus)}) · `:""}${esc(when)} · ${hits}/${s.legs.length} legs hit${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
+      <div class="p ${p>0?"pos":p<0?"neg":""}">${s.status==="void"?"—":moneyAs(s.name,p,true)}${s.status==="won"&&showMoney(s.name)&&s.stake?`<small style="display:block;font-weight:500;font-size:11.5px;color:var(--muted)">returned ${money(Number(s.stake)+p)}</small>`:""}</div><span class="chev" aria-hidden="true">▼</span></summary>
       <div class="hlegs">${legs}<div class="meta3">${esc(src)}${s.odds?` · odds ${esc(s.odds)}`:""}${s.payout&&showMoney(s.name)?` · paid ${money(+s.payout)}`:""}${d?` · ${d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}`:""}</div></div></details>`;
   }).join("") + (done.length>300?`<div class="empty">Showing the first 300. Narrow the filters to see more.</div>`:"")
   : `<div class="empty"><b>${vis().some(s=>s.status!=="open")?"Nothing matches these filters":"No settled slips yet"}</b>${vis().some(s=>s.status!=="open")?"Try widening the filters or tap Reset filters.":"Slips land here once every leg is decided."}</div>`;
@@ -2193,8 +2195,10 @@ function buildPropParlays(ts){
   const make=(pool,n,seedSkip)=>{ const legs=[], games={};
     for(const x of pool.slice(seedSkip)){ if(legs.length>=n) break; const g=x.game.id; if((games[g]||0)>=2) continue; if(legs.some(l=>norm(l.player)===norm(x.player))) continue; legs.push(x); games[g]=(games[g]||0)+1; }
     if(legs.length<n) return null;
-    const price=legs.reduce((m,x)=>m*x.price,1), prob=legs.reduce((m,x)=>m*x.S.p,1), dec=1/price;
-    return {legs, price, prob, dec, ev:prob*dec-1};
+    // Polymarket prices a combo as its own market: about the product of the leg mid-prices, minus ~5% per leg.
+    const mids=legs.reduce((m,x)=>m*(x.mid||x.price),1), legsDec=1/legs.reduce((m,x)=>m*x.price,1);
+    const dec=(1/mids)*Math.pow(0.95,legs.length), price=1/dec, prob=legs.reduce((m,x)=>m*x.S.p,1);
+    return {legs, price, prob, dec, legsDec, ev:prob*dec-1};
   };
   const T=[
     {name:"Steady 2-leg", blurb:"Two of the most reliable lines on the board.", n:2, pool:[...c].filter(x=>x.S.p>=0.62 && x.price>=0.5).sort((a,b)=>b.S.p-a.S.p||b.edge-a.edge)},
@@ -2220,12 +2224,12 @@ function renderPropParlays(){
   const list=buildPropParlays(ts); ts.pp=list;
   $("#ppStatus").textContent=`${propCandidates(ts).length} props with an edge · updated ${ago(ts.at)}`;
   $("#propParlays").innerHTML = list.length ? list.map((p,i)=>`<article class="slip"><div class="slip-h"><div class="ttl">${esc(p.name)}${p.alt?' <span class="tag">ALT</span>':""}<small style="display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px">${esc(p.blurb)}</small></div>
-      <div class="right"><span class="pill won">${p.dec.toFixed(1)}x</span></div></div>
+      <div class="right"><span class="pill won">≈${p.dec.toFixed(1)}x</span></div></div>
       <div class="legs">${p.legs.map(x=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(x.player)}</div><div class="leg-bet">${esc(legLine(x))} · ${esc(x.game.name||"")}</div></div>
         <div class="leg-num"><div class="cur">${Math.round(x.price*100)}¢</div><div class="of">est. ${Math.round(x.S.p*100)}%</div></div></div>
         <div class="statline">L10 ${x.S.W.l10.h}/${x.S.W.l10.n} · season ${x.S.W.season.n?x.S.W.season.h+"/"+x.S.W.season.n:"–"} · <b class="pos">+${Math.round(x.edge*100)} pts</b>${x.S.hot&&x.side==="over"?" · 🔥 trending up":""}</div></div>`).join("")}</div>
-      <div class="slip-f"><span class="statline" style="align-self:center">Costs ${Math.round(p.price*100)}¢ per $1 payout (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}% · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
-    + `<p class="fine">Estimates treat legs as independent. Two legs from the same game can move together. Polymarket prices a combo on its own, so check the real combo price before you buy.</p>`
+      <div class="slip-f"><span class="statline" style="align-self:center">Estimated Polymarket combo payout ${p.dec.toFixed(2)}x (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}% · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
+    + `<p class="fine">Payouts are estimates: Polymarket prices a combo as its own market, usually about 5% less per leg than the legs alone. Check the real combo price before you buy. Hit chances treat legs as independent; two legs from the same game can move together.</p>`
     : `<div class="empty"><b>No prop parlays right now</b>${esc(ts.note || "Not enough props beat their prices today. Check back closer to tip-off, when lines move.")}</div>`;
   if(list.length) logPropModel(ppLeague,list);
 }
@@ -2239,11 +2243,15 @@ $("#propParlays").addEventListener("click",e=>{ const i=e.target.dataset.ppadd; 
   document.querySelector('[data-tab="live"]')?.click(); showReview(p.name+" from Value parlays"); $("#review").scrollIntoView({behavior:"smooth"}); });
 async function logPropModel(lg,list){
   const day=etDay().replace(/-/g,"");
+  const etHour=Number(new Date().toLocaleString("en-US",{timeZone:"America/New_York",hour:"numeric",hour12:false}));
+  if(etHour<9 || etHour>=19) return;   // prop markets are thin overnight; only log during normal market hours
   for(const [i,p] of list.filter(x=>!x.alt).slice(0,2).entries()){
-    const id=`mprop_${day}_${lg}_${i+1}`; if(slips.some(s=>s.id===id)) continue;
+    const firstStart=Math.min(...p.legs.map(x=>Date.parse(x.game?.date)||Infinity)); if(!(firstStart-Date.now()>45*60000)) continue;   // at least 45 min before tip-off
+    if(p.legs.some(x=>x.wide)) continue;
+    const id=`mprop2_${day}_${lg}_${i+1}`; if(slips.some(s=>s.id===id)) continue;
     try{ const ref=gref().collection("slips").doc(id); if((await ref.get()).exists) continue;
-      await ref.set({uid, name:"Model", source:"model", modelKind:"props", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open",
-        legs:p.legs.map(x=>({league:lg, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||null, market:x.label, line:x.line, gameId:x.game.id, result:null}))}); }catch{}
+      await ref.set({uid, name:"Model", source:"model", modelKind:"props", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open", pricingV:2, pricedAt:Date.now(), legsDec:Math.round(p.legsDec*100)/100,
+        legs:p.legs.map(x=>({league:lg, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||null, market:x.label, line:x.line, gameId:x.game.id, result:null, price:x.price, mid:Math.round((x.mid||x.price)*1000)/1000, slug:x.slug}))}); }catch{}
   }
 }
 
@@ -2353,13 +2361,15 @@ function propFromMarket(m){
     sides:(m.marketSides||[]).map(x=>({d:x.description||"",long:!!x.long,team:"",teamName:""}))};
   const leg=pmToLeg(mk,"SIDE_BUY",m.title); if(leg.kind!=="prop") return null;
   const yes=(m.marketSides||[]).find(x=>x.long), no=(m.marketSides||[]).find(x=>!x.long);
-  // quote = what it costs to buy that side right now (the ask). A side only counts if Polymarket lets you trade it and someone is selling.
-  const canBuy=side=> side && side.tradable!==false && Number(side.quote?.value)>0 && Number(side.quote?.value)<1;
-  const py= canBuy(yes)? Number(yes.quote.value) : NaN;
-  const pn= canBuy(no)?  Number(no.quote.value)  : NaN;
+  // Prices from the Yes order book: buying Yes costs the Yes ask; buying No costs 1 − Yes bid. Mid = halfway between.
+  const yb=Number(yes?.price), ya=Number(yes?.quote?.value);
+  if(!(ya>0&&ya<1)) return null;
+  const bid= yb>0&&yb<1 ? yb : null; const spread= bid!=null ? ya-bid : 1;
+  const yesOk= yes && yes.tradable!==false, noOk= no && no.tradable!==false && bid!=null;
+  const py= yesOk? ya : NaN, pn= noOk? Math.round((1-bid)*100)/100 : NaN;
   if(!(py>0) && !(pn>0)) return null;
-  const spread= py>0&&pn>0 ? (py+pn)-1 : (py>0? py-Number(yes?.price||0) : pn-Number(no?.price||0));
-  return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, wide:spread>0.12};
+  const midY= bid!=null? (ya+bid)/2 : ya;
+  return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, midYes:midY, midNo:1-midY, spread, wide:spread>0.05};
 }
 async function scanTrends(lgArg){
   if(trendBusy) return; trendBusy=true; const lg=lgArg||tf.league; const stEl=$("#tStatus"), ppEl=$("#ppStatus"); if(lg===tf.league) $("#trendList").innerHTML=`<div class="empty"><b>Loading ${esc(LEAGUES[lg].label)} players…</b>Pulling today's games and game logs from ESPN.</div>`; const st={set textContent(v){ if(lg===tf.league) stEl.textContent=v; if(lg===ppLeague) ppEl.textContent=v; }}; $("#tScan").disabled=true;
@@ -2399,7 +2409,7 @@ async function scanTrends(lgArg){
       const S=pickUnder?under:over, price=pickUnder?p.pNo:p.pYes;
       const inj=injFor(lg,p.player);
       const teamOut=injData? (injData.byTeam.get(String(p.game.teams.find(t=>t.abbr===p.ath.team)?.id))?.list||[]).filter(o=>o.cls==="out"&&!sameName(o.name,p.player)).map(o=>o.name) : [];
-      items.push({...p, side:pickUnder?"under":"over", price, S, edge:S.p-price, label:mk.label, keys:mk.keys, inj, teamOut});
+      items.push({...p, side:pickUnder?"under":"over", price, mid:pickUnder?p.midNo:p.midYes, S, edge:S.p-price, label:mk.label, keys:mk.keys, inj, teamOut});
     }
     const sport=sportOf(lg); const statItems=[];
     for(const a of ath.values()){ const log=logCache.get(lg+":"+a.id); if(!log) continue; const sm=statSummary(log,sport); if(!sm.length) continue;
@@ -2585,7 +2595,7 @@ function renderMe(){
     $("#meAccountCats").innerHTML = `<thead><tr><th>Sport</th><th>Record</th><th>Staked</th><th>Net</th></tr></thead><tbody>`+
       [...byCat].sort((a,b)=>b[1].pnl-a[1].pnl).map(([c,t])=>`<tr><td>${esc(c)}</td><td>${t.w}-${t.l}</td><td>${money(t.stake)}</td><td class="${t.pnl>0?"pos":t.pnl<0?"neg":""}">${signed(t.pnl)}</td></tr>`).join("")+"</tbody>";
   } else { $("#meAccount").innerHTML=""; $("#meAccountCats").innerHTML=""; }
-  const mine=vis().filter(s=>s.uid===uid||norm(s.name)===norm(me.name)).filter(isPerson);
+  const mine=vis().filter(isMineSlip);
   const t=tally(mine); const open=mine.filter(s=>s.status==="open");
   const best=mine.filter(s=>s.status==="won").sort((a,b)=>profitOf(b)-profitOf(a))[0];
   $("#meSlips").innerHTML = statCard("Net (tracked slips)",signed(t.profit),"Bets in the group tracker. The Polymarket total above also counts non-sports markets.",t.profit>0?"pos":t.profit<0?"neg":"")
@@ -2610,7 +2620,7 @@ $("#renameBtn").onclick=async()=>{
     const b=db.batch();
     if(nameKey(nn)!==nameKey(old)){ b.set(g.collection("names").doc(nameKey(nn)),{uid}); b.delete(g.collection("names").doc(nameKey(old))); }
     b.update(g.collection("members").doc(uid),{name:nn}); await b.commit();
-    const mine=slips.filter(s=>s.uid===uid || (norm(s.name)===norm(old) && s.source!=="model"));
+    const mine=slips.filter(s=>s.source!=="model" && (s.uid===uid || norm(s.name)===norm(old)));
     for(let i=0;i<mine.length;i+=400){ const bb=db.batch(); mine.slice(i,i+400).forEach(s=>bb.update(g.collection("slips").doc(s.id),{name:nn})); await bb.commit().catch(()=>{}); }
     me={...me,name:nn,key:me.key||norm(old).replace(/ /g,"")}; ls.set(KEY+".me",me); rememberInUrl(); toast("You're now "+nn+"."); startGroup();
   }catch(err){ note("Couldn't rename: "+err.message); } finally{ $("#renameBtn").disabled=false; }
@@ -2630,7 +2640,7 @@ function toCsv(list){
 }
 function download(name,text){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type:"text/csv"})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
 $("#exportCsv").onclick=()=>{ const l=histFiltered(); download(`bets-${me.group}.csv`,toCsv(l)); toast(`Downloaded ${l.length} slips.`); };
-$("#exportMine").onclick=()=>{ const l=slips.filter(s=>s.uid===uid||norm(s.name)===norm(me.name)); download(`my-bets.csv`,toCsv(l)); toast(`Downloaded ${l.length} slips.`); };
+$("#exportMine").onclick=()=>{ const l=slips.filter(isMineSlip); download(`my-bets.csv`,toCsv(l)); toast(`Downloaded ${l.length} slips.`); };
 
 /* ---------- Review / entry ---------- */
 let drafts=[];
