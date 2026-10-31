@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-2rtfBvGlv04ysYnmGJxiedAP8B9Fg9TAE/1GjdLFWKA=' 'sha256-jlIebp+AMIMajE+47WWFCHODrtuSccIlyziecRLudtA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-ApdvUjZQs455yn592G258n70VSu4QNgB8x964A7Txuc=' 'sha256-f9RlBLjkRwWbQei7dDBx3uHJ2ISpqFdQm68we3Rgi/o=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -140,6 +140,11 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .modal ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;line-height:1.4}.modal .ver{font-size:12.5px;color:var(--muted)}
 .modal-x{position:absolute;top:10px;right:8px;font-size:18px}
 .modal li.ownonly:before{content:"Owner: ";font-weight:700;color:var(--accent,#c4531a)}
+.recap{gap:10px}.recap .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.recap .big div{background:var(--chip,rgba(127,127,127,.08));border-radius:10px;padding:8px 10px}
+.recap .big b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.recap .big small{color:var(--muted);font-size:12px}.recap ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
+a.btn{text-decoration:none}.btn.small{min-height:32px;padding:5px 10px;font-size:13px}.btn.ghost{background:none;border:none;color:var(--muted);font-weight:500;font-size:13px;padding:6px 8px;min-height:0}
+.badge{display:inline-block;font-size:12px;margin-left:4px}.leak{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}.leak:last-child{border-bottom:0}.leak small{grid-column:2/4;color:var(--muted);font-size:12.5px}
+.sig{font-size:11.5px;font-weight:700;padding:2px 6px;border-radius:6px;background:var(--chip,rgba(127,127,127,.12));margin-left:4px;white-space:nowrap}.sig.up{color:var(--win)}.sig.dn{color:var(--loss)}
 .hsum{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted)}.hsum b{color:var(--ink,inherit)}
 details.hist{display:block;padding:0}details.hist>summary{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 12px;align-items:center;padding:12px 14px;list-style:none;cursor:pointer}details.hist>summary::-webkit-details-marker{display:none}
 details.hist .chev{color:var(--muted);font-size:12px;transition:transform .15s}details.hist[open] .chev{transform:rotate(180deg)}
@@ -314,7 +319,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <button type="button" class="ghost" id="membersBtn">Members</button>
       <button type="button" class="ghost" id="inviteBtn">Invite friends</button>
     </div>
-    <section class="panel" id="notifPanel" hidden><div class="section-head"><h2>Reactions</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
+    <section class="panel" id="notifPanel" hidden><div class="section-head"><h2>Alerts</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
     <section class="panel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div>
       <div id="syncOwner" hidden style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;flex-direction:column;gap:8px">
         <h3 style="margin:0;font-size:15px">Background sync setup (owner)</h3>
@@ -478,6 +483,12 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="tablewrap"><table id="meAccountCats"></table></div>
       <div class="section-head"><h2>Your tracked slips</h2></div>
       <div class="cat-grid" id="meSlips"></div>
+      <div class="section-head"><h2>Your week</h2><div class="chips" id="meWeekPick"></div></div>
+      <div class="panel recap" id="meWeek"></div>
+      <div class="section-head"><h2>Leak finder</h2><span class="statline">Only you see this</span></div>
+      <div class="panel" id="leaks"></div>
+      <div class="section-head"><h2>Watching</h2><span class="statline">Alerts when a price moves 5¢ or a player is ruled out</span></div>
+      <div class="panel" id="watchList"></div>
       <div class="section-head"><h2>Background sync</h2></div>
       <div class="panel" style="gap:10px" id="syncCard">
         <p id="syncState" style="margin:0"></p>
@@ -512,6 +523,10 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
     <!-- LEADERBOARD -->
     <section id="view-board" hidden style="flex-direction:column;gap:16px">
+      <div class="section-head"><h2>Weekly recap</h2><div class="chips" id="recapWeek"></div></div>
+      <div class="panel recap" id="weekRecap"></div>
+      <div class="section-head"><h2>This week's challenges</h2><span class="statline">Resets Monday</span></div>
+      <div class="cat-grid" id="challenges"></div>
       <div class="chips" id="boardRange"></div>
       <div class="section-head"><h2 id="plTitle">All-time profit &amp; loss</h2></div>
       <div class="pl-grid" id="plGrid"></div>
@@ -708,10 +723,35 @@ function tennisGames(d){
 }
 function gamesFromBoard(league, d){ return sportOf(league)==="ten" ? tennisGames(d) : (d.events||[]).map(toGame); }
 
+// Words that make a different school/team ("Iowa" vs "Iowa State", "Florida" vs "South Florida")
+const TEAM_DISTINCT=new Set("state st tech a m am southern northern eastern western central international intl atlantic christian oh poly north south east west upstate gulf coast mountain pacific baptist methodist".split(" "));
+// 3 = exact name, 2 = safe partial (e.g. "Lakers" ↔ "Los Angeles Lakers"), 0 = no match
+function teamScore(x,t){
+  const q=norm(t); if(!q) return 0;
+  let best=0;
+  for(const v of [x.abbr,x.name,x.short,x.nick]){
+    const n=norm(v); if(!n) continue;
+    if(n===q){ return 3; }
+    if(v===x.abbr) continue;
+    const [lo,hi]=n.length<q.length?[n,q]:[q,n];
+    if(lo.length<3 || !(" "+hi+" ").includes(" "+lo+" ")) continue;
+    const extra=hi.split(" ").filter(w=>!lo.split(" ").includes(w));
+    const own=new Set([x.name,x.short,x.nick].map(norm).join(" ").split(" "));
+    if(extra.some(w=>TEAM_DISTINCT.has(w) && !(hi===q && own.has(w)))) continue;
+    best=2;
+  }
+  if(!best && sameName(x.name,t)) best=1;
+  return best;
+}
 function teamMatch(game,t){
-  const q=norm(t); if(!q) return null;
-  return game.teams.find(x=>[x.abbr,x.name,x.short,x.nick].some(v=>{const n=norm(v); return n && (n===q || n.includes(q) || (q.includes(n) && n.length>2));}))
-      || game.teams.find(x=>sameName(x.name,t)) || null;
+  let best=null,sc=0;
+  for(const x of game.teams){ const v=teamScore(x,t); if(v>sc){sc=v;best=x;} }
+  return best;
+}
+function findTeamGame(games,t){
+  let best=null,sc=0;
+  for(const g of games) for(const x of g.teams){ const v=teamScore(x,t); if(v>sc){sc=v;best=g;} }
+  return best;
 }
 function findPlayer(players,name){
   for(const [team,list] of Object.entries(players||{})){const p=list.find(x=>sameName(x.name,name)); if(p) return {team,...p};}
@@ -915,7 +955,7 @@ function parseSlip(text, league, roster){
   const seen=new Set();
   return legs.filter(l=>{const k=(l.player||l.team)+"|"+l.market+"|"+l.line; if(seen.has(k)) return false; seen.add(k); return true;});
 }
-if(typeof module!=="undefined") module.exports={amToDec,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
+if(typeof module!=="undefined") module.exports={amToDec,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findTeamGame,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
 </script>
 
 <script src="fb-app.js?v=10.12.2"></script>
@@ -994,7 +1034,7 @@ function startGroup(){
   unsub.push(gref().collection("notifs").where("toName","==",me.name).limit(100).onSnapshot(q=>{
     notifs=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
     const fresh=notifs.filter(n=>!n.read && !seenNotifs.has(n.id));
-    fresh.forEach(n=>{ seenNotifs.add(n.id); const msg=`${n.fromName} reacted ${n.emoji} to your ${n.label||"slip"}`; toast(msg);
+    fresh.forEach(n=>{ seenNotifs.add(n.id); const msg= n.text ? `${n.emoji||"🔔"} ${n.text}` : `${n.fromName} reacted ${n.emoji} to your ${n.label||"slip"}`; toast(msg);
       try{ if(window.Notification && Notification.permission==="granted") new Notification("Live Bet Tracker",{body:msg}); }catch{} });
     ls.set(KEY+".seenN",[...seenNotifs].slice(-300)); renderBell(); },()=>{}));
   unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(800).onSnapshot(s=>{
@@ -1295,22 +1335,34 @@ async function refresh(){
     for(const s of open){
       let changed=false;
       for(const l of s.legs){
-        if(l.result || l.gameId || !LEAGUES[l.league]?.path) continue;
+        if(l.result || !LEAGUES[l.league]?.path) continue;
         const games=boards[l.league]||[];
+        if(l.gameId){
+          // Re-check an earlier match: drop it if the team isn't actually in that game (e.g. Iowa vs Iowa State)
+          const og=games.find(x=>String(x.id)===String(l.gameId));
+          if(!og || l.kind==="prop" || !(l.team||l.opponent) || teamMatch(og,l.team||l.opponent)) continue;
+          delete l.gameId; changed=true;
+        }
         let g=null;
         if(l.abbrA&&l.abbrH){
           const AL={utah:"uta",wsh:"was",gs:"gsw",ny:"nyk",sa:"sas",no:"nop",la:"lar"};
           const eq=(e,p)=>{ e=String(e||"").toLowerCase(); return e===p || AL[e]===p || AL[p]===e || (e.length>2&&p.length>2&&(e.startsWith(p)||p.startsWith(e))); };
-          const has=(x,a)=>x.teams.some(t=>eq(t.abbr,a)); g=games.find(x=>has(x,l.abbrA)&&has(x,l.abbrH))||null; }
+          const ex=(e,p)=>{ e=String(e||"").toLowerCase(); return e===p || AL[e]===p || AL[p]===e; };
+          const has=(x,a,f)=>x.teams.some(t=>f(t.abbr,a));
+          g=games.find(x=>has(x,l.abbrA,ex)&&has(x,l.abbrH,ex))||null;
+          // Loose abbreviation match only if it doesn't change the school ("iowa" must not match "iowast")
+          if(!g){ const lo=(e,p)=>{ e=String(e||"").toLowerCase(); if(ex(e,p)) return true; const [a,b]=e.length<p.length?[e,p]:[p,e]; return a.length>2 && b.startsWith(a) && !/^s/.test(b.slice(a.length)); };
+            g=games.find(x=>has(x,l.abbrA,lo)&&has(x,l.abbrH,lo))||null; }
+          if(g && l.team && !teamMatch(g,l.team)) g=null; }
         if(g){ l.gameId=g.id; changed=true; continue; }
         if(l.kind==="prop"){
-          const t=l.team; const hint=t?games.find(x=>teamMatch(x,t)):null;
+          const t=l.team; const hint=t?findTeamGame(games,t):null;
           for(const cand of (hint?[hint,...games.filter(x=>x!==hint)]:games).filter(x=>x.state!=="pre")){
             const p=boxes[cand.id]||await loadBox(l.league,cand.id).catch(()=>null);
             if(p && findPlayer(p,l.player)){ g=cand; break; }
           }
           if(!g && hint && hint.state==="pre") g=hint;
-        } else { g=games.find(x=>teamMatch(x,l.team||l.opponent)); }
+        } else { g=findTeamGame(games,l.team||l.opponent); }
         if(g){ l.gameId=g.id; changed=true; }
       }
       if(changed) persistLegs(s);
@@ -1467,6 +1519,7 @@ function slipHTML(s){
       <div class="right"><span class="pill ${label[0]}">${label[1]}</span>${sweat?`<span class="sweat">${sweat}</span>`:""}<span class="chev" aria-hidden="true">▼</span></div>
       <div class="dots" aria-hidden="true">${dots}</div></summary>
     <div class="legs">${s.legs.map((l,i)=>legHTML(s,l,i)).join("")}</div>
+    <div class="slip-f">${(()=>{ const u=s.legs.map(pmEventUrl).find(Boolean); return u?`<a class="ghost btn small" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Open in Polymarket</a>`:""; })()}<button type="button" class="ghost" data-copy="${esc(s.id)}">Copy bet</button></div>
     ${reactBar(s)}
     ${mine&&s.source!=="polymarket"&&s.source!=="pmus"?`<div class="slip-f">${canEdit?`<button type="button" class="ghost" data-edit="${esc(s.id)}">Edit</button>`:""}<button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
   </details>`;
@@ -1560,6 +1613,103 @@ function renderHistory(){
   : `<div class="empty"><b>${vis().some(s=>s.status!=="open")?"Nothing matches these filters":"No settled slips yet"}</b>${vis().some(s=>s.status!=="open")?"Try widening the filters or tap Reset filters.":"Slips land here once every leg is decided."}</div>`;
 }
 
+/* ---------- Weekly recap, challenges, leak finder ---------- */
+function weekStart(offset){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)+7*offset); return d.getTime(); }
+const weekRange=w=>[weekStart(w==="last"?-1:0), weekStart(w==="last"?0:1)];
+const fmtDay=t=>new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+let recapWeek= new Date().getDay()===1 ? "last" : ls.get(KEY+".recapWeek","last"), meWeekPick="last";
+function settledIn(list,[a,b]){ return list.filter(s=>s.status!=="open"&&s.status!=="void"&&settledAt(s)>=a&&settledAt(s)<b); }
+const peopleSlips=()=>vis().filter(isPerson);
+function oneLegMiss(s){ return s.status==="lost" && (s.legs||[]).length>=3 && (s.legs||[]).filter(l=>l.result==="lost").length===1 && (s.legs||[]).filter(l=>l.result==="won").length===(s.legs||[]).length-1; }
+function renderRecap(){
+  chipRow($("#recapWeek"),[["last","Last week"],["this","This week"]],recapWeek,"rw");
+  const R=weekRange(recapWeek), list=settledIn(peopleSlips(),R);
+  if(!list.length){ $("#weekRecap").innerHTML=`<div class="empty"><b>No settled bets ${recapWeek==="last"?"last week":"yet this week"}</b>${fmtDay(R[0])} – ${fmtDay(R[1]-1)}</div>`; return; }
+  const t=tally(list), byP=new Map(); list.forEach(s=>{ const k=norm(s.name); if(!byP.has(k)) byP.set(k,{name:s.name,list:[]}); byP.get(k).list.push(s); });
+  const P=[...byP.values()].map(x=>({...x,t:tally(x.list)}));
+  const allShow=P.every(x=>showMoney(x.name));
+  const top=[...P].filter(x=>x.t.n>=3).sort((a,b)=>(b.t.roi??-9)-(a.t.roi??-9))[0];
+  const best=[...list].filter(s=>s.status==="won").sort((a,b)=>profitOf(b)-profitOf(a))[0];
+  const beat=[...list].filter(oneLegMiss).sort((a,b)=>(Number(b.payout)||0)-(Number(a.payout)||0))[0];
+  const active=[...P].sort((a,b)=>b.list.length-a.list.length)[0];
+  const cats=new Map(); list.forEach(s=>{ const c=slipCategory(s); if(!cats.has(c)) cats.set(c,[]); cats.get(c).push(s); });
+  const bestCat=[...cats].map(([c,l])=>({c,t:tally(l)})).filter(x=>x.t.n>=3).sort((a,b)=>(b.t.pct||0)-(a.t.pct||0))[0];
+  $("#weekRecap").innerHTML=`<div class="fine">${fmtDay(R[0])} – ${fmtDay(R[1]-1)}</div>
+    <div class="big"><div><small>Bets settled</small><b>${list.length}</b></div><div><small>Group record</small><b>${t.w}-${t.l}${t.p?"-"+t.p:""}</b></div>
+      <div><small>Legs hit</small><b>${t.legPct!=null?Math.round(t.legPct*100)+"%":"–"}</b></div>${allShow?`<div><small>Group net</small><b class="${t.profit>0?"pos":t.profit<0?"neg":""}">${t.profit>0?"+":""}${money(t.profit)}</b></div>`:""}</div>
+    <ul>${top?`<li>🏆 <b>${esc(top.name)}</b> had the best week: ${top.t.w}-${top.t.l}, ROI ${Math.round((top.t.roi||0)*100)}%.</li>`:""}
+      ${best?`<li>💰 Biggest hit: <b>${esc(best.name)}</b>'s ${best.legs.length}-leg ${esc(slipCategory(best))}${showMoney(best.name)?` for ${signedMoney(profitOf(best))}`:""}.</li>`:""}
+      ${beat?`<li>😭 Bad beat: <b>${esc(beat.name)}</b> missed a ${beat.legs.length}-leg by one leg.</li>`:""}
+      ${bestCat?`<li>🎯 Best sport for the group: <b>${esc(bestCat.c)}</b>, ${Math.round(bestCat.t.pct*100)}% of bets won.</li>`:""}
+      ${active?`<li>📈 Most active: <b>${esc(active.name)}</b> with ${active.list.length} bets settled.</li>`:""}</ul>`;
+}
+const signedMoney=n=>(n>0?"+":"")+money(n);
+$("#recapWeek").addEventListener("click",e=>{ const k=e.target.dataset.rw; if(!k) return; recapWeek=k; ls.set(KEY+".recapWeek",k); renderRecap(); });
+function weekChallenges(){
+  const R=weekRange("this"), list=settledIn(peopleSlips(),R); const by=new Map();
+  list.forEach(s=>{ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,list:[]}); by.get(k).list.push(s); });
+  const P=[...by.values()].map(x=>{ const t=tally(x.list); const ord=[...x.list].sort((a,b)=>settledAt(a)-settledAt(b)); let streak=0; for(let i=ord.length-1;i>=0;i--){ if(ord[i].status==="won") streak++; else if(ord[i].status==="lost") break; }
+    return {...x,t,streak,best:Math.max(0,...x.list.filter(s=>s.status==="won").map(profitOf)),bestMult:Math.max(0,...x.list.filter(s=>s.status==="won").map(s=>(Number(s.payout)||0)/(Number(s.stake)||1)))}; });
+  const pick=(f,ok)=>{ const c=P.filter(ok).sort((a,b)=>f(b)-f(a))[0]; return c && f(c)>0 ? c : null; };
+  return [
+    {k:"roi",emoji:"🏆",title:"Best ROI",min:"3+ bets",w:pick(x=>x.t.roi??-9,x=>x.t.n>=3),val:x=>Math.round((x.t.roi||0)*100)+"% ROI"},
+    {k:"streak",emoji:"🔥",title:"Hottest streak",min:"wins in a row",w:pick(x=>x.streak,()=>true),val:x=>x.streak+" straight"},
+    {k:"hit",emoji:"💰",title:"Biggest hit",min:"single bet",w:pick(x=>x.bestMult,()=>true),val:x=>showMoney(x.name)? signedMoney(x.best) : x.bestMult.toFixed(1)+"x payout"},
+    {k:"legs",emoji:"🎯",title:"Sharpest legs",min:"10+ legs",w:pick(x=>x.t.legPct??0,x=>x.t.legsT>=10),val:x=>Math.round((x.t.legPct||0)*100)+"% of legs hit"},
+    {k:"beat",emoji:"😭",title:"Bad beat",min:"lost by one leg",w:(()=>{ const b=list.filter(oneLegMiss).sort((a,c)=>c.legs.length-a.legs.length)[0]; return b? {name:b.name,b} : null; })(),val:x=>`${x.b.legs.length}-leg, one leg short`},
+  ];
+}
+function renderChallenges(){
+  const C=weekChallenges();
+  $("#challenges").innerHTML=C.map(c=>`<div class="cat"><span class="k">${c.emoji} ${esc(c.title)}</span><span class="v" style="font-size:18px">${c.w?esc(c.w.name):"–"}</span><span class="s">${c.w?esc(c.val(c.w)):"Up for grabs ("+esc(c.min)+")"}</span></div>`).join("");
+}
+function badgesFor(name){ return weekChallenges().filter(c=>c.k!=="beat"&&c.w&&norm(c.w.name)===norm(name)).map(c=>`<span class="badge" title="${esc(c.title)} this week">${c.emoji}</span>`).join(""); }
+// Personal week + leak finder (Me tab, private)
+function renderMeWeek(){
+  chipRow($("#meWeekPick"),[["last","Last week"],["this","This week"]],meWeekPick,"mw");
+  const R=weekRange(meWeekPick), prevR=[R[0]-7*864e5,R[0]];
+  const mine=vis().filter(isMineSlip), list=settledIn(mine,R), prev=settledIn(mine,prevR);
+  if(!list.length){ $("#meWeek").innerHTML=`<div class="empty"><b>No settled bets ${meWeekPick==="last"?"last week":"yet this week"}</b>${fmtDay(R[0])} – ${fmtDay(R[1]-1)}</div>`; return; }
+  const t=tally(list), tp=tally(prev);
+  const best=[...list].sort((a,b)=>profitOf(b)-profitOf(a))[0], worst=[...list].sort((a,b)=>profitOf(a)-profitOf(b))[0];
+  const cats=new Map(); list.forEach(s=>{ const c=slipCategory(s); cats.set(c,[...(cats.get(c)||[]),s]); });
+  const bc=[...cats].map(([c,l])=>({c,t:tally(l)})).sort((a,b)=>b.t.profit-a.t.profit)[0];
+  const delta=t.profit-tp.profit;
+  $("#meWeek").innerHTML=`<div class="fine">${fmtDay(R[0])} – ${fmtDay(R[1]-1)}</div>
+    <div class="big"><div><small>Record</small><b>${t.w}-${t.l}${t.p?"-"+t.p:""}</b></div><div><small>Net</small><b class="${t.profit>0?"pos":t.profit<0?"neg":""}">${signedMoney(t.profit)}</b></div>
+      <div><small>Staked</small><b>${money(t.staked)}</b></div><div><small>ROI</small><b>${t.roi!=null?Math.round(t.roi*100)+"%":"–"}</b></div></div>
+    <ul>${profitOf(best)>0?`<li>Best bet: ${best.legs.length}-leg ${esc(slipCategory(best))}, ${signedMoney(profitOf(best))}.</li>`:`<li>No winning bets this week.</li>`}
+      ${worst!==best&&profitOf(worst)<0?`<li>Toughest: ${worst.legs.length}-leg ${esc(slipCategory(worst))}, ${signedMoney(profitOf(worst))}.</li>`:""}
+      ${bc?`<li>Best sport: ${esc(bc.c)} (${signedMoney(bc.t.profit)}).</li>`:""}
+      ${prev.length?`<li>${delta>=0?"Up":"Down"} ${money(Math.abs(delta))} compared with the week before.</li>`:""}</ul>`;
+}
+$("#meWeekPick").addEventListener("click",e=>{ const k=e.target.dataset.mw; if(!k) return; meWeekPick=k; renderMeWeek(); });
+function renderLeaks(){
+  const mine=vis().filter(isMineSlip).filter(s=>s.status!=="open"&&s.status!=="void");
+  if(mine.length<10){ $("#leaks").innerHTML=`<div class="empty"><b>Not enough bets yet</b>The leak finder needs at least 10 settled bets to spot patterns.</div>`; return; }
+  const hr=s=>{ const t=s.createdAt?.toDate?.(); return t? t.getHours() : null; };
+  const seg=(label,fn)=>{ const m=new Map(); mine.forEach(s=>{ const k=fn(s); if(k==null) return; m.set(k,[...(m.get(k)||[]),s]); }); return [...m].map(([k,l])=>({group:label,k,t:tally(l)})); };
+  const n=s=>(s.legs||[]).length;
+  const kinds=s=>{ const k=new Set((s.legs||[]).map(l=>l.kind==="prop"?"prop":l.kind==="pmus"?"other":"team")); return k.size>1?"Mixed props + team bets":k.has("prop")?"Player props only":k.has("team")?"Team bets only":null; };
+  const segs=[
+    ...seg("Parlay size",s=>n(s)===1?"Single bets":n(s)<=3?"2–3 leg parlays":n(s)<=6?"4–6 leg parlays":"7+ leg parlays"),
+    ...seg("Sport",s=>slipCategory(s)),
+    ...seg("Bet type",kinds),
+    ...seg("Time you placed it",s=>{ const h=hr(s); return h==null?null: h>=5&&h<12?"Morning bets":h<17&&h>=12?"Afternoon bets":h<21&&h>=17?"Evening bets":"Late-night bets"; }),
+    ...seg("Stake size",s=>{ const x=Number(s.stake)||0; return x<5?"Under $5 stakes":x<20?"$5–$20 stakes":"$20+ stakes"; }),
+  ].filter(x=>x.t.n+x.t.p>=5);
+  // leg-level: overs vs unders on player props
+  const legSide=side=>{ let w=0,t=0; mine.forEach(s=>(s.legs||[]).forEach(l=>{ if(l.kind!=="prop"||(l.side||"over")!==side) return; if(l.result==="won"||l.result==="lost"){ t++; if(l.result==="won") w++; } })); return {w,t}; };
+  const ov=legSide("over"), un=legSide("under");
+  const leaks=segs.filter(x=>(x.t.roi??0)<=-0.25 && x.t.profit<=-10).sort((a,b)=>a.t.profit-b.t.profit).slice(0,4);
+  const goods=segs.filter(x=>(x.t.roi??-1)>=0 && x.t.n>=5).sort((a,b)=>b.t.profit-a.t.profit).slice(0,3);
+  const row=(x,icon)=>`<div class="leak"><span>${icon}</span><b>${esc(x.k)}</b><span class="${x.t.profit>0?"pos":"neg"}">${signedMoney(x.t.profit)}</span><small>${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""} · ROI ${Math.round((x.t.roi||0)*100)}% · ${esc(x.group)}</small></div>`;
+  $("#leaks").innerHTML = (leaks.length? `<div class="fine" style="margin-bottom:4px"><b>Where you're losing the most</b></div>`+leaks.map(x=>row(x,"🔻")).join("") : `<div class="fine">No big leaks found. Nothing is losing more than 25% with at least 5 bets.</div>`)
+    + (goods.length? `<div class="fine" style="margin:10px 0 4px"><b>What's working</b></div>`+goods.map(x=>row(x,"✅")).join("") : "")
+    + (ov.t>=10&&un.t>=10? `<div class="fine" style="margin-top:10px">Player-prop legs: overs hit ${Math.round(ov.w/ov.t*100)}% (${ov.w}/${ov.t}), unders hit ${Math.round(un.w/un.t*100)}% (${un.w}/${un.t}).</div>`:"")
+    + `<p class="fine" style="margin-top:8px">Based on your ${mine.length} settled bets. Groups with fewer than 5 bets are left out.</p>`;
+}
+
 /* ---------- Render: leaderboard ---------- */
 const pct = x => x==null?"–":Math.round(x*100)+"%";
 let rankBy="won";
@@ -1577,6 +1727,7 @@ $("#rankBy").addEventListener("click",e=>{const k=e.target.dataset.rb; if(!k) re
 function rangeStart(r){ const d=new Date(); d.setHours(0,0,0,0); if(r==="week"){ d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getTime(); } if(r==="month"){ d.setDate(1); return d.getTime(); } return 0; }
 $("#boardRange").addEventListener("click",e=>{const k=e.target.dataset.br; if(!k) return; boardRange=k; renderBoard();});
 function renderBoard(){
+  renderRecap(); renderChallenges();
   const ppl=people().filter(([k])=>k!=="model");
   chipRow($("#boardRange"),[["all","All-time"],["month","This month"],["week","This week"]],boardRange,"br");
   $("#plTitle").textContent = boardRange==="week"?"This week's profit & loss":boardRange==="month"?"This month's profit & loss":"All-time profit & loss";
@@ -1593,7 +1744,7 @@ function renderBoard(){
   cards.sort((a,b)=>(b.me-a.me)||(b.net-a.net));
   $("#plGrid").innerHTML = cards.length ? cards.map(c=>{
     const cls=c.net>0.004?"up":c.net<-0.004?"down":""; const label=c.net>0.004?"In the green":c.net<-0.004?"In the red":"Even";
-    return `<div class="pl ${cls}"><div class="who"><span>${esc(c.name)}${c.me?' <span class="tag">YOU</span>':""}</span><span class="pill ${cls==="up"?"won":cls==="down"?"lost":"wait"}">${label}</span></div>
+    return `<div class="pl ${cls}"><div class="who"><span>${esc(c.name)}${badgesFor(c.name)}${c.me?' <span class="tag">YOU</span>':""}</span><span class="pill ${cls==="up"?"won":cls==="down"?"lost":"wait"}">${label}</span></div>
       <div class="net ${cls==="up"?"pos":cls==="down"?"neg":""}">${showMoney(c.name)?(c.net>0?"+":"")+money(c.net):(c.t.roi!=null?(c.t.roi>0?"+":"")+Math.round(c.t.roi*100)+"% ROI":"—")}</div>
       ${spark(c.pts)}
       <div class="sub2">${c.t.w}-${c.t.l}${c.t.p?"-"+c.t.p:""}${showMoney(c.name)?` · ${money(c.t.staked)} staked`:""}${c.t.roi!=null?" · ROI "+Math.round(c.t.roi*100)+"%":""}</div>
@@ -1713,6 +1864,10 @@ function renderPicks(){
   $("#modelRecord").innerHTML=`<div class="cat"><span class="k">Record</span><span class="v">${t.w}-${t.l}</span><span class="s">${openN} still open</span></div>
     <div class="cat"><span class="k">Profit ($10 per pick)</span><span class="v ${t.profit>0?"pos":t.profit<0?"neg":""}">${t.profit>0?"+":""}${money(t.profit)}</span><span class="s">ROI ${pctS(t.roi)}</span></div>
     <div class="cat"><span class="k">Legs hit</span><span class="v">${pctS(t.legPct)}</span><span class="s">${t.legsW} of ${t.legsT}</span></div>
+    ${(()=>{ const legs=model.filter(s=>s.pricingV>=2).flatMap(s=>s.legs||[]).filter(l=>l.mid!=null&&l.closeMid!=null);
+      if(!legs.length) return `<div class="cat"><span class="k">Beat the closing price</span><span class="v">–</span><span class="s">Tracked from the price right before tip-off</span></div>`;
+      const beat=legs.filter(l=>l.closeMid>l.mid+0.004).length, avg=legs.reduce((m,l)=>m+(l.closeMid-l.mid),0)/legs.length;
+      return `<div class="cat"><span class="k">Beat the closing price</span><span class="v ${avg>0?"pos":avg<0?"neg":""}">${Math.round(beat/legs.length*100)}%</span><span class="s">${legs.length} legs · avg ${avg>=0?"+":""}${(avg*100).toFixed(1)}¢ vs the price at tip-off</span></div>`; })()}
     <div class="cat"><span class="k">Prop parlays</span><span class="v">${tp.w}-${tp.l}</span><span class="s"><span class="${tp.profit>0?"pos":tp.profit<0?"neg":""}">${tp.profit>0?"+":""}${money(tp.profit)}</span> · legs ${pctS(tp.legPct)}</span></div>
     <div class="cat"><span class="k">Team longshots</span><span class="v">${tt.w}-${tt.l}</span><span class="s"><span class="${tt.profit>0?"pos":tt.profit<0?"neg":""}">${tt.profit>0?"+":""}${money(tt.profit)}</span> · legs ${pctS(tt.legPct)}</span></div>`;
 }
@@ -2231,8 +2386,15 @@ function buildPropParlays(ts){
     if(legs.length<n) return null;
     // Polymarket prices a combo as its own market: about the product of the leg mid-prices, minus ~5% per leg.
     const mids=legs.reduce((m,x)=>m*(x.mid||x.price),1), legsDec=1/legs.reduce((m,x)=>m*x.price,1);
-    const dec=(1/mids)*Math.pow(0.95,legs.length), price=1/dec, prob=legs.reduce((m,x)=>m*x.S.p,1);
-    return {legs, price, prob, dec, legsDec, ev:prob*dec-1};
+    const dec=(1/mids)*Math.pow(0.95,legs.length), price=1/dec;
+    // Same-game legs move together: overs on the same team (or both teams) tend to hit together; an over and an under tend to split.
+    let prob=legs.reduce((m,x)=>m*x.S.p,1), corr=0;
+    for(let a=0;a<legs.length;a++) for(let b=a+1;b<legs.length;b++){ const A=legs[a], B=legs[b]; if(A.game.id!==B.game.id) continue;
+      const same=A.ath?.team&&A.ath.team===B.ath?.team, aligned=A.side===B.side;
+      const rho= same ? (aligned?0.15:-0.10) : (aligned?0.08:-0.05);
+      const pa=A.S.p, pb=B.S.p; prob*=Math.max(0.5,1+rho*Math.sqrt(((1-pa)*(1-pb))/(pa*pb))); corr++; }
+    prob=Math.min(prob, Math.min(...legs.map(x=>x.S.p)));
+    return {legs, price, prob, dec, legsDec, corr, ev:prob*dec-1};
   };
   const T=[
     {name:"Steady 2-leg", blurb:"Two of the most reliable lines on the board.", n:2, pool:[...c].filter(x=>x.S.p>=0.62 && x.price>=0.5).sort((a,b)=>b.S.p-a.S.p||b.edge-a.edge)},
@@ -2262,7 +2424,7 @@ function renderPropParlays(){
       <div class="legs">${p.legs.map(x=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(x.player)}</div><div class="leg-bet">${esc(legLine(x))} · ${esc(x.game.name||"")}</div></div>
         <div class="leg-num"><div class="cur">${Math.round(x.price*100)}¢</div><div class="of">est. ${Math.round(x.S.p*100)}%</div></div></div>
         <div class="statline">L10 ${x.S.W.l10.h}/${x.S.W.l10.n} · season ${x.S.W.season.n?x.S.W.season.h+"/"+x.S.W.season.n:"–"} · <b class="pos">+${Math.round(x.edge*100)} pts</b>${x.S.hot&&x.side==="over"?" · 🔥 trending up":""}</div></div>`).join("")}</div>
-      <div class="slip-f"><span class="statline" style="align-self:center">Estimated Polymarket combo payout ${p.dec.toFixed(2)}x (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}% · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
+      <div class="slip-f"><span class="statline" style="align-self:center">Estimated Polymarket combo payout ${p.dec.toFixed(2)}x (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}%${p.corr?" (adjusted for same-game legs)":""} · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
     + `<p class="fine">Payouts are estimates: Polymarket prices a combo as its own market, usually about 5% less per leg than the legs alone. Check the real combo price before you buy. Hit chances treat legs as independent; two legs from the same game can move together.</p>`
     : `<div class="empty"><b>No prop parlays right now</b>${esc(ts.note || "Not enough props beat their prices today. Check back closer to tip-off, when lines move.")}</div>`;
   if(list.length) logPropModel(ppLeague,list);
@@ -2347,6 +2509,15 @@ async function playerLog(lg,id){
   const out={at:Date.now(),cur,prev}; logCache.set(ck,out); return out;
 }
 const statVal=(o,keys)=>{ let t=0; for(const k of keys){ const v=o[k] ?? o[String(k).split(".").pop()]; if(v==null) return null; t+=v; } return t; };
+function roleSignal(log,gameDate){
+  const mins=log.cur.map(r=>r.o.minutes ?? r.o.timeOnIce).filter(v=>v!=null&&v>0);
+  const avg=a=>a.length? a.reduce((m,x)=>m+x,0)/a.length : null;
+  const season=avg(mins), l5=avg(mins.slice(0,5));
+  const last=log.cur[0]?.t, gd=Date.parse(gameDate)||Date.now();
+  const b2b= !!last && gd-last < 36*3600e3 && gd>last;
+  const ratio= season&&l5 ? l5/season : 1;
+  return {season,l5,ratio,b2b,down:ratio<=0.85&&mins.length>=5,up:ratio>=1.12&&mins.length>=5};
+}
 function lineStats(log,keys,line,side){
   const now=Date.now();
   const vals=rows=>rows.map(r=>({v:statVal(r.o,keys),t:r.t,opp:r.opp})).filter(x=>x.v!=null);
@@ -2441,18 +2612,25 @@ async function scanTrends(lgArg){
       if(eo===-1 && eu===-1) continue;
       const pickUnder= p.pYes>0 ? (eu>eo && eu>0.05) : true;   // only offer a side Polymarket will actually sell
       const S=pickUnder?under:over, price=pickUnder?p.pNo:p.pYes;
-      const inj=injFor(lg,p.player);
+      const inj=injFor(lg,p.player); const role=roleSignal(log,p.game.date);
       const teamOut=injData? (injData.byTeam.get(String(p.game.teams.find(t=>t.abbr===p.ath.team)?.id))?.list||[]).filter(o=>o.cls==="out"&&!sameName(o.name,p.player)).map(o=>o.name) : [];
-      items.push({...p, side:pickUnder?"under":"over", price, mid:pickUnder?p.midNo:p.midYes, S, edge:S.p-price, label:mk.label, keys:mk.keys, inj, teamOut});
+      items.push({...p, side:pickUnder?"under":"over", price, mid:pickUnder?p.midNo:p.midYes, S, edge:S.p-price, label:mk.label, keys:mk.keys, inj, teamOut, role});
     }
     const sport=sportOf(lg); const statItems=[];
     for(const a of ath.values()){ const log=logCache.get(lg+":"+a.id); if(!log) continue; const sm=statSummary(log,sport); if(!sm.length) continue;
-      statItems.push({player:a.name, ath:a, game:a.game, stats:sm, inj:injFor(lg,a.name), hot:Math.max(...sm.map(x=>x.ratio)), cold:Math.min(...sm.map(x=>x.ratio)), hasProp:props.some(p=>p.ath?.id===a.id)}); }
+      statItems.push({player:a.name, ath:a, game:a.game, stats:sm, inj:injFor(lg,a.name), role:roleSignal(log,a.game?.date), hot:Math.max(...sm.map(x=>x.ratio)), cold:Math.min(...sm.map(x=>x.ratio)), hasProp:props.some(p=>p.ath?.id===a.id)}); }
     trendState={lg,day:today,at:Date.now(),items,statItems,games,note: props.length? "" : "Polymarket doesn't have player props for today's "+LEAGUES[lg].label+" games yet, so only player stats are shown."};
   }catch(e){ trendState={lg,day:etDay(),at:Date.now(),items:[],statItems:[],games:[],note:"Couldn't load players right now ("+(e.message||e)+"). Tap Refresh to try again."}; }
   finally{ trendBusy=false; $("#tScan").disabled=false; if(trendState){ trendCacheByLg.set(trendState.lg,trendState); if(trendState.lg!==tf.league){ const c=trendCacheByLg.get(tf.league); trendState=c||null; } } renderTrends(); }
 }
 function hrChip(label,x,line){ if(!x||!x.n) return `<span class="hr">${label} –</span>`; const r=x.h/x.n; return `<span class="hr ${r>=.6?"good":r<=.4?"bad":""}">${label} ${x.h}/${x.n}${x.mixed?"*":""}</span>`; }
+function roleTags(r){ if(!r) return ""; return (r.up?`<span class="sig up">⏱ ${Math.round(r.season)}→${Math.round(r.l5)} min</span>`:"")+(r.down?`<span class="sig dn">⏱ ${Math.round(r.season)}→${Math.round(r.l5)} min</span>`:"")+(r.b2b?`<span class="sig">Back-to-back</span>`:""); }
+function pmEventUrl(l){
+  const PL={nba:"nba",wnba:"wnba",nfl:"nfl",ncaafb:"cfb",ncaamb:"cbb",mlb:"mlb",nhl:"nhl",epl:"epl",ucl:"ucl",mls:"mls"};
+  if(l.abbrA&&l.abbrH&&l.date&&PL[l.league]) return `https://polymarket.us/event/${PL[l.league]}-${l.abbrA}-${l.abbrH}-${l.date}`;
+  const info=pmSlugInfo(l.slug); if(info){ const pl=Object.entries(PL).find(([k])=>k===info.league)?.[1]; if(pl) return `https://polymarket.us/event/${pl}-${info.a}-${info.h}-${info.date}`; }
+  return null;
+}
 function trendCard(it,i){
   const S=it.S, W=S.W, ln=Number(it.line), thr=Number.isInteger(ln+0.5)? (it.side==="over"? (ln+0.5)+"+" : (ln-0.5)+" or fewer") : (it.side==="over"?"over ":"under ")+ln;
   const trend= S.hot? (it.side==="over"?'<span class="hot">🔥 Trending up</span>':'<span class="hot" style="color:var(--loss)">⚠ Trending up</span>') : S.cold? (it.side==="under"?'<span class="hot" style="color:var(--win)">❄ Trending down</span>':'<span class="hot" style="color:var(--muted)">❄ Trending down</span>') : "";
@@ -2461,17 +2639,18 @@ function trendCard(it,i){
   const edge=it.edge!=null? Math.round(it.edge*100):null;
   return `<details class="trend" data-ti="${i}"><summary>
     <div><div class="who">${esc(it.player)}${injBadge(it.inj)} <small>${esc(it.ath?.team||"")} · ${esc(it.game.name||"")}</small></div>
-      <div style="font-size:14px;margin-top:2px">${esc(it.label)} <b>${esc(thr)}</b> ${trend}</div></div>
+      <div style="font-size:14px;margin-top:2px">${esc(it.label)} <b>${esc(thr)}</b> ${trend}${roleTags(it.role)}</div></div>
     <div class="px"><b>${Math.round(it.price*100)}¢</b><span>est. ${Math.round(S.p*100)}% · <span class="edge ${edge>0?"pos":edge<0?"neg":""}">${edge>0?"+":""}${edge}%</span></span></div>
     <div class="wins">${hrChip("L5",W.l5)}${hrChip("L10",W.l10)}${hrChip("7d",W.d7)}${hrChip("30d",W.d30)}${hrChip("Season",W.season)}${hrChip("Last szn",W.last)}</div></summary>
     <div class="body">
       <div>Averages: season <b>${W.season.avg!=null?W.season.avg.toFixed(1):"–"}</b> · last 7 days <b>${W.d7.avg!=null?W.d7.avg.toFixed(1):"–"}</b> · last 10 <b>${W.l10.avg!=null?W.l10.avg.toFixed(1):"–"}</b> · last season <b>${W.last.avg!=null?W.last.avg.toFixed(1):"–"}</b></div>
       ${it.inj?`<div style="color:${it.inj.cls==="out"?"var(--loss)":"#b45309"}">⚠ Injury report: ${esc(it.inj.status)}${it.inj.detail?" · "+esc(it.inj.detail):""}${it.inj.comment?". "+esc(it.inj.comment):""}</div>`:""}
+      ${it.role&&(it.role.season||it.role.b2b)?`<div>Minutes: season <b>${it.role.season?it.role.season.toFixed(1):"–"}</b> · last 5 <b>${it.role.l5?it.role.l5.toFixed(1):"–"}</b>${it.role.b2b?" · <b>second night of a back-to-back</b> (tired legs, possible rest)":""}${it.role.down&&it.side==="over"?". Minutes are down, so this isn't counted as an edge.":""}</div>`:""}
       ${it.teamOut?.length?`<div>Teammates out: <b>${esc(it.teamOut.slice(0,6).join(", "))}</b>. That can mean more minutes and shots for this player.</div>`:""}
       <div class="bars">${bars}<span class="ln" style="bottom:${ln/max*100}%"></span></div>
       <div class="fine">Last ${S.recent.length} games, oldest to newest. Green cleared the line. Dashed line = ${esc(String(ln))}.${(W.l10.mixed||W.l5.mixed)?" * includes last season's games.":""}</div>
       <div class="fine">Price is what it costs to buy ${it.side==="over"?"Yes":"No"} on Polymarket right now (${Math.round(it.price*100)}% implied).${it.wide?" ⚠ Thin market: the buy and sell prices are far apart, so the price may move when you trade.":""} Estimate blends the hit rates above, weighted toward recent games.</div>
-      <div class="row-end"><button type="button" class="small" data-tadd="${i}">Add to a slip</button></div>
+      <div class="row-end">${pmEventUrl(it)?`<a class="small btn" href="${esc(pmEventUrl(it))}" target="_blank" rel="noopener noreferrer">Open in Polymarket</a>`:""}<button type="button" class="small" data-twatch="${i}">Watch line</button><button type="button" class="small" data-tadd="${i}">Add to a slip</button></div>
     </div></details>`;
 }
 function statCardHTML(it){
@@ -2481,7 +2660,7 @@ function statCardHTML(it){
     return `<div class="statc"><small>${esc(x.label)}</small><b>${f(x.season ?? x.last)}</b><small>L5 ${f(x.l5)} · 7d ${f(x.d7)}${x.season==null&&x.last!=null?" · last szn":""}</small> ${arrow}</div>`; }).join("");
   const flag=it.hot>=1.25?'<span class="hot">🔥 Hot</span>':it.cold<=0.75?'<span class="hot" style="color:var(--muted)">❄ Cold</span>':"";
   return `<div class="trend" style="padding:12px 14px;display:grid;gap:8px"><div><div class="who">${esc(it.player)}${injBadge(it.inj)} <small>${esc(it.ath?.team||"")}${it.ath?.pos?" "+esc(it.ath.pos):""} · ${esc(it.game?.name||"")}</small> ${flag}</div>
-    <div class="fine">${it.stats[0]?.games||0} games this season${it.hasProp?" · has Polymarket props (switch View to Prop edges)":""}</div></div><div class="statrow">${cells}</div></div>`;
+    <div class="fine">${it.stats[0]?.games||0} games this season${it.hasProp?" · has Polymarket props (switch View to Prop edges)":""} ${roleTags(it.role)}</div></div><div class="statrow">${cells}</div></div>`;
 }
 function renderTrends(){
   const opt=(arr,cur)=>arr.map(([v,l])=>`<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(l)}</option>`).join("");
@@ -2512,7 +2691,7 @@ function renderTrends(){
   $("#tStatus").textContent=`${ts.items.length} props checked · updated ${ago(ts.at)}`;
   let list=ts.items.filter(x=>(tf.game==="all"||x.game.id===tf.game)&&(tf.stat==="all"||x.label===tf.stat));
   if(tf.price==="long") list=list.filter(x=>x.price<.4); else if(tf.price==="mid") list=list.filter(x=>x.price>=.4&&x.price<.7); else if(tf.price==="fav") list=list.filter(x=>x.price>=.7);
-  if(tf.show==="edge") list=list.filter(x=>x.edge>=0.08 && x.S.W.l10.n>=5 && x.price<0.95 && x.inj?.cls!=="out");
+  if(tf.show==="edge") list=list.filter(x=>x.edge>=0.08 && x.S.W.l10.n>=5 && x.price<0.95 && x.inj?.cls!=="out" && !(x.side==="over"&&x.role?.down));
   const key={edge:x=>-x.edge, l10:x=>-(x.S.W.l10.n? x.S.W.l10.h/x.S.W.l10.n:0), hot:x=>-((x.S.W.d7.avg||0)/((x.S.W.season.avg)||1e9)), price:x=>x.price}[tf.sort];
   list.sort((a,b)=>key(a)-key(b));
   trendState.view=list; const cap=trendState.cap||40;
@@ -2524,7 +2703,19 @@ function renderTrends(){
 $("#tLeagueChips").addEventListener("click",e=>{ const k=e.target.dataset.tl; if(!k||k===tf.league) return; tf.league=k; ls.set(KEY+".tLeague",k); tf.game="all"; tf.stat="all";
   const c=trendCacheByLg.get(k); trendState= c && Date.now()-c.at<15*60000 ? c : null; renderTrends(); });
 $("#tScan").onclick=async()=>{ trendCacheByLg.delete(tf.league); await scanTrends(); toast("Player stats updated."); };
-$("#trendList").addEventListener("click",e=>{ if(e.target.id==="tMore"){ trendState.cap=(trendState.cap||40)+40; renderTrends(); return; } const i=e.target.dataset.tadd; if(i==null) return; const it=trendState?.view?.[+i]; if(!it) return;
+async function addWatch(it){
+  const w=[...(members[uid]?.watch||[])].filter(x=>x.slug!==it.slug).slice(-29);
+  w.push({slug:it.slug, player:it.player, label:it.label, line:it.line, side:it.side, lg:trendState?.lg||tf.league, price:Math.round(it.price*100)/100, last:Math.round(it.price*100)/100, gameDate:it.game?.date||null, at:Date.now()});
+  try{ await gref().collection("members").doc(uid).update({watch:w}); toast(`Watching ${it.player}. You'll get an alert if the price moves 5¢ or he's ruled out.`); }catch(err){ note("Couldn't save: "+err.message); }
+}
+function renderWatch(){
+  const w=(members[uid]?.watch||[]).filter(x=>!x.gameDate || Date.parse(x.gameDate)>Date.now()-6*3600e3);
+  $("#watchList").innerHTML = w.length ? w.map(x=>`<div class="leak"><span>👀</span><b>${esc(x.player)} · ${esc(x.label)} ${x.side==="over"?Math.round(Number(x.line)+0.5)+"+":"under "+x.line}</b><button type="button" class="ghost small" data-unwatch="${esc(x.slug)}">Stop</button><small>Added at ${Math.round(x.price*100)}¢ · last seen ${Math.round((x.last??x.price)*100)}¢${x.gameDate?" · "+new Date(x.gameDate).toLocaleString(undefined,{weekday:"short",hour:"numeric",minute:"2-digit"}):""}</small></div>`).join("")
+    : `<div class="empty"><b>Not watching anything</b>Tap “Watch line” on a Player trends card to get alerts when its price moves 5¢ or the player is ruled out. Alerts arrive with background sync.</div>`;
+}
+$("#watchList").addEventListener("click",async e=>{ const sl=e.target.dataset.unwatch; if(!sl) return; const w=(members[uid]?.watch||[]).filter(x=>x.slug!==sl);
+  try{ await gref().collection("members").doc(uid).update({watch:w}); toast("Stopped watching."); }catch(err){ note("Couldn't update: "+err.message); } });
+$("#trendList").addEventListener("click",e=>{ const wi=e.target.dataset.twatch; if(wi!=null){ const it=trendState?.view?.[+wi]; if(it) addWatch(it); return; } if(e.target.id==="tMore"){ trendState.cap=(trendState.cap||40)+40; renderTrends(); return; } const i=e.target.dataset.tadd; if(i==null) return; const it=trendState?.view?.[+i]; if(!it) return;
   editingId=null; $("#saveSlip").textContent="Post slip";
   drafts=[{league:trendState.lg, kind:"prop", side:it.side, player:it.player, team:it.ath?.team||"", market:it.label, line:it.line}];
   ["stake","odds","payout"].forEach(id=>$("#"+id).value=""); $("#previewImg").hidden=true;
@@ -2536,6 +2727,10 @@ document.body.addEventListener("click",async e=>{
   if(d.del){ const b=e.target; if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again to delete"; setTimeout(()=>{b.dataset.armed="";b.textContent="Delete";},3000); return; }
     await gref().collection("slips").doc(d.del).delete().catch(err=>note("Couldn't delete: "+err.message)); }
   if(d.settle){ const [id,res]=d.settle.split("|"); await gref().collection("slips").doc(id).update({status:res, manual:true, settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>note("Couldn't update: "+err.message)); }
+  if(d.copy){ const s=slips.find(x=>x.id===d.copy); if(!s) return;
+    const lines=[`${s.name}'s ${s.legs.length}-leg ${slipCategory(s)}${s.odds?" ("+s.odds+")":""}`, ...s.legs.map(l=>"• "+legTitle(l)+(l.kind==="prop"?` ${(l.side||"over")==="over"?"over":"under"} ${l.line} ${l.market||""}`:l.kind==="spread"?` ${l.line>0?"+":""}${l.line}`:l.kind==="total"?` ${l.side} ${l.line}`:""))];
+    if(s.stake&&showMoney(s.name)) lines.push(`$${s.stake} to pay $${s.payout||"?"}`);
+    try{ await navigator.clipboard.writeText(lines.join("\n")); toast("Bet copied. Paste it anywhere."); }catch{ note("Couldn't copy on this device."); } }
   if(d.mark){ const [id,i,res]=d.mark.split("|"); const s=slips.find(x=>x.id===id); if(!s) return; s.legs[+i].result=res; persistLegs(s); }
   const rb=e.target.closest?.("[data-react]"); if(rb){ e.preventDefault(); react(...rb.dataset.react.split("|")); }
   if(d.edit){ const s=slips.find(x=>x.id===d.edit); if(!s) return; editingId=s.id;
@@ -2563,8 +2758,9 @@ function renderBell(){
 function renderNotifs(){
   $("#notifList").innerHTML = notifs.length ? notifs.slice(0,40).map(n=>{
     const when=n.at?.toDate? n.at.toDate().toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"";
-    return `<div class="notif ${n.read?"":"unread"}"><span class="e">${esc(n.emoji)}</span><div><b>${esc(n.fromName)}</b> reacted to your ${esc(n.label||"slip")}<small>${esc(when)}</small></div></div>`;
-  }).join("") : `<div class="empty"><b>No reactions yet</b>When a friend reacts to one of your slips, it shows up here.</div>`;
+    const body= n.text ? esc(n.text) : `<b>${esc(n.fromName)}</b> reacted to your ${esc(n.label||"slip")}`;
+    return `<div class="notif ${n.read?"":"unread"}"><span class="e">${esc(n.emoji||"🔔")}</span><div>${body}<small>${esc(when)}</small></div></div>`;
+  }).join("") : `<div class="empty"><b>No alerts yet</b>Reactions, line moves, injuries and “one leg away” alerts show up here.</div>`;
 }
 $("#bellBtn").onclick=async()=>{ const p=$("#notifPanel"); p.hidden=!p.hidden; if(p.hidden) return; renderNotifs();
   const unread=notifs.filter(n=>!n.read); for(const n of unread) gref().collection("notifs").doc(n.id).update({read:true}).catch(()=>{}); };
@@ -2602,8 +2798,18 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=20;
+const APP_VERSION=21;
 const RELEASES=[
+  {v:21, date:"Oct 31", title:"Recaps, alerts and smarter picks",
+   news:["<b>Weekly recap</b> and <b>This week's challenges</b> at the top of the Board. Winners get a badge next to their name.",
+         "<b>Your week</b> and a private <b>Leak finder</b> on the Me tab show which kinds of bets make or lose you money.",
+         "<b>Alerts</b> under the 🔔: a friend is one leg away, a bet cashed, a player in your bet is ruled out, or a line you're watching moved 5¢.",
+         "<b>Watch line</b> on any Player trends card to get those price-move and injury alerts.",
+         "Player trends now flag <b>minutes going up or down</b> and <b>back-to-back</b> games, and prop parlays account for legs from the same game moving together.",
+         "<b>Open in Polymarket</b> and <b>Copy bet</b> buttons on every slip.",
+         "The model's picks are now checked against the price right before tip-off, the best early sign of whether it's any good."],
+   todo:["Turn on <b>Background sync</b> on the Me tab if you haven't. Alerts and the monthly Polymarket check run through it.",
+         {owner:true, text:"Backups now save nightly in GitHub (bet-tracker-sync → Actions → a run around 3 AM → Artifacts). If something breaks 3 runs in a row, GitHub emails you."}]},
   {v:20, date:"Oct 31", title:"Background sync, fairer model, cleaner filters",
    news:["<b>Background sync:</b> your Polymarket bets can now keep updating every 30 minutes, even when the app is closed. Turn it on in Me → Background sync once the group owner has set it up.",
          "<b>Just me</b> filters no longer include the Model's picks.",
@@ -2645,7 +2851,8 @@ function renderSync(){
   if(!pub){ $("#syncState").textContent= isOwner()? "Not set up yet. Open Members to create the server lock first." : "The group owner hasn't set up background sync yet."; $("#syncToggle").disabled=true; return; }
   $("#syncToggle").disabled=false;
   const server= groupDoc?.syncAt ? `The group's sync job last ran ${agoTs(groupDoc.syncAt)}.` : "The group's sync job hasn't run yet.";
-  $("#syncState").textContent = myVault ? `On. ${myVault.lastError? "⚠ "+myVault.lastError : myVault.lastSync? "Your bets last synced "+agoTs(myVault.lastSync)+"." : "Waiting for the first run."} ${server}` : `Off. ${server}`;
+  const au=myVault?.audit;
+  $("#syncState").textContent = myVault ? `On.${au?` Monthly check (${agoTs(au.at)}): ${au.checked} bets checked${au.fixed?`, ${au.fixed} corrected`:""}${au.missing?`, ${au.missing} not tracked`:""}, ${Math.abs(au.gap)<0.5?"matches Polymarket":"off by "+money(Math.abs(au.gap))}.`:""} ${myVault.lastError? "⚠ "+myVault.lastError : myVault.lastSync? "Your bets last synced "+agoTs(myVault.lastSync)+"." : "Waiting for the first run."} ${server}` : `Off. ${server}`;
 }
 async function sealKey(key, pubB64){
   const eph=nacl.box.keyPair(), nonce=nacl.randomBytes(24);
@@ -2685,7 +2892,7 @@ $("#syncHide").onclick=()=>{ $("#syncSecret").value=""; $("#syncSecretBox").hidd
 function statCard(k,v,sub,cls){ return `<div class="cat"><span class="k">${esc(k)}</span><span class="v ${cls||""}">${v}</span><span class="s">${sub||""}</span></div>`; }
 const signed=n=>(n>0?"+":"")+money(n);
 function renderMe(){
-  renderAccount(); renderSync();
+  renderAccount(); renderSync(); renderMeWeek(); renderLeaks(); renderWatch();
   const h=ls.get(KEY+".pmhist",null);
   const st=ls.get(KEY+".pmhistAt",0);
   $("#pmHistStatus").textContent = pmLocked() ? "Locked. Enter your PIN to refresh." : !rawPm() ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
