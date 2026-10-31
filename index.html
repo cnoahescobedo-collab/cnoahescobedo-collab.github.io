@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-ApdvUjZQs455yn592G258n70VSu4QNgB8x964A7Txuc=' 'sha256-tnrXeq7zlXGZZ+rCFiUCX8M/MjD+lwZvhFclav50FU8=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-ApdvUjZQs455yn592G258n70VSu4QNgB8x964A7Txuc=' 'sha256-TOm+1Nc++muHodZbK+YhOzQABXFTOjCbATjEa5t+niE=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1213,13 +1213,20 @@ async function afterSignIn(oldUid){
   if(!authUser.emailVerified){ showVerify(oldUid); return; }
   let udoc={}, udocFailed=false; try{ udoc=(await getRetry(db.collection("users").doc(uid))).data()||{}; }catch{ udocFailed=true; }
   let local=null; try{ const lg=JSON.parse(localStorage.getItem(KEY+".lastGroup")||"null"); if(lg?.uid===uid) local=lg.group; }catch{}
-  const sp=new URLSearchParams(location.search);
-  const urlGroup=(sp.get("join")||sp.get("group")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  const group = sp.get("join") ? urlGroup : (me?.group || udoc.lastGroup || local || urlGroup);
-  if(!group){ if(udocFailed) groupLoadFailed(""); else showJoin(); return; }
-  await openGroup(group, oldUid);
+  const sp=new URLSearchParams(location.search), clean=v=>String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  const joinCode=clean(sp.get("join"));
+  const saved=[...new Set([me?.group, udoc.lastGroup, local, clean(sp.get("group"))].filter(Boolean))];
+  if(joinCode){
+    // A real invite link opens/joins that group. An old or made-up link (e.g. a saved home-screen link) is ignored.
+    let gd=null; try{ gd=await getRetry(db.collection("groups").doc(joinCode)); }catch{}
+    if(gd?.exists){ await openGroup(joinCode, oldUid, saved.filter(g=>g!==joinCode)); return; }
+    try{ history.replaceState(null,"",location.pathname); }catch{}
+    if(!saved.length){ showJoin(); note("That invite link's group code ("+joinCode+") doesn't exist. Ask your friend for a new link."); return; }
+  }
+  if(!saved.length){ if(udocFailed) groupLoadFailed(""); else showJoin(); return; }
+  await openGroup(saved[0], oldUid, saved.slice(1));
 }
-async function openGroup(group, oldUid){
+async function openGroup(group, oldUid, rest=[]){
   const g=db.collection("groups").doc(group);
   let mdoc=null, failed=false; try{ mdoc=await getRetry(g.collection("members").doc(uid)); }catch(e){ failed=true; console.warn("member read",e); }
   if(failed && !oldUid){ me={...(me||{}), group}; groupLoadFailed(group); return; }
@@ -1235,6 +1242,7 @@ async function openGroup(group, oldUid){
       }
     }catch(e){ console.warn("carry-over",e); }
   }
+  if(!mdoc?.exists && rest.length) return openGroup(rest[0], oldUid, rest.slice(1));   // not in this one; try the next group you're in
   if(!mdoc?.exists){ me={...(me||{}), group}; showJoin(group); return; }
   const m=mdoc.data();
   if(m.removed){ me=null; ls.set(KEY+".me",null); showJoin(); note("You're no longer in group "+group+". Join or start another group."); return; }
@@ -2217,7 +2225,7 @@ async function pmBackfill(force){
   }catch(e){ if(e.message==="401") note("Polymarket US didn't accept your key for history. Reconnect it from “Connect Polymarket”."); else if(force) note("Couldn't read Polymarket history: "+(e.message||e)); }
   finally{ pmHistBusy=false; if(tab==="me") renderMe(); }
 }
-setInterval(()=>{ if(!document.hidden && db && me) pmBackfill(false); },60000);
+setInterval(()=>{ if(!document.hidden && db && me && !$("#app").hidden) pmBackfill(false); },60000);
 
 async function syncPmus(force){
   const key=getPmKey(); if(!key){ askUnlock(); return; } if(pmusBusy || (!force && Date.now()-pmusLast<60000)) return;
@@ -2819,7 +2827,7 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 const APP_VERSION=22;
 const RELEASES=[
   {v:22, date:"Oct 31", title:"Sign-in and team fixes",
-   news:["Signing in takes you straight to your group again. No more re-entering the group code.",
+   news:["Signing in takes you straight to your group again, even from an old saved link. No more re-entering the group code.",
          "Fixed teams with similar names getting mixed up (like <b>Iowa</b> and <b>Iowa State</b>). Bets already linked to the wrong game fix themselves."]},
   {v:21, date:"Oct 31", title:"Recaps, alerts and smarter picks",
    news:["<b>Weekly recap</b> and <b>This week's challenges</b> at the top of the Board. Winners get a badge next to their name.",
