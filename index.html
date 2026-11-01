@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-i0sBI223f5G7My8bjwmOxhvtjTwF+0CzDEjzWiq+aeU=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-Tr7lZD2nzGN/k+3Spo0VqL1MvwlHyYRbF+EuNuikQ2k=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -2571,7 +2571,9 @@ const pmSlipId=slug=>("pu_"+myKey()+"_"+slug).replace(/[^A-Za-z0-9_\-]/g,"_").sl
 let pmHistBusy=false;
 async function pmBackfill(force){
   const key=getPmKey(); if(!key){ askUnlock(); return; } if(pmHistBusy || !db || !me) return;
-  if(!force && Date.now()-ls.get(KEY+".pmhistAt",0) < 10*60000) return;
+  // One-time full rebuild (Nov 1): overwrite every Polymarket bet with Polymarket's own numbers and remove duplicate copies
+  const rbKey=KEY+".pmRebuilt1."+uid; const rebuild=!ls.get(rbKey,false);
+  if(!force && !rebuild && Date.now()-ls.get(KEY+".pmhistAt",0) < 10*60000) return;
   pmHistBusy=true; if(tab==="me") $("#pmHistStatus").textContent="Reading your Polymarket history…";
   try{
     const acts=[]; let cursor="";
@@ -2640,7 +2642,7 @@ async function pmBackfill(force){
     const known=new Set(slips.filter(s=>s.source==="pmus").map(s=>s.id));
     const sfx=slug=>"_"+String(slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,120);
     const mineOld=slips.filter(s=>s.source==="pmus" && norm(s.name)===norm(me.name));
-    let added=0; const fast=[], legJobs=[], handled=new Set();
+    let added=0; const fast=[], legJobs=[], handled=new Set(), dupDel=[];
     const prog=t=>{ if(tab==="me") $("#pmHistStatus").textContent=t; };
     for(const x of Object.values(by).filter(x=>x.settled && x.t).sort((a,b)=>b.t-a.t)){
       const id=pmSlipId(x.slug);
@@ -2648,9 +2650,13 @@ async function pmBackfill(force){
       const status=x.pnl>0.004?"won":x.pnl<-0.004?"lost":"push";
       if(ex){
         handled.add(ex.id);
-        if(ex.status==="open" || ex.pnl==null || Math.abs((ex.pnl??0)-x.pnl)>0.009)
-          fast.push({id:ex.id, upd:{status, pnl:x.pnl, settledAt:firebase.firestore.Timestamp.fromMillis(x.t), ...(status==="won"?{legs:(ex.legs||[]).map(l=>({...l,result:"won"}))}:{})}});
-        if((ex.legsV||0)<5) legJobs.push({id:ex.id, slug:x.slug, title:x.title, short:x.short, status});
+        if(rebuild) mineOld.filter(o=>o.id!==ex.id && o.id.endsWith(sfx(x.slug))).forEach(o=>dupDel.push(o.id));
+        const stakeOff= x.stake>0 && Math.abs((Number(ex.stake)||0)-x.stake)>0.009;
+        const timeOff= Math.abs((ex.settledAt?.toMillis?.()||0)-x.t)>60000;
+        if(ex.status==="open" || ex.pnl==null || Math.abs((ex.pnl??0)-x.pnl)>0.009 || (rebuild && (stakeOff||timeOff||ex.status!==status)))
+          fast.push({id:ex.id, upd:{upd:firebase.firestore.FieldValue.serverTimestamp(), status, pnl:x.pnl, settledAt:firebase.firestore.Timestamp.fromMillis(x.t), manual:false, clearedEarly:false,
+            ...(rebuild&&x.stake>0?{stake:x.stake, payout:Math.round((x.stake+Math.max(0,x.pnl))*100)/100}:{}), ...(status==="won"?{legs:(ex.legs||[]).map(l=>({...l,result:"won"}))}:{})}});
+        if(rebuild || (ex.legsV||0)<5) legJobs.push({id:ex.id, slug:x.slug, title:x.title, short:x.short, status});
         continue;
       }
       if(!all && !pmSlugInfo(x.slug) && (x.cat==="Other")) continue;
@@ -2663,6 +2669,7 @@ async function pmBackfill(force){
     }
     // 1) Save corrected results right away
     let done=0; await pool(fast,6,async f=>{ await col.doc(f.id).update(f.upd).catch(()=>{}); done++; if(done%10===0) prog(`Correcting results… ${done} of ${fast.length}`); });
+    if(dupDel.length){ await pool([...new Set(dupDel)],4,async id=>{ await col.doc(id).delete().then(()=>forgetSlip(id)).catch(()=>{}); }); }
     // 2) Safety net: my Polymarket slips still not confirmed -> ask Polymarket how that market settled
     const mineAll=slips.filter(s=>isPM(s) && s.source==="pmus" && (s.uid===uid || members[s.uid]?.linkedTo===uid || norm(s.name)===norm(me.name)));
     const stale=mineAll.filter(s=>!handled.has(s.id) && s.status==="open" && !pos[(String(s.id).match(/^pu_[^_]+_(.+)$/)||[])[1]] && (Date.now()-(s.createdAt?.toMillis?.()||0))>3*3600e3).slice(0,80);
@@ -2681,8 +2688,9 @@ async function pmBackfill(force){
     const fixed=fast.length+fixedBySettle;
     if(added||fixed) toast(`Polymarket check: ${fixed} result${fixed===1?"":"s"} corrected${added?`, ${added} past bet${added===1?"":"s"} added`:""}.`);
     // 3) Rebuild mislabeled legs in the background (display only)
-    (async()=>{ let n=0; await pool(legJobs.slice(0,120),3,async j=>{ const nl=await pmBuildLegs(j.slug,key,j.title,j.short).catch(()=>null); if(!nl) return;
-      await col.doc(j.id).update({legs:nl.map(l=>({...l,result:j.status==="won"?"won":(j.status==="lost"&&nl.length===1)?"lost":null})), legsV:5}).catch(()=>{}); n++; }); })();
+    await (async()=>{ let n=0; const jobs=legJobs.slice(0,rebuild?3000:120); await pool(jobs,3,async j=>{ const nl=await pmBuildLegs(j.slug,key,j.title,j.short).catch(()=>null); if(!nl) return;
+      await col.doc(j.id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), legs:nl.map(l=>({...l,result:j.status==="won"?"won":(j.status==="lost"&&nl.length===1)?"lost":(j.status==="push"&&nl.length===1)?"push":null})), legsV:5}).catch(()=>{}); n++; if(rebuild&&n%25===0) prog(`Rebuilding your Polymarket bets… ${n} of ${jobs.length}`); }); })();
+    if(rebuild){ ls.set(rbKey,true); toast("Your Polymarket history was rebuilt from Polymarket."); }
   }catch(e){ if(e.message==="401") note("Polymarket US didn't accept your key for history. Reconnect it from “Connect Polymarket”."); else if(force) note("Couldn't read Polymarket history: "+(e.message||e)); }
   finally{ pmHistBusy=false; if(tab==="me") renderMe(); }
 }
@@ -3315,8 +3323,10 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=31;
+const APP_VERSION=32;
 const RELEASES=[
+  {v:32, date:"Nov 1", title:"History rebuilt from Polymarket",
+   news:["Your Polymarket bets are being rebuilt from Polymarket's own records: stake, result, amount, date and legs. Open the app with Polymarket connected and it happens automatically (it can take a minute). Duplicate copies are removed.", "Model picks and bets you entered by hand aren't changed."]},
   {v:31, date:"Nov 1", title:"All your history, every time",
    news:["Fixed: some settled bets never showed up in History after Firebase hit its daily limit on Oct 31. Your phone now reloads everything once and keeps the full history (it used to keep only the newest 800 slips).", "If the live connection drops, the app reloads in full next time instead of skipping bets."]},
   {v:30, date:"Nov 1", title:"History dates fixed",
