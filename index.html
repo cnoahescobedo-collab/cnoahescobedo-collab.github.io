@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-xi2cO8XSO7Xy58VUNPIzf80EQX7HMSSC7EVdof3E5nY=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-oq2QjiybbKSkWktzpDkywgLtXzYhXGq2xND79kmDtnA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -146,6 +146,20 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .recap{gap:10px}.recap .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.recap .big div{background:var(--chip,rgba(127,127,127,.08));border-radius:10px;padding:8px 10px}
 .recap .big b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.recap .big small{color:var(--muted);font-size:12px}.recap ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
 a.btn{text-decoration:none}.btn.small{min-height:32px;padding:5px 10px;font-size:13px}.btn.ghost{background:none;border:none;color:var(--muted);font-weight:500;font-size:13px;padding:6px 8px;min-height:0}
+.hd-left{display:flex;gap:12px;align-items:center}
+.menubtn{width:42px;height:42px;min-height:0;padding:0;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;flex:none}
+.menubtn span{display:block;width:18px;height:2px;background:var(--ink,currentColor);border-radius:2px}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(300px,86vw);background:var(--surface);border-right:1px solid var(--line);z-index:61;overflow-y:auto;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.drawer[hidden],.drawer-bg[hidden]{display:none}
+.dr-h{display:flex;justify-content:space-between;align-items:center}.dr-h b{font-size:18px}
+.dr-g{display:flex;flex-direction:column}.dr-g h4{margin:6px 0 2px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dr-g button,.dr-g a{all:unset;cursor:pointer;padding:9px 8px;border-radius:8px;font-size:15px;color:inherit}.dr-g button:hover,.dr-g a:hover,.dr-g button:focus-visible,.dr-g a:focus-visible{background:var(--chip,rgba(127,127,127,.12))}
+.dr-help{border-top:1px solid var(--line);padding-top:10px}
+body.noscroll{overflow:hidden}
+.rg ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+details.danger summary{cursor:pointer;color:var(--loss)}details.danger p{margin:8px 0}
+footer a{color:inherit}
 .grade{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
 .grade-top{display:flex;gap:12px;align-items:center}.gl{font:700 30px var(--display,inherit);width:46px;height:46px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff}
 .gA{background:var(--win)}.gB{background:#4f9a5a}.gC{background:#b98a1d}.gD{background:var(--live)}.gF{background:var(--loss)}
@@ -253,13 +267,31 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 <body>
 <div class="wrap">
   <header>
-    <div>
+    <div class="hd-left"><button type="button" class="menubtn" id="menuBtn" aria-label="Open menu" aria-controls="drawer" aria-expanded="false" hidden><span></span><span></span><span></span></button><div>
       <h1>Live <span>Bet</span> Tracker</h1>
       <p class="sub">Snap your slip. Watch every leg move. See who's cashing.</p>
-    </div>
+    </div></div>
     <div class="pulse" id="pulse"><i></i><span id="pulseText">Ready</span></div>
   </header>
 
+  <div class="drawer-bg" id="drawerBg" hidden></div>
+  <nav class="drawer" id="drawer" aria-label="All sections" hidden>
+    <div class="dr-h"><b>Menu</b><button type="button" class="ghost" id="drawerClose" aria-label="Close menu">✕</button></div>
+    <div class="dr-g"><h4>Live</h4>
+      <button type="button" data-go="live|liveList">Open slips</button><button type="button" data-go="live|sweat">Sweat board</button><button type="button" data-go="live|add">Add a slip</button></div>
+    <div class="dr-g"><h4>History</h4><button type="button" data-go="history|histList">Settled bets</button></div>
+    <div class="dr-g"><h4>Picks</h4>
+      <button type="button" data-go="picks|pm:trends">Player trends</button><button type="button" data-go="picks|pm:news">Injuries &amp; news</button><button type="button" data-go="picks|pm:value">Value parlays</button></div>
+    <div class="dr-g"><h4>Board</h4>
+      <button type="button" data-go="board|weekRecap">Weekly recap</button><button type="button" data-go="board|challenges">Challenges</button><button type="button" data-go="board|season">Season</button><button type="button" data-go="board|pickem">Daily pick'em</button><button type="button" data-go="board|closeCalls">Close calls</button><button type="button" data-go="board|plGrid">Profit &amp; loss</button><button type="button" data-go="board|rankList">Rankings</button><button type="button" data-go="board|catGrid">Best sport</button></div>
+    <div class="dr-g"><h4>Me (private)</h4>
+      <button type="button" data-go="me|meWeek">Your week</button><button type="button" data-go="me|leaks">Leak finder</button><button type="button" data-go="me|meClose">Close calls</button><button type="button" data-go="me|watchList">Watching</button><button type="button" data-go="me|pushCard">Phone alerts</button><button type="button" data-go="me|syncCard">Background sync</button><button type="button" data-go="me|rgCard">Play responsibly</button><button type="button" data-go="me|acctCard">Account</button><button type="button" data-go="me|setCard">Settings</button></div>
+    <div class="dr-g"><h4>Group</h4>
+      <button type="button" data-go="act|bellBtn">Alerts</button><button type="button" data-go="act|membersBtn">Members</button><button type="button" data-go="act|inviteBtn">Invite friends</button><button type="button" data-go="act|polyBtn">Connect Polymarket</button></div>
+    <div class="dr-g"><h4>Help</h4>
+      <button type="button" data-go="act|wnOpen">What's new</button><a href="terms.html" target="_blank" rel="noopener">Terms of Use</a><a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a><button type="button" data-go="act|acctSignOut">Sign out</button></div>
+    <p class="fine dr-help">21+ only. Gambling problem? Call or text <a href="tel:18006973738">1-800-MY-RESET</a> (24/7, free) or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>.</p>
+  </nav>
   <div class="notice" id="moved" hidden><b>The app has a new address.</b> Open <a href="https://live-bet-tracker-b4f3f.web.app" id="movedLink">live-bet-tracker-b4f3f.web.app</a>, sign in, and add it to your home screen. You'll need to connect Polymarket again there. This old address keeps working for now.</div>
   <div class="notice" id="notice" hidden></div>
 
@@ -288,6 +320,21 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     <p class="switch-mode"><span id="authSwitchText">New here?</span> <button type="button" class="linkbtn" id="authSwitch">Create an account</button></p>
     <div class="or"><span>or</span></div>
     <button type="button" id="authGoogle" class="google">Continue with Google</button>
+    <p class="fine" style="text-align:center">21+ only. By continuing you agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  </section>
+
+  <section class="panel" id="gatePanel" hidden>
+    <h2>Before you start</h2>
+    <p>Live Bet Tracker is for adults <b>21 or older</b>. It tracks bets and shows stats. It doesn't take bets, and its picks and grades are estimates, not advice.</p>
+    <div class="grid6">
+      <label class="f c2">Birth month<select id="dobM"><option value="">Month</option></select></label>
+      <label class="f c2">Day<select id="dobD"><option value="">Day</option></select></label>
+      <label class="f c2">Year<select id="dobY"><option value="">Year</option></select></label>
+    </div>
+    <p class="fine">Your birth date is only used to check your age right now. It isn't saved.</p>
+    <label class="toggle"><input type="checkbox" id="gateAgree"> I'm 21 or older, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including that I'm responsible for my own bets.</label>
+    <div class="row-end"><button type="button" class="ghost" id="gateSignOut">Sign out</button><button type="button" class="primary" id="gateGo">Continue</button></div>
+    <p class="fine">Gambling problem? Call or text <a href="tel:18006973738">1-800-MY-RESET</a> (24/7, free) or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>.</p>
   </section>
 
   <section class="panel" id="verifyPanel" hidden>
@@ -465,7 +512,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
           <div class="row-end"><span class="sp" id="tStatus" style="font-size:13px;color:var(--muted)"></span><button type="button" class="ghost small" id="tScan">Refresh</button></div>
         </div>
         <div class="list" id="trendList" style="gap:8px"><div class="empty"><b>Loading players…</b></div></div>
-        <p class="fine">Past results don't guarantee future ones. Injuries, minutes and matchups matter, so use this as a starting point.</p>
+        <p class="fine">Past results don't guarantee future ones. Injuries, minutes and matchups matter, so use this as a starting point. For information only, not betting advice. You're responsible for your own bets.</p>
       </div>
       <div id="picksNews" style="display:flex;flex-direction:column;gap:12px">
         <div class="panel">
@@ -522,7 +569,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="section-head"><h2>Watching</h2><span class="statline">Alerts when a price moves 5¢ or a player is ruled out</span></div>
       <div class="panel" id="watchList"></div>
       <div class="section-head"><h2>Phone alerts</h2></div>
-      <div class="panel" style="gap:10px">
+      <div class="panel" style="gap:10px" id="pushCard">
         <p id="pushState" style="margin:0"></p>
         <label class="toggle"><input type="checkbox" id="pushToggle"> Send alerts to this phone, even when the app is closed</label>
         <p class="fine">Reactions, one leg away, cashed bets, injuries and watched lines. Checked about once an hour. On iPhone this works only from the home-screen icon (Share → Add to Home Screen), iOS 16.4 or newer. Turn it on separately on each phone.</p>
@@ -533,8 +580,17 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
         <label class="toggle"><input type="checkbox" id="syncToggle"> Keep my Polymarket bets syncing when the app is closed</label>
         <p class="fine" id="syncFine">Your key is locked on this phone with the group's server lock, so Firebase only stores a scrambled copy and nobody can read it in the app. About once an hour the group's sync job unlocks it to <b>read</b> your positions and results. It never places trades. The group owner runs that job, so turn this on only if you trust them. You can turn it off anytime, or delete the key at polymarket.us/developer.</p>
       </div>
+      <div class="section-head"><h2>Play responsibly</h2></div>
+      <div class="panel rg" id="rgCard" style="gap:8px">
+        <p style="margin:0">Betting should stay fun. Set a budget before you start, never chase losses, and take breaks. If it stops being fun, help is free and confidential:</p>
+        <ul>
+          <li><b>National Problem Gambling Helpline:</b> call or text <a href="tel:18006973738">1-800-MY-RESET</a> (1-800-697-3738), or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>. Open 24/7.</li>
+          <li><b>Oregon:</b> <a href="tel:18776954648">1-877-MY-LIMIT</a> or <a href="https://www.opgr.org" target="_blank" rel="noopener">opgr.org</a>.</li>
+          <li>Most betting apps, including Polymarket, let you set deposit limits or take a break in your account settings.</li>
+        </ul>
+      </div>
       <div class="section-head"><h2>Account</h2></div>
-      <div class="panel" style="gap:12px">
+      <div class="panel" style="gap:12px" id="acctCard">
         <div class="acct-line"><span>Signed in as <b id="acctEmail"></b></span><span class="pill" id="acctVerified"></span></div>
         <div id="pwChangeBox" style="display:flex;flex-direction:column;gap:10px">
           <div class="grid6">
@@ -550,9 +606,13 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
           <button type="button" class="small" id="acctSignOut">Sign out</button>
           <button type="button" class="small" id="signOutBtn">Sign out &amp; forget my Polymarket key</button>
         </div>
+        <details class="fine danger"><summary>Delete my account and data</summary>
+          <p>This permanently deletes your account, your bets, picks, reactions, alerts settings and any saved keys from this group. It can't be undone. Type <b>DELETE</b> to confirm.</p>
+          <div class="row-end"><input id="delConfirm" autocomplete="off" placeholder="DELETE" style="max-width:140px"><button type="button" class="small" id="delAcct">Delete everything</button></div>
+        </details>
       </div>
       <div class="section-head"><h2>Settings</h2></div>
-      <div class="panel" style="gap:14px">
+      <div class="panel" style="gap:14px" id="setCard">
         <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
         <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
         <div class="row-end"><button type="button" class="small" id="wnOpen">What's new</button><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
@@ -592,6 +652,8 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
   </div>
   <footer>
     <span>Live data from ESPN, refreshed every 20 seconds while open. Slips are shared only with approved members of your group.</span>
+    <span>21+ only. For information and entertainment. Not a sportsbook and not betting advice. Gambling problem? Call or text <a href="tel:18006973738">1-800-MY-RESET</a> (24/7, free) or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>.</span>
+    <span><a href="terms.html" target="_blank" rel="noopener">Terms</a> · <a href="privacy.html" target="_blank" rel="noopener">Privacy</a></span>
   </footer>
 </div>
 
@@ -1070,7 +1132,7 @@ const gref = () => db.collection("groups").doc(me.group);
 function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
-  ["authPanel","joinPanel","pendingPanel","verifyPanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false;
+  ["authPanel","joinPanel","pendingPanel","verifyPanel","gatePanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false; $("#menuBtn").hidden=false;
   try{ localStorage.setItem(KEY+".lastGroup",JSON.stringify({uid,group:me.group})); }catch{}
   db.collection("users").doc(uid).set({lastGroup:me.group, groups:firebase.firestore.FieldValue.arrayUnion(me.group)},{merge:true}).catch(()=>{});
   if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
@@ -1140,7 +1202,7 @@ function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?
 function genCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; const r=crypto.getRandomValues(new Uint8Array(6)); r.forEach(x=>c+=a[x%a.length]); return c; }
 
 /* ---------- Accounts ---------- */
-function showOnly(id){ ["authPanel","joinPanel","pendingPanel","verifyPanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
+function showOnly(id){ $("#menuBtn").hidden=true; ["authPanel","joinPanel","pendingPanel","verifyPanel","gatePanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
 function showAuth(){ showOnly("authPanel"); setAuthMode(firebase.auth().currentUser?.isAnonymous ? "signup" : "signin"); }
 function authMsg(e){
   const c=e?.code||"";
@@ -1284,6 +1346,83 @@ $("#pwChangeBtn").onclick=async()=>{
   finally{ btn.disabled=false; }
 };
 
+/* ---- Age check + Terms (21+) ---- */
+const TERMS_V=1;
+let gateOldUid=null;
+function showGate(oldUid){
+  gateOldUid=oldUid; showOnly("gatePanel");
+  const M=$("#dobM"), D=$("#dobD"), Y=$("#dobY");
+  if(M.options.length<3){
+    ["January","February","March","April","May","June","July","August","September","October","November","December"].forEach((m,i)=>M.add(new Option(m,i+1)));
+    for(let d=1;d<=31;d++) D.add(new Option(d,d));
+    const yr=new Date().getFullYear(); for(let y=yr-18;y>=yr-100;y--) Y.add(new Option(y,y));
+  }
+}
+function ageFrom(y,m,d){ const t=new Date(); let a=t.getFullYear()-y; if(t.getMonth()+1<m || (t.getMonth()+1===m && t.getDate()<d)) a--; return a; }
+$("#gateGo").onclick=async()=>{
+  const y=+$("#dobY").value, m=+$("#dobM").value, d=+$("#dobD").value;
+  if(!y||!m||!d){ note("Pick your birth month, day and year."); return; }
+  if(new Date(y,m-1,d).getMonth()!==m-1){ note("That date doesn't exist. Check the day."); return; }
+  if(ageFrom(y,m,d)<21){ note("Sorry, you must be 21 or older to use Live Bet Tracker."); $("#dobY").value=""; $("#gateAgree").checked=false; return; }
+  if(!$("#gateAgree").checked){ note("Check the box to agree to the Terms and Privacy Policy."); return; }
+  const b=$("#gateGo"); b.disabled=true;
+  try{ await db.collection("users").doc(uid).set({ageOk:true, ageAt:firebase.firestore.FieldValue.serverTimestamp(), termsV:TERMS_V, termsAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    ["dobY","dobM","dobD"].forEach(id=>$("#"+id).value=""); note(); await afterSignIn(gateOldUid); }
+  catch(e){ note("Couldn't save that: "+e.message); }
+  finally{ b.disabled=false; }
+};
+$("#gateSignOut").onclick=()=>signOutAll(false);
+
+/* ---- Side menu ---- */
+function openDrawer(on){ $("#drawer").hidden=!on; $("#drawerBg").hidden=!on; $("#menuBtn").setAttribute("aria-expanded",String(on)); document.body.classList.toggle("noscroll",on); if(on) $("#drawer").querySelector("button,a")?.focus(); }
+$("#menuBtn").onclick=()=>openDrawer(true); $("#drawerClose").onclick=()=>openDrawer(false); $("#drawerBg").onclick=()=>openDrawer(false);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("#drawer").hidden) openDrawer(false); });
+$("#drawer").addEventListener("click",e=>{
+  const b=e.target.closest("[data-go]"); if(!b){ if(e.target.closest("a")) openDrawer(false); return; }
+  openDrawer(false);
+  const [where,what]=b.dataset.go.split("|");
+  if(where==="act"){ const el=$("#"+what); if(!el) return; if(el.closest("#view-me")) document.querySelector('[data-tab="me"]').click(); setTimeout(()=>el.click(),50); return; }
+  document.querySelector(`[data-tab="${where}"]`)?.click();
+  setTimeout(()=>{
+    let el=null;
+    if(what==="sweat"){ liveView="game"; renderLive(); el=$("#liveView"); }
+    else if(what==="add"){ $("#manualBtn").click(); return; }
+    else if(what.startsWith("pm:")){ pickMode=what.slice(3); ls.set(KEY+".pickMode",pickMode); renderPickMode(); el=$("#pickMode"); }
+    else el=$("#"+what);
+    if(!el) return; const head=el.previousElementSibling?.classList?.contains("section-head")? el.previousElementSibling : el;
+    head.scrollIntoView({behavior:"smooth",block:"start"});
+  },80);
+});
+
+/* ---- Delete my account and data ---- */
+$("#delAcct").onclick=async()=>{
+  if($("#delConfirm").value.trim()!=="DELETE"){ note("Type DELETE in the box to confirm."); return; }
+  const b=$("#delAcct"); b.disabled=true; const u=firebase.auth().currentUser; const myUid=u.uid;
+  try{
+    let groups=[me?.group].filter(Boolean); try{ const ud=(await db.collection("users").doc(myUid).get()).data(); groups=[...new Set([...groups,...(ud?.groups||[])])]; }catch{}
+    for(const code of groups){
+      const g=db.collection("groups").doc(code);
+      const del=async q=>{ try{ const r=await q.get(); for(const d of r.docs) await d.ref.delete().catch(()=>{}); }catch{} };
+      await del(g.collection("slips").where("uid","==",myUid));
+      await del(g.collection("reactions").where("uid","==",myUid));
+      await del(g.collection("notifs").where("from","==",myUid));
+      await del(g.collection("picks").where("uid","==",myUid));
+      for(const c of ["vault","push"]) await g.collection(c).doc(myUid).delete().catch(()=>{});
+      try{ const m=(await g.collection("members").doc(myUid).get()).data(); if(m?.name) await g.collection("names").doc(nameKey(m.name)).delete().catch(()=>{}); }catch{}
+      await g.collection("members").doc(myUid).delete().catch(()=>{});
+    }
+    await db.collection("users").doc(myUid).delete().catch(()=>{});
+    try{ Object.keys(localStorage).filter(k=>k.startsWith(KEY)).forEach(k=>localStorage.removeItem(k)); }catch{}
+    try{ const sub=await currentSub(); if(sub) await sub.unsubscribe(); }catch{}
+    try{ await u.delete(); }
+    catch(e){ if(e.code==="auth/requires-recent-login"){ note("Your data is deleted. To finish removing your login, sign in again and tap Delete everything once more."); setTimeout(()=>signOutAll(true),4000); return; } throw e; }
+    unsub.forEach(f=>f()); unsub=[]; me=null; try{ sessionStorage.clear(); }catch{}
+    alertGone();
+  }catch(e){ note("Couldn't finish deleting: "+e.message); }
+  finally{ b.disabled=false; }
+};
+function alertGone(){ showOnly("authPanel"); setAuthMode("signup"); note("Your account and data were deleted."); }
+
 let pendingUnsub=null;
 // Right after sign-in the first reads can fail for a moment (sign-in token still settling, slow phone network).
 // Retry, refreshing the token, instead of treating a failed read as "not in a group".
@@ -1305,6 +1444,7 @@ async function afterSignIn(oldUid){
   try{ await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION); sessionStorage.setItem(KEY+".session","1"); }catch{}
   if(!authUser.emailVerified){ showVerify(oldUid); return; }
   let udoc={}, udocFailed=false; try{ udoc=(await getRetry(db.collection("users").doc(uid))).data()||{}; }catch{ udocFailed=true; }
+  if(!udocFailed && !(udoc.ageOk && (udoc.termsV||0)>=TERMS_V)){ showGate(oldUid); return; }
   let local=null; try{ const lg=JSON.parse(localStorage.getItem(KEY+".lastGroup")||"null"); if(lg?.uid===uid) local=lg.group; }catch{}
   const sp=new URLSearchParams(location.search), clean=v=>String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   const joinCode=clean(sp.get("join"));
@@ -2917,8 +3057,13 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=23;
+const APP_VERSION=24;
 const RELEASES=[
+  {v:24, date:"Nov 1", title:"Menu, age check and Terms",
+   news:["<b>Menu</b> (☰, top left) jumps straight to any section: season, pick'em, leak finder, phone alerts and more.",
+         "Live Bet Tracker is <b>21+</b>. Everyone confirms their age and agrees to the new <b>Terms</b> and <b>Privacy Policy</b> once.",
+         "<b>Play responsibly</b> on the Me tab, with the free 24/7 helpline: call or text 1-800-MY-RESET.",
+         "You can now <b>delete your account and data</b> from Me → Account."]},
   {v:23, date:"Nov 1", title:"Seasons, pick'em and phone alerts",
    news:["<b>Season</b> on the Board: each week you're matched with someone. Higher ROI on that week's bets wins. The last week of the month is the playoff.",
          "<b>Daily pick'em</b> on the Board: pick one team to win each day. It's free, with a monthly leaderboard and streaks.",
@@ -3090,7 +3235,8 @@ async function updateGrade(){
       <div class="fine">${ev!=null?`On average you'd get back about <b>${Math.round(ev*100)}¢ per $1</b>. ${ev>=1?"That's a good price.":ev>=0.9?"About a fair price.":"The price is worse than the real odds."}`:"Add your stake and payout (or odds) to see a grade."}</div></div></div>
     <ul class="grade-legs">${legs.map((d,i)=>`<li><span>${esc(legTitle({...d,line:d.line===""?null:Number(d.line)}))}</span><b>${Math.round(P[i].p*100)}%</b><small>${esc(P[i].src)}</small></li>`).join("")}</ul>
     ${t.n+t.p>=3?`<div class="fine">Your record on ${sizeBucket(n)}: <b>${t.w}-${t.l}${t.p?"-"+t.p:""}</b>${t.roi!=null?`, ROI ${Math.round(t.roi*100)}%`:""}${close?` · lost ${close} by one leg`:""}.</div>`:""}
-    ${n>=2?`<div class="fine">Estimates treat each leg as separate, so legs from the same game that move together can be off.</div>`:""}`;
+    ${n>=2?`<div class="fine">Estimates treat each leg as separate, so legs from the same game that move together can be off.</div>`:""}
+    <div class="fine">Grades are estimates for information only, not betting advice.</div>`;
 }
 let gradeTimer=null; const gradeSoon=()=>{ clearTimeout(gradeTimer); gradeTimer=setTimeout(updateGrade,700); };
 
