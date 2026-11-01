@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-AOmUt3VPBKnsz6Wp6Szzonw0FFW27VUjOyhvOKpzW88=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-TqSIHMN8L/oAGFujKZhfQXFPkb595JICOzljfa7C72Y=' 'sha256-skA6LVSRq7Xqhg2o7mKxEd+VTaQanrlmTKHOO+x/+vs=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -1056,26 +1056,30 @@ const amToDec = a => { a=Number(a); if(!a) return null; return a>0 ? 1+a/100 : 1
 const decToAm = d => d>=2 ? "+"+Math.round((d-1)*100) : "-"+Math.round(100/(d-1));
 const impl = a => { const d=amToDec(a); return d?1/d:null; };
 // For each side of a game: book fair %, model % (avg of available), edge and EV per $1.
+// Priced with Polymarket US (where you actually bet). Sportsbook odds and ESPN's model are only used to estimate the real chance.
 function valueSides(g){
   const out=[];
-  const ia=impl(g.mlA), ih=impl(g.mlH); if(ia==null||ih==null) return out;
-  const fairA=ia/(ia+ih), fairH=ih/(ia+ih);
-  for(const [side,team,ml,fair] of [["A",g.away,g.mlA,fairA],["H",g.home,g.mlH,fairH]]){
-    const est=[]; const espn = side==="A"?g.espnA:g.espnH; const poly = side==="A"?g.polyA:g.polyH;
-    if(espn!=null) est.push(espn); if(poly!=null) est.push(poly);
-    if(!est.length) continue;
-    const p=est.reduce((s,x)=>s+x,0)/est.length;
-    const dec=amToDec(ml);
-    out.push({gameId:g.id, league:g.league, team, opp: side==="A"?g.home:g.away, ml, dec, fair, espn, poly, p, edge:p-fair, ev:p*dec-1, start:g.date, label:g.name});
+  const ia=impl(g.mlA), ih=impl(g.mlH);
+  const bookA= ia!=null&&ih!=null ? ia/(ia+ih) : null, bookH= bookA!=null ? 1-bookA : null;
+  for(const [side,team] of [["A",g.away],["H",g.home]]){
+    const buy= side==="A"? g.buyA : g.buyH, mid= side==="A"? g.midA : g.midH;
+    if(!(buy>0&&buy<1) || !(mid>0&&mid<1)) continue;            // not on Polymarket US, or can't be bought right now
+    const espn= side==="A"? g.espnA : g.espnH, book= side==="A"? bookA : bookH;
+    const est=[espn,book].filter(x=>x!=null); if(!est.length) continue;
+    const p=est.reduce((m,x)=>m+x,0)/est.length;
+    const ml= side==="A"? g.mlA : g.mlH;
+    out.push({gameId:g.id, league:g.league, team, opp: side==="A"?g.home:g.away, ml, buy, mid, dec:1/mid, fair:mid, espn, book, poly:mid, p, edge:p-mid, ev:p/buy-1, start:g.date, label:g.name, slug:g.pmSlug});
   }
   return out;
 }
+// Polymarket US combos pay a little less than the legs multiplied together (about 2.5% per leg, checked against the app)
+const COMBO_ML_CUT=0.975;
 // Small longshot parlays from positive-edge sides in different games.
 function buildParlays(spots, {minDec=3.5, max=3}={}){
   const pool=spots.filter(s=>s.edge>=0.02 && s.ev>0).sort((a,b)=>b.ev-a.ev).slice(0,8);
   const res=[];
   const add=legs=>{ if(new Set(legs.map(l=>l.gameId)).size!==legs.length) return;
-    const dec=legs.reduce((m,l)=>m*l.dec,1), p=legs.reduce((m,l)=>m*l.p,1); if(dec<minDec) return;
+    const dec=legs.reduce((m,l)=>m*l.dec,1)*Math.pow(COMBO_ML_CUT,legs.length), p=legs.reduce((m,l)=>m*l.p,1); if(dec<minDec) return;
     res.push({legs, dec, p, ev:p*dec-1}); };
   for(let i=0;i<pool.length;i++) for(let j=i+1;j<pool.length;j++){ add([pool[i],pool[j]]); for(let k=j+1;k<pool.length;k++) add([pool[i],pool[j],pool[k]]); }
   res.sort((a,b)=>b.ev-a.ev);
@@ -1825,6 +1829,9 @@ function cleanSlips(raw){
     // A Polymarket slip marked settled without Polymarket's numbers was settled by ESPN: treat it as still open until Polymarket confirms.
     if(isPM(s) && s.status!=="open" && s.pnl==null && !s.manual){ s.status="open"; s.unconfirmed=true; }
     if(s.source==="model" && s.modelKind==="props" && !s.pricingV){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; }   // priced before the fix: shown, not counted
+    // Legs read wrong before the Nov 1 fix (e.g. "longest reception 20+" shown as "receptions", hockey periods as full game)
+    if(isPM(s)||s.source==="model"){ let bad=false; s.legs=(s.legs||[]).map(l=>{ const r=String(l.raw||""); if(l.kind!=="pmus" && /Long Rec|longest|FPTS|touchdowns|Two-Point|D\/ST|Period|60 Min|Scrim Yds|field goals|offensive yards/i.test(r) && !/Pass TD/i.test(r)){ bad=true; return {...l, kind:"pmus", league:l.league, market:r.replace(/ · (Yes|No)$/,""), team:/ · No$/.test(r)?"No":"Yes"}; } return l; });
+      if(bad && s.source==="model" && s.status!=="void"){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; s.badMarket=true; } }
     const k=isPM(s)? pmKeyOf(s) : null;
     if(!k){ out.push(s); continue; }
     const cur=best.get(k);
@@ -2034,7 +2041,7 @@ function renderHistory(){
     const legs=(s.legs||[]).map(l=>{ const c=l.result||"none"; return `<div class="lg ${c}"><span class="m">${c==="won"?"✓":c==="lost"?"✗":c==="push"?"–":"·"}</span><span>${esc(legTitle(l))}${l.final!=null?` <span class="meta3">(${esc(String(l.final))})</span>`:""}</span></div>`; }).join("");
     const src={pmus:"Polymarket US",polymarket:"Polymarket.com",model:"Model pick",manual:"Added by hand"}[srcOf(s)];
     return `<details class="hist" data-sid="${esc(s.id)}" ${openHist.has(s.id)?"open":""}><summary><div class="r ${s.status}">${r}</div>
-      <div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${s.oldPricing?`Old pricing, not counted (was ${esc(s.realStatus)}) · `:""}${esc(when)} · ${hits}/${s.legs.length} legs hit${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
+      <div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${s.badMarket?`Market read wrong, not counted (was ${esc(s.realStatus)}) · `:s.oldPricing?`Old pricing, not counted (was ${esc(s.realStatus)}) · `:""}${esc(when)} · ${hits}/${s.legs.length} legs hit${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
       <div class="p ${p>0?"pos":p<0?"neg":""}">${s.status==="void"?"—":moneyAs(s.name,p,true)}${s.status==="won"&&showMoney(s.name)&&s.stake?`<small style="display:block;font-weight:500;font-size:11.5px;color:var(--muted)">returned ${money(Number(s.stake)+p)}</small>`:""}</div><span class="chev" aria-hidden="true">▼</span></summary>
       <div class="hlegs">${legs}<div class="meta3">${esc(src)}${s.odds?` · odds ${esc(s.odds)}`:""}${s.payout&&showMoney(s.name)?` · paid ${money(+s.payout)}`:""}${d?` · ${d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}`:""}</div></div></details>`;
   }).join("") + (done.length>300?`<div class="empty">Showing the first 300. Narrow the filters to see more.</div>`:"")
@@ -2209,6 +2216,7 @@ function renderAll(){ if(!me||$("#app").hidden) return; renderBell(); if(tab==="
 /* ---------- Value picks ---------- */
 const PICK_LEAGUES=["nba","nfl","ncaafb","ncaamb","wnba","ncaawb","nhl","mlb"];
 let picksState=ls.get(KEY+".picks",null); // {day, spots, parlays, at}
+if(picksState && picksState.pricing!=="pmus"){ picksState=null; ls.set(KEY+".picks",null); }
 const etDay = d => new Date(d||Date.now()).toLocaleDateString("en-CA",{timeZone:"America/New_York"});
 async function polyMoneyline(league,g){
   for(const slug of polySlugs(league,g)){
@@ -2224,6 +2232,21 @@ async function polyMoneyline(league,g){
   }
   return null;
 }
+async function pmusMoneyline(lg,g){
+  if(!PMUS_LEAGUE[lg]) return null;      // e.g. women's college games aren't on Polymarket US
+  const ev=await pmEventForGame(lg,{date:g.date, teams:[{abbr:g.awayAbbr,home:false},{abbr:g.homeAbbr,home:true}]}); if(!ev) return null;
+  const m=(ev.markets||[]).find(x=>/full_game_winner$/.test(String(x.sportsMarketType||"")) && (!x.status || /OPEN/.test(x.status))); if(!m) return null;
+  const sides=m.marketSides||[]; const L=sides.find(x=>x.long), S=sides.find(x=>!x.long); if(!L||!S) return null;
+  const nm=x=>norm(x?.description||""), ab=x=>String(x?.team?.abbreviation||"").toLowerCase();
+  const isAway=x=> ab(x)===String(g.awayAbbr).toLowerCase() || (nm(x) && (nm(x)===norm(g.awayT.nick) || norm(g.awayT.name).includes(nm(x))));
+  const isHome=x=> ab(x)===String(g.homeAbbr).toLowerCase() || (nm(x) && (nm(x)===norm(g.homeT.nick) || norm(g.homeT.name).includes(nm(x))));
+  const awaySide= isAway(L)&&!isHome(L) ? L : isAway(S)&&!isHome(S) ? S : null; if(!awaySide) return null;
+  const homeSide= awaySide===L? S : L;
+  const ok=x=>x.tradable!==false; const q=x=>Number(x?.quote?.value); const bidL=Number(L.price), askL=q(L);
+  const midL= askL>0&&askL<1&&bidL>0&&bidL<1 ? (askL+bidL)/2 : null; if(midL==null) return null;
+  const mid=x=> x===L? midL : 1-midL;
+  return {pmSlug:m.slug, buyA: ok(awaySide)? q(awaySide) : null, buyH: ok(homeSide)? q(homeSide) : null, midA: mid(awaySide), midH: mid(homeSide), polyA: mid(awaySide), polyH: mid(homeSide)};
+}
 async function scanLeagueOdds(lg){
   const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard").catch(()=>null); if(!d) return [];
   const soon=Date.now()+30*3600e3;
@@ -2237,7 +2260,7 @@ async function scanLeagueOdds(lg){
     const g={id:e.id, league:lg, name:e.shortName, date:e.date, away:A.displayName, home:H.displayName, awayAbbr:A.abbreviation, homeAbbr:H.abbreviation,
       awayT:{name:A.displayName,nick:A.name}, homeT:{name:H.displayName,nick:H.name},
       mlA:pc.awayTeamOdds.moneyLine, mlH:pc.homeTeamOdds.moneyLine, espnA:pct(pr?.awayTeam?.gameProjection), espnH:pct(pr?.homeTeam?.gameProjection), polyA:null, polyH:null};
-    const pm=await polyMoneyline(lg,g); if(pm){ g.polyA=pm.pa; g.polyH=pm.ph; }
+    const pm=await pmusMoneyline(lg,g).catch(()=>null); if(pm) Object.assign(g,pm);
     return g;
   }));
   return games.filter(Boolean);
@@ -2249,7 +2272,7 @@ async function findPicks(){
     for(const lg of PICK_LEAGUES){ $("#picksStatus").textContent=`Checking ${LEAGUES[lg].label}…`; all.push(...await scanLeagueOdds(lg)); }
     const spots=all.flatMap(valueSides).filter(s=>s.edge>0).sort((a,b)=>b.ev-a.ev);
     const parlays=buildParlays(spots,{minDec:3.5,max:3});
-    picksState={day:etDay(), at:Date.now(), games:all.length, spots, parlays};
+    picksState={day:etDay(), at:Date.now(), games:all.length, spots, parlays, pricing:"pmus"};
     ls.set(KEY+".picks",picksState);
     $("#picksStatus").textContent=`Checked ${all.length} games just now`;
     renderPicks(); logModel(parlays.slice(0,2));
@@ -2264,8 +2287,8 @@ async function logModel(parlays){
     if(slips.some(s=>s.id===id)) continue;
     try{
       const ref=gref().collection("slips").doc(id); const ex=await ref.get(); if(ex.exists) continue;
-      await ref.set({uid, name:"Model", source:"model", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open",
-        legs:p.legs.map(l=>({league:l.league, kind:"moneyline", side:"over", team:l.team, player:null, market:null, line:null, gameId:l.gameId, result:null}))});
+      await ref.set({uid, name:"Model", source:"model", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open", pricingV:2,
+        legs:p.legs.map(l=>({league:l.league, kind:"moneyline", side:"over", team:l.team, player:null, market:null, line:null, gameId:l.gameId, result:null, price:l.buy??null, mid:l.mid??null, slug:l.slug??null}))});
     }catch{}
   }
 }
@@ -2278,14 +2301,14 @@ function renderPicks(){
   else if(ps) $("#picksStatus").textContent=`Checked ${ps.games} games ${Math.max(0,Math.round((Date.now()-ps.at)/60000))} min ago`;
   if(ps && ps.parlays?.length){
     $("#parlayList").innerHTML=ps.parlays.map((p,i)=>`<article class="slip"><div class="slip-h"><div><span class="who">${p.legs.length}-leg longshot</span> <span class="tag">${i<2?"TRACKED":"IDEA"}</span></div>
-      <div class="money">Pays <b>${decToAm(p.dec)}</b> · $10 → <b>${money(10*p.dec)}</b></div></div>
-      <div class="legs">${p.legs.map(l=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(l.team)}</div><div class="leg-bet"><b>To win</b> vs ${esc(l.opp)} · ${esc(LEAGUES[l.league].label)} · ${new Date(l.start).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div></div><div class="leg-num"><div class="cur">${amS(l.ml)}</div><div class="of">DraftKings</div></div></div>
-        <div class="statline">Odds imply ${pctS(l.fair)} · ESPN model ${pctS(l.espn)} · Polymarket ${pctS(l.poly)} · <b class="pos">+${Math.round(l.edge*100)} pts</b></div></div>`).join("")}</div>
-      <div class="slip-f"><span class="statline" style="align-self:center">Estimated chance all hit: ${(p.p*100).toFixed(1)}% · Expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}% per bet</span><span class="sp"></span><button type="button" class="ghost" data-tail="${i}">Tail this</button></div></article>`).join("");
+      <div class="money">Polymarket combo ≈ <b>${p.dec.toFixed(2)}x</b> · $10 → <b>${money(10*p.dec)}</b></div></div>
+      <div class="legs">${p.legs.map(l=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(l.team)}</div><div class="leg-bet"><b>To win</b> vs ${esc(l.opp)} · ${esc(LEAGUES[l.league].label)} · ${new Date(l.start).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div></div><div class="leg-num"><div class="cur">${l.buy!=null?Math.round(l.buy*100)+"¢":amS(l.ml)}</div><div class="of">${l.buy!=null?"Polymarket":"DraftKings"}</div></div></div>
+        <div class="statline">${l.buy!=null?`Polymarket ${pctS(l.mid)}`:`Odds imply ${pctS(l.fair)}`} · ESPN model ${pctS(l.espn)}${l.book!=null?` · Sportsbooks ${pctS(l.book)}`:""} · <b class="pos">+${Math.round(l.edge*100)} pts</b></div></div>`).join("")}</div>
+      <div class="slip-f"><span class="statline" style="align-self:center">Estimated chance all hit: ${(p.p*100).toFixed(1)}% · Expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}% per bet · Polymarket shows the exact payout when you build the combo</span><span class="sp"></span><button type="button" class="ghost" data-tail="${i}">Tail this</button></div></article>`).join("");
   } else if(ps){ $("#parlayList").innerHTML=`<div class="empty"><b>No good longshots right now</b>None of today's prices beat the estimates by enough. That happens. Check again closer to game time, when lines move.</div>`; }
   if(ps && ps.spots?.length){
-    $("#spotTable").innerHTML=`<thead><tr><th>Team</th><th>Odds</th><th>Implied</th><th>ESPN</th><th>Poly</th><th>Edge</th></tr></thead><tbody>`+
-      ps.spots.slice(0,15).map(s=>`<tr><td class="name">${esc(s.team)}<div class="statline">vs ${esc(s.opp)} · ${esc(LEAGUES[s.league].label)}</div></td><td>${amS(s.ml)}</td><td>${pctS(s.fair)}</td><td>${pctS(s.espn)}</td><td>${pctS(s.poly)}</td><td class="pos">+${Math.round(s.edge*100)}</td></tr>`).join("")+"</tbody>";
+    $("#spotTable").innerHTML=`<thead><tr><th>Team</th><th>Price</th><th>Books</th><th>ESPN</th><th>Edge</th></tr></thead><tbody>`+
+      ps.spots.slice(0,15).map(s=>`<tr><td class="name">${esc(s.team)}<div class="statline">vs ${esc(s.opp)} · ${esc(LEAGUES[s.league].label)}</div></td><td>${s.buy!=null?Math.round(s.buy*100)+"¢":amS(s.ml)}</td><td>${pctS(s.book??s.fair)}</td><td>${pctS(s.espn)}</td><td class="pos">+${Math.round(s.edge*100)}</td></tr>`).join("")+"</tbody>";
   }
   const model=slips.filter(s=>s.source==="model"); const t=tally(model); const openN=model.filter(s=>s.status==="open").length;
   const mp=model.filter(s=>s.modelKind==="props"), mt=model.filter(s=>s.modelKind!=="props"), tp=tally(mp), tt=tally(mt);
@@ -2303,7 +2326,7 @@ $("#parlayList").addEventListener("click",e=>{
   const i=e.target.dataset.tail; if(i==null||!picksState) return; const p=picksState.parlays[+i];
   drafts=p.legs.map(l=>({league:l.league, kind:"moneyline", team:l.team, side:"over"}));
   $("#stake").value=10; $("#odds").value=decToAm(p.dec); $("#payout").value=Math.round(10*p.dec*100)/100; $("#previewImg").hidden=true;
-  document.querySelector('[data-tab="live"]').click(); showReview("Tail this parlay. Check the odds on your app first"); $("#review").scrollIntoView({behavior:"smooth"});
+  document.querySelector('[data-tab="live"]').click(); showReview("Tail this parlay. Enter the exact payout Polymarket shows"); $("#review").scrollIntoView({behavior:"smooth"});
 });
 
 /* ---------- Polymarket ---------- */
@@ -2436,7 +2459,7 @@ function pmToLeg(mkt, side, fallbackTitle){
   const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw, result:null};
   if(!info || !LEAGUES[info.league]) return base;
   const g={league:info.league, abbrA:info.a, abbrH:info.h, date:info.date, raw, result:null, gameId:null};
-  const fullGame = !/(first|second|third|fourth)_(half|quarter)|_half|quarter|team_total|race|margin|overtime/.test(type);
+  const fullGame = !/(first|second|third|fourth)_(half|quarter|period)|_half|quarter|period|regulation|inning|first_five|team_total|race|margin|overtime|double_result|exact/.test(type);
   const L = mkt?.line!=null ? Number(mkt.line) : null;
 
   // Moneyline: "Who will win…", sides are the two teams
@@ -2444,8 +2467,11 @@ function pmToLeg(mkt, side, fallbackTitle){
     return {...g, kind:"moneyline", team: buy? (yes?.teamName||yes?.d) : (no?.teamName||no?.d)};
   }
   // Player props: slug like astatc-nba-sa-uta-2026-10-28-ast-defox-gte4, title "De'Aaron Fox 4+ Ast"
+  // Player markets we can't track from a box score (longest play, fantasy points, first scorer, "most"): keep as plain Polymarket legs
+  if(/player_(fantasy|first|team_first|most|anytime_first|last)|scrimmage/.test(type)) return {...base, league:info.league, cat:catOf(info.league)};
   if(/player/.test(type) || /-(pts|reb|ast|pra|pr|pa|ra|3pm|threes|stl|blk|sb)-[a-z]+-gte\d/.test(slug)){
-    const statText = type.replace(/^[a-z]+_player_/,"").replace(/_/g," + ") + " " + title;   // points_rebounds_assists -> "points + rebounds + assists"
+    const st0=type.replace(/^[a-z]+_player_/,"");
+    const statText = (/longest|attempts|completions|interceptions|yards|touchdowns/.test(st0)? st0.replace(/_/g," ") : st0.replace(/_/g," + ")) + " " + title;   // points_rebounds_assists -> "points + rebounds + assists"; longest_reception -> "longest reception"
     const mk=marketFor(info.league, statText.toLowerCase());
     const nm=(title.match(/^(.+?)\s+\d+(?:\.\d+)?\s*\+/)||[])[1] || (q.match(/Will (.+?) record/)||[])[1] || "";
     const thr = L ?? Number((title.match(/(\d+(?:\.\d+)?)\s*\+/)||[])[1]);
@@ -2466,7 +2492,8 @@ function pmToLeg(mkt, side, fallbackTitle){
     return {...base, league:info.league, cat:catOf(info.league)};
   }
   // Full-game total: "Will the total … be more than 208.5?"
-  if(/total/.test(type) && fullGame && !/team_total/.test(type)){
+  // Only the full-game points/goals total (not touchdowns, team totals, periods, etc.)
+  if(/(full_game_total|game_total|full_game_total_goals|game_total_goals)$/.test(type) && fullGame && !/team_points|team_total/.test(type)){
     const n = L ?? Number((q.match(/more than\s+([\d.]+)/i)||[])[1]);
     if(!isNaN(n)) return {...g, kind:"total", team:null, line:n, side: buy?"over":"under"};
   }
@@ -2801,7 +2828,7 @@ let ppLeague=ls.get(KEY+".ppLeague","nba");
 function propCandidates(ts){
   const best=new Map();
   for(const x of ts?.items||[]){
-    if(x.edge<0.05 || x.edge>0.35 || x.wide || x.S.W.l10.n<5 || x.price<0.15 || x.price>0.92) continue;   // skip thin markets and too-good-to-be-true gaps
+    if(x.edge<0.04 || x.edge>0.25 || x.wide || x.S.W.l10.n<8 || x.price<0.25 || x.price>0.85 || x.combo===false) continue;   // only real, mainstream lines: skip thin markets, deep longshots, near-locks and too-good-to-be-true gaps
     if(x.inj && x.inj.cls!=="ok") continue;
     const k=norm(x.player); if(!best.has(k) || best.get(k).edge<x.edge) best.set(k,x);
   }
@@ -2830,7 +2857,7 @@ function buildPropParlays(ts){
     {name:"Big swing 4-leg", blurb:"Bigger payout. Still positive by the estimate, but expect it to miss more often than not.", n:4, pool:[...c].sort((a,b)=>(b.edge/b.price)-(a.edge/a.price))},
   ];
   for(const t of T) for(let skip=0; skip<3; skip++){
-    const p=make(t.pool,t.n,skip); if(!p || p.ev<=0.05) continue;
+    const p=make(t.pool,t.n,skip); if(!p || p.ev<=0.05 || p.dec>40) continue;
     const key=p.legs.map(l=>l.slug).sort().join("|"); if(seen.has(key)) continue; seen.add(key);
     out.push({...t, ...p, alt:skip>0}); if(out.filter(o=>o.name===t.name).length>=2) break;
   }
@@ -3002,7 +3029,7 @@ function propFromMarket(m){
   const py= yesOk? ya : NaN, pn= noOk? Math.round((1-bid)*100)/100 : NaN;
   if(!(py>0) && !(pn>0)) return null;
   const midY= bid!=null? (ya+bid)/2 : ya;
-  return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, midYes:midY, midNo:1-midY, spread, wide:spread>0.05};
+  return {...leg, slug:m.slug, title:m.titleShort||m.title, pYes:py, pNo:pn, midYes:midY, midNo:1-midY, spread, wide:spread>0.05, combo:m.comboEnabled!==false};
 }
 async function scanTrends(lgArg){
   if(trendBusy) return; trendBusy=true; const lg=lgArg||tf.league; const stEl=$("#tStatus"), ppEl=$("#ppStatus"); if(lg===tf.league) $("#trendList").innerHTML=`<div class="empty"><b>Loading ${esc(LEAGUES[lg].label)} players…</b>Pulling today's games and game logs from ESPN.</div>`; const st={set textContent(v){ if(lg===tf.league) stEl.textContent=v; if(lg===ppLeague) ppEl.textContent=v; }}; $("#tScan").disabled=true;
@@ -3039,7 +3066,10 @@ async function scanTrends(lgArg){
       const eo= p.pYes>0 ? over.p-p.pYes : -1, eu=(under.p!=null&&p.pNo>0)? under.p-p.pNo : -1;
       if(eo===-1 && eu===-1) continue;
       const pickUnder= p.pYes>0 ? (eu>eo && eu>0.05) : true;   // only offer a side Polymarket will actually sell
-      const S=pickUnder?under:over, price=pickUnder?p.pNo:p.pYes;
+      const S0=pickUnder?under:over, price=pickUnder?p.pNo:p.pYes, mid0=pickUnder?p.midNo:p.midYes;
+      // Anchor to the market: a few games of history shouldn't override the price. Raw hit rate counts fully only with ~a season of games.
+      const raw= S0.eff? (S0.p*(S0.eff+4)-2)/S0.eff : S0.p, K=12;
+      const S={...S0, pRaw:S0.p, p: Math.min(0.97,Math.max(0.03,(raw*S0.eff + mid0*K)/(S0.eff+K)))};
       const inj=injFor(lg,p.player); const role=roleSignal(log,p.game.date);
       const teamOut=injData? (injData.byTeam.get(String(p.game.teams.find(t=>t.abbr===p.ath.team)?.id))?.list||[]).filter(o=>o.cls==="out"&&!sameName(o.name,p.player)).map(o=>o.name) : [];
       items.push({...p, side:pickUnder?"under":"over", price, mid:pickUnder?p.midNo:p.midYes, S, edge:S.p-price, label:mk.label, keys:mk.keys, inj, teamOut, role});
@@ -3119,7 +3149,7 @@ function renderTrends(){
   $("#tStatus").textContent=`${ts.items.length} props checked · updated ${ago(ts.at)}`;
   let list=ts.items.filter(x=>(tf.game==="all"||x.game.id===tf.game)&&(tf.stat==="all"||x.label===tf.stat));
   if(tf.price==="long") list=list.filter(x=>x.price<.4); else if(tf.price==="mid") list=list.filter(x=>x.price>=.4&&x.price<.7); else if(tf.price==="fav") list=list.filter(x=>x.price>=.7);
-  if(tf.show==="edge") list=list.filter(x=>x.edge>=0.08 && x.S.W.l10.n>=5 && x.price<0.95 && x.inj?.cls!=="out" && !(x.side==="over"&&x.role?.down));
+  if(tf.show==="edge") list=list.filter(x=>x.edge>=0.05 && x.S.W.l10.n>=5 && x.price>=0.2 && x.price<0.9 && x.inj?.cls!=="out" && !(x.side==="over"&&x.role?.down));
   const key={edge:x=>-x.edge, l10:x=>-(x.S.W.l10.n? x.S.W.l10.h/x.S.W.l10.n:0), hot:x=>-((x.S.W.d7.avg||0)/((x.S.W.season.avg)||1e9)), price:x=>x.price}[tf.sort];
   list.sort((a,b)=>key(a)-key(b));
   trendState.view=list; const cap=trendState.cap||40;
@@ -3226,8 +3256,11 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=26;
+const APP_VERSION=27;
 const RELEASES=[
+  {v:27, date:"Nov 1", title:"Fixes to picks and payouts",
+   news:["Fixed: some player props were read wrong. For example, \"longest reception 20+ yards\" showed as \"19 or fewer receptions\". Touchdown totals, team totals and hockey periods are also read correctly now. Model picks built on a misread market aren't counted.",
+         "Team longshots are now priced with <b>Polymarket US</b> instead of DraftKings, so the payout matches your combo (within a few cents), and they only include games you can bet on Polymarket."]},
   {v:26, date:"Nov 1", title:"One thing per screen",
    news:["Board and Me are now split into their own screens. Use the tabs at the top, or swipe left and right.",
          "<b>Board:</b> Recap · Season · Pick'em · Standings. <b>Me:</b> My stats · Insights · Settings.",
