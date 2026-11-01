@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-TqSIHMN8L/oAGFujKZhfQXFPkb595JICOzljfa7C72Y=' 'sha256-skA6LVSRq7Xqhg2o7mKxEd+VTaQanrlmTKHOO+x/+vs=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-sDhbIcXon3DYERgbKwvmps95KMqG08epMSpZH4ucCns=' 'sha256-pg1mDuI36ZFpoHAWudIb6eFK5hs+BzkXiJmjtW1D4fE=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -634,6 +634,7 @@ footer{margin-top:10px;font-size:11.5px;line-height:1.5}
       <div class="panel">
         <h2>Player prop parlays</h2>
         <p>Built from the Player trends edges: props where the player's hit rate on that exact line beats Polymarket's price. Injured players are skipped, and each parlay uses at most 2 legs from the same game.</p>
+        <p class="fine">Pick one or more sports. With several picked, parlays can mix legs from all of them.</p>
         <div class="chips" id="ppLeague"></div>
         <div class="row-end"><span class="sp" id="ppStatus" style="font-size:13px;color:var(--muted)"></span><button type="button" class="ghost small" id="ppRefresh">Refresh</button></div>
       </div>
@@ -881,15 +882,16 @@ const MARKETS = {
     [/anytime\s*t(ouch)?d|any\s*td|to score/,["rushingTouchdowns","receivingTouchdowns"],"anytime TD"],
     [/pass(ing)?\s*(yds|yards)|pass\s*yd/,["passingYards"],"passing yds"],
     [/pass(ing)?\s*(tds?|touchdowns?)/,["passingTouchdowns"],"passing TDs"],
+    [/longest\s*(pass|comp)|long\s*comp/,["longPassing"],"longest pass"],
     [/completion/,["completions"],"completions"],
     [/pass(ing)?\s*att/,["passingAttempts"],"pass attempts"],
     [/interception/,["passing.interceptions"],"interceptions"],
     [/rush(ing)?\s*(yds|yards)|rush\s*yd/,["rushingYards"],"rushing yds"],
     [/rush(ing)?\s*att|carries/,["rushingAttempts"],"rush attempts"],
     [/rec(eiving)?\s*(yds|yards)|rec\s*yd/,["receivingYards"],"receiving yds"],
+    [/longest\s*rec|long\s*rec/,["longReception"],"longest rec"],
+    [/longest\s*rush|long\s*rush/,["longRushing"],"longest rush"],
     [/reception|\brec\b|catches/,["receptions"],"receptions"],
-    [/longest\s*rec/,["longReception"],"longest rec"],
-    [/longest\s*rush/,["longRushing"],"longest rush"],
     [/tackle/,["totalTackles"],"tackles"],
     [/sack/,["defensive.sacks"],"sacks"],
     [/kicking\s*p|kicker\s*p/,["totalKickingPoints"],"kicking pts"],
@@ -1830,7 +1832,7 @@ function cleanSlips(raw){
     if(isPM(s) && s.status!=="open" && s.pnl==null && !s.manual){ s.status="open"; s.unconfirmed=true; }
     if(s.source==="model" && s.modelKind==="props" && !s.pricingV){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; }   // priced before the fix: shown, not counted
     // Legs read wrong before the Nov 1 fix (e.g. "longest reception 20+" shown as "receptions", hockey periods as full game)
-    if(isPM(s)||s.source==="model"){ let bad=false; s.legs=(s.legs||[]).map(l=>{ const r=String(l.raw||""); if(l.kind!=="pmus" && /Long Rec|longest|FPTS|touchdowns|Two-Point|D\/ST|Period|60 Min|Scrim Yds|field goals|offensive yards/i.test(r) && !/Pass TD/i.test(r)){ bad=true; return {...l, kind:"pmus", league:l.league, market:r.replace(/ · (Yes|No)$/,""), team:/ · No$/.test(r)?"No":"Yes"}; } return l; });
+    if(isPM(s)||s.source==="model"){ let bad=false; s.legs=(s.legs||[]).map(l=>{ const r=String(l.raw||""); const sl=String(l.slug||""); if(l.kind==="prop" && /-(lrec|lrush|lrsh|lru|lcmp|lpass|fpts|scrim)-[a-z]+-gte\d+$/.test(sl)){ bad=true; return {...l, kind:"pmus", market:`${l.player} ${sl.match(/-(\w+)-[a-z]+-gte(\d+)$/).slice(1).join(" ")}`, team:l.side==="under"?"No":"Yes"}; } if(l.kind!=="pmus" && /Long Rec|longest|FPTS|touchdowns|Two-Point|D\/ST|Period|60 Min|Scrim Yds|field goals|offensive yards/i.test(r) && !/Pass TD/i.test(r)){ bad=true; return {...l, kind:"pmus", league:l.league, market:r.replace(/ · (Yes|No)$/,""), team:/ · No$/.test(r)?"No":"Yes"}; } return l; });
       if(bad && s.source==="model" && s.status!=="void"){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; s.badMarket=true; } }
     const k=isPM(s)? pmKeyOf(s) : null;
     if(!k){ out.push(s); continue; }
@@ -2468,7 +2470,7 @@ function pmToLeg(mkt, side, fallbackTitle){
   }
   // Player props: slug like astatc-nba-sa-uta-2026-10-28-ast-defox-gte4, title "De'Aaron Fox 4+ Ast"
   // Player markets we can't track from a box score (longest play, fantasy points, first scorer, "most"): keep as plain Polymarket legs
-  if(/player_(fantasy|first|team_first|most|anytime_first|last)|scrimmage/.test(type)) return {...base, league:info.league, cat:catOf(info.league)};
+  if(/player_(fantasy|first|team_first|most|anytime_first|last|longest)|scrimmage|longest/.test(type)) return {...base, league:info.league, cat:catOf(info.league)};
   if(/player/.test(type) || /-(pts|reb|ast|pra|pr|pa|ra|3pm|threes|stl|blk|sb)-[a-z]+-gte\d/.test(slug)){
     const st0=type.replace(/^[a-z]+_player_/,"");
     const statText = (/longest|attempts|completions|interceptions|yards|touchdowns/.test(st0)? st0.replace(/_/g," ") : st0.replace(/_/g," + ")) + " " + title;   // points_rebounds_assists -> "points + rebounds + assists"; longest_reception -> "longest reception"
@@ -2825,6 +2827,20 @@ $("#nLoad").onclick=async()=>{ await loadNews(true); toast("Injuries and news up
 
 /* ---------- Player prop parlays (built from Player trends) ---------- */
 let ppLeague=ls.get(KEY+".ppLeague","nba");
+let ppLeagues=(()=>{ const v=ls.get(KEY+".ppLeagues",null); return Array.isArray(v)&&v.length? v : [ppLeague]; })();
+let ppCombined=null, ppScanning=false;
+const ppFresh=lg=>{ const t=trendCacheByLg.get(lg); return t && Date.now()-t.at<15*60000; };
+async function ppEnsure(){
+  if(ppScanning) return; ppScanning=true;
+  try{ const need=ppLeagues.filter(lg=>!ppFresh(lg));
+    for(const [i,lg] of need.entries()){
+      $("#propParlays").innerHTML=`<div class="empty"><b>Checking ${esc(LEAGUES[lg].label)} props${need.length>1?` (${i+1} of ${need.length})`:""}…</b>Pulling Player trends data.</div>`;
+      for(let w=0; trendBusy && w<120; w++) await new Promise(r=>setTimeout(r,500));
+      await scanTrends(lg);
+    } }
+  finally{ ppScanning=false; }
+  if(pickMode==="value") renderPropParlays();
+}
 function propCandidates(ts){
   const best=new Map();
   for(const x of ts?.items||[]){
@@ -2865,31 +2881,35 @@ function buildPropParlays(ts){
 }
 function legLine(x){ const ln=Number(x.line); return Number.isInteger(ln+0.5)? (x.side==="over"? `${ln+0.5}+ ${x.label}` : `${ln-0.5} or fewer ${x.label}`) : `${x.side} ${ln} ${x.label}`; }
 function renderPropParlays(){
-  chipRow($("#ppLeague"),TREND_LEAGUES.map(l=>[l,LEAGUES[l].label]),ppLeague,"pp");
-  const ts=trendCacheByLg.get(ppLeague);
-  if(!ts || Date.now()-ts.at>15*60000){
-    $("#propParlays").innerHTML=`<div class="empty"><b>Checking ${esc(LEAGUES[ppLeague].label)} props…</b>Pulling Player trends data.</div>`; $("#ppStatus").textContent="";
-    if(!trendBusy) scanTrends(ppLeague).then(()=>{ if(pickMode==="value") renderPropParlays(); });
-    return;
-  }
+  $("#ppLeague").innerHTML=TREND_LEAGUES.map(l=>`<button type="button" class="chip" data-pp="${l}" aria-pressed="${ppLeagues.includes(l)}">${ppLeagues.includes(l)?"✓ ":""}${esc(LEAGUES[l].label)}</button>`).join("")
+    + `<button type="button" class="chip" data-pp="__all" aria-pressed="false">All</button>`;
+  if(!ppLeagues.every(ppFresh)){ $("#ppStatus").textContent=""; if(!ppScanning) ppEnsure(); else if(!$("#propParlays").innerHTML) $("#propParlays").innerHTML=`<div class="empty"><b>Checking props…</b></div>`; return; }
+  // One combined board: legs can come from any of the chosen sports
+  const parts=ppLeagues.map(lg=>trendCacheByLg.get(lg));
+  const ts={lg:ppLeagues.join("+"), at:Math.min(...parts.map(t=>t.at)), items:parts.flatMap((t,i)=>(t.items||[]).map(x=>({...x, lg:ppLeagues[i]}))), note: parts.map(t=>t.note).filter(Boolean).join(" ")};
+  ppCombined=ts;
   const list=buildPropParlays(ts); ts.pp=list;
   $("#ppStatus").textContent=`${propCandidates(ts).length} props with an edge · updated ${ago(ts.at)}`;
   $("#propParlays").innerHTML = list.length ? list.map((p,i)=>`<article class="slip"><div class="slip-h"><div class="ttl">${esc(p.name)}${p.alt?' <span class="tag">ALT</span>':""}<small style="display:block;font-weight:400;color:var(--muted);font-size:12.5px;margin-top:2px">${esc(p.blurb)}</small></div>
       <div class="right"><span class="pill won">≈${p.dec.toFixed(1)}x</span></div></div>
-      <div class="legs">${p.legs.map(x=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(x.player)}</div><div class="leg-bet">${esc(legLine(x))} · ${esc(x.game.name||"")}</div></div>
+      <div class="legs">${p.legs.map(x=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(x.player)}</div><div class="leg-bet">${esc(legLine(x))} · ${esc(x.game.name||"")}${ppLeagues.length>1?` · ${esc(LEAGUES[x.lg]?.label||"")}`:""}</div></div>
         <div class="leg-num"><div class="cur">${Math.round(x.price*100)}¢</div><div class="of">est. ${Math.round(x.S.p*100)}%</div></div></div>
         <div class="statline">L10 ${x.S.W.l10.h}/${x.S.W.l10.n} · season ${x.S.W.season.n?x.S.W.season.h+"/"+x.S.W.season.n:"–"} · <b class="pos">+${Math.round(x.edge*100)} pts</b>${x.S.hot&&x.side==="over"?" · 🔥 trending up":""}</div></div>`).join("")}</div>
       <div class="slip-f"><span class="statline" style="align-self:center">Estimated Polymarket combo payout ${p.dec.toFixed(2)}x (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}%${p.corr?" (adjusted for same-game legs)":""} · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
     + `<p class="fine">Payouts are estimates: Polymarket prices a combo as its own market, usually about 5% less per leg than the legs alone. Check the real combo price before you buy. Hit chances treat legs as independent; two legs from the same game can move together.</p>`
     : `<div class="empty"><b>No prop parlays right now</b>${esc(ts.note || "Not enough props beat their prices today. Check back closer to tip-off, when lines move.")}</div>`;
-  if(list.length) logPropModel(ppLeague,list);
+  if(list.length) logPropModel(ppLeagues.length===1? ppLeagues[0] : [...ppLeagues].sort().join("-"),list);
 }
-$("#ppLeague").addEventListener("click",e=>{ const k=e.target.dataset.pp; if(!k) return; ppLeague=k; ls.set(KEY+".ppLeague",k); renderPropParlays(); });
-$("#ppRefresh").onclick=async()=>{ const b=$("#ppRefresh"); b.disabled=true; trendCacheByLg.delete(ppLeague);
-  try{ await scanTrends(ppLeague); renderPropParlays(); toast("Prop parlays updated."); } finally{ b.disabled=false; } };
-$("#propParlays").addEventListener("click",e=>{ const i=e.target.dataset.ppadd; if(i==null) return; const p=trendCacheByLg.get(ppLeague)?.pp?.[+i]; if(!p) return;
+$("#ppLeague").addEventListener("click",e=>{ const k=e.target.closest("[data-pp]")?.dataset.pp; if(!k) return;
+  if(k==="__all") ppLeagues=[...TREND_LEAGUES];
+  else if(ppLeagues.includes(k)){ if(ppLeagues.length>1) ppLeagues=ppLeagues.filter(x=>x!==k); }
+  else ppLeagues=[...ppLeagues,k];
+  ppLeague=ppLeagues[0]; ls.set(KEY+".ppLeague",ppLeague); ls.set(KEY+".ppLeagues",ppLeagues); renderPropParlays(); });
+$("#ppRefresh").onclick=async()=>{ const b=$("#ppRefresh"); b.disabled=true; ppLeagues.forEach(lg=>trendCacheByLg.delete(lg));
+  try{ await ppEnsure(); toast("Prop parlays updated."); } finally{ b.disabled=false; } };
+$("#propParlays").addEventListener("click",e=>{ const i=e.target.dataset.ppadd; if(i==null) return; const p=ppCombined?.pp?.[+i]; if(!p) return;
   editingId=null; $("#saveSlip").textContent="Post slip";
-  drafts=p.legs.map(x=>({league:ppLeague, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||"", market:x.label, line:x.line}));
+  drafts=p.legs.map(x=>({league:x.lg||ppLeague, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||"", market:x.label, line:x.line}));
   ["stake","payout"].forEach(id=>$("#"+id).value=""); $("#odds").value=decToAm(p.dec); $("#previewImg").hidden=true;
   document.querySelector('[data-tab="live"]')?.click(); showReview(p.name+" from Value parlays"); $("#review").scrollIntoView({behavior:"smooth"}); });
 async function logPropModel(lg,list){
@@ -2902,7 +2922,7 @@ async function logPropModel(lg,list){
     const id=`mprop2_${day}_${lg}_${i+1}`; if(slips.some(s=>s.id===id)) continue;
     try{ const ref=gref().collection("slips").doc(id); if((await ref.get()).exists) continue;
       await ref.set({uid, name:"Model", source:"model", modelKind:"props", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:10, payout:Math.round(10*p.dec*100)/100, odds:decToAm(p.dec), status:"open", pricingV:2, pricedAt:Date.now(), legsDec:Math.round(p.legsDec*100)/100,
-        legs:p.legs.map(x=>({league:lg, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||null, market:x.label, line:x.line, gameId:x.game.id, result:null, price:x.price, mid:Math.round((x.mid||x.price)*1000)/1000, slug:x.slug}))}); }catch{}
+        legs:p.legs.map(x=>({league:x.lg||lg, kind:"prop", side:x.side, player:x.player, team:x.ath?.team||null, market:x.label, line:x.line, gameId:x.game.id, result:null, price:x.price, mid:Math.round((x.mid||x.price)*1000)/1000, slug:x.slug}))}); }catch{}
   }
 }
 
@@ -3040,6 +3060,9 @@ async function scanTrends(lgArg){
     st.textContent=`Finding player props for ${games.length} game${games.length===1?"":"s"}…`;
     const evs=await pool(games,4,g=>pmEventForGame(lg,g));
     const props=[]; games.forEach((g,i)=>{ (evs[i]?.markets||[]).forEach(m=>{ const p=propFromMarket(m); if(p) props.push({...p,game:g}); }); });
+    // A higher line can't be as likely as a lower one (3+ blocks priced the same as 2+): that price is stale, so skip it
+    { const grp=new Map(); props.forEach(p=>{ const k=p.game.id+"|"+norm(p.player)+"|"+p.market; if(!grp.has(k)) grp.set(k,[]); grp.get(k).push(p); });
+      for(const arr of grp.values()){ arr.sort((a,b)=>a.line-b.line); for(let i=1;i<arr.length;i++) if(arr[i].midYes>=arr[i-1].midYes-0.005){ arr[i].stale=true; } } }
     // Players -> ESPN ids
     const rosters={}; await pool(games,4,async g=>{ for(const t of g.teams) rosters[g.id+":"+t.id]=await teamRoster(lg,t.id); });
     const findAth=(name,g)=>{ for(const t of g.teams){ const a=(rosters[g.id+":"+t.id]||[]).find(x=>sameName(x.name,name)); if(a) return {...a,team:t.abbr}; } return null; };
@@ -3059,7 +3082,7 @@ async function scanTrends(lgArg){
     const injData=await leagueInjuries(lg).catch(()=>null);
     const items=[];
     for(const p of props){
-      if(!p.ath) continue; const log=logCache.get(lg+":"+p.ath.id); if(!log) continue;
+      if(!p.ath || p.stale) continue; const log=logCache.get(lg+":"+p.ath.id); if(!log) continue;
       const mk=marketFor(lg,p.market); if(!mk) continue;
       const over=lineStats(log,mk.keys,Number(p.line),"over"), under=lineStats(log,mk.keys,Number(p.line),"under");
       if(over.p==null) continue;
@@ -3256,8 +3279,11 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=27;
+const APP_VERSION=28;
 const RELEASES=[
+  {v:28, date:"Nov 1", title:"Mix sports in prop parlays",
+   news:["<b>Value parlays</b>: pick more than one sport (or tap <b>All</b>) and the suggested prop parlays can mix legs across them, like an NBA leg with an NFL leg.",
+         "Skips props whose price looks stale on Polymarket, like a harder line priced the same as an easier one.", "Fixed for real this time: \"longest reception 20+\" no longer shows as \"19 or fewer receptions\". Longest-play props are left out of model suggestions."]},
   {v:27, date:"Nov 1", title:"Fixes to picks and payouts",
    news:["Fixed: some player props were read wrong. For example, \"longest reception 20+ yards\" showed as \"19 or fewer receptions\". Touchdown totals, team totals and hockey periods are also read correctly now. Model picks built on a misread market aren't counted.",
          "Team longshots are now priced with <b>Polymarket US</b> instead of DraftKings, so the payout matches your combo (within a few cents), and they only include games you can bet on Polymarket."]},
