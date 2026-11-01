@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-S6DXuWppjq2cZz/vlI1dKY7sA0cbisfJRdF21pRl0Mw=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-t4I54JPX4hZ9oPewGu8KQbqEMf6LN9uK9nB0biO/pbA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -2046,7 +2046,7 @@ function renderHistory(){
   const moreOn=["res","src","legs"].filter(k=>hf[k]!=="all").length; $("#hMoreSum").textContent= moreOn?`More filters (${moreOn} on)`:"More filters";
   $("#histList").innerHTML = done.length ? done.slice(0,300).map(s=>{
     const p=profitOf(s); const r=s.status==="won"?"W":s.status==="lost"?"L":s.status==="void"?"–":"P";
-    const d=(s.settledAt||s.createdAt)?.toDate?.(); const when=d? d.toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
+    const d=(s.settledAt||s.createdAt)? new Date(settledAt(s)) : null; const when=d? d.toLocaleDateString(undefined,{month:"short",day:"numeric"}):"";
     const hits=(s.legs||[]).filter(l=>l.result==="won").length;
     const legs=(s.legs||[]).map(l=>{ const c=l.result||"none"; return `<div class="lg ${c}"><span class="m">${c==="won"?"✓":c==="lost"?"✗":c==="push"?"–":"·"}</span><span>${esc(legTitle(l))}${l.final!=null?` <span class="meta3">(${esc(String(l.final))})</span>`:""}</span></div>`; }).join("");
     const src={pmus:"Polymarket US",polymarket:"Polymarket.com",model:"Model pick",manual:"Added by hand"}[srcOf(s)];
@@ -2159,7 +2159,11 @@ function renderLeaks(){
 const pct = x => x==null?"–":Math.round(x*100)+"%";
 let rankBy="won";
 const isPerson = s => s.source!=="model";
-const settledAt = s => (s.settledAt?.toMillis?.() || s.createdAt?.toMillis?.() || 0);
+// When a bet finished. A Polymarket result can be recorded hours or days after the game (e.g. when sync was down),
+// so if it was recorded well after its last game day, date it to that game day (evening, Eastern time) instead.
+const settledAt = s => { const raw=(s.settledAt?.toMillis?.() || s.createdAt?.toMillis?.() || 0);
+  const days=(s.legs||[]).map(l=>l.date).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d||"")).sort(); if(!days.length||!raw) return raw;
+  const game=Date.parse(days[days.length-1]+"T22:00:00-05:00"); return raw>game+12*3600e3 ? game : raw; };
 function spark(points){
   if(points.length<2) return "";
   const W=200,H=44,P=3; const ys=points.map(p=>p.y); const lo=Math.min(0,...ys), hi=Math.max(0,...ys); const span=(hi-lo)||1;
@@ -2468,6 +2472,8 @@ function pmToLeg(mkt, side, fallbackTitle){
   const type=mkt?.type||""; const q=mkt?.q||""; const slug=String(mkt?.slug||"").toLowerCase();
   const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw, result:null};
   if(!info || !LEAGUES[info.league]) return base;
+  base.date=info.date;   // the game's day, so history dates it correctly
+  if(picked?.teamName && /^[+-]?\d/.test(picked.d||"")) { const n=Number(picked.d); const per=(title.match(/\b(1H|2H|[1-4]Q|Q[1-4]|[1-3]P|P[1-3]|F5|1st Half|2nd Half)\b/i)||[])[1]; base.team=`${picked.teamName} ${isNaN(n)? picked.d : (n>0?"+":"")+n}${per?" "+({"1h":"1st half","2h":"2nd half","f5":"first 5 inn."}[per.toLowerCase()]||per):""}`; }   // "+10.50" -> "Knicks +10.5"
   const g={league:info.league, abbrA:info.a, abbrH:info.h, date:info.date, raw, result:null, gameId:null};
   const fullGame = !/(first|second|third|fourth)_(half|quarter|period)|_half|quarter|period|regulation|inning|first_five|team_total|race|margin|overtime|double_result|exact/.test(type);
   const L = mkt?.line!=null ? Number(mkt.line) : null;
@@ -2628,7 +2634,7 @@ async function pmBackfill(force){
         handled.add(ex.id);
         if(ex.status==="open" || ex.pnl==null || Math.abs((ex.pnl??0)-x.pnl)>0.009)
           fast.push({id:ex.id, upd:{status, pnl:x.pnl, settledAt:firebase.firestore.Timestamp.fromMillis(x.t), ...(status==="won"?{legs:(ex.legs||[]).map(l=>({...l,result:"won"}))}:{})}});
-        if((ex.legsV||0)<4) legJobs.push({id:ex.id, slug:x.slug, title:x.title, short:x.short, status});
+        if((ex.legsV||0)<5) legJobs.push({id:ex.id, slug:x.slug, title:x.title, short:x.short, status});
         continue;
       }
       if(!all && !pmSlugInfo(x.slug) && (x.cat==="Other")) continue;
@@ -2636,7 +2642,7 @@ async function pmBackfill(force){
       const sportsy=legs.some(l=>l.kind!=="pmus"||l.cat!=="Other"); if(!sportsy && !all) continue;
       legs=legs.map(l=>({...l,result: status==="won"?"won":null}));
       const ts=firebase.firestore.Timestamp.fromMillis(x.t);
-      await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:4, backfill:true}).catch(()=>{});
+      await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:5, backfill:true}).catch(()=>{});
       added++;
     }
     // 1) Save corrected results right away
@@ -2660,7 +2666,7 @@ async function pmBackfill(force){
     if(added||fixed) toast(`Polymarket check: ${fixed} result${fixed===1?"":"s"} corrected${added?`, ${added} past bet${added===1?"":"s"} added`:""}.`);
     // 3) Rebuild mislabeled legs in the background (display only)
     (async()=>{ let n=0; await pool(legJobs.slice(0,120),3,async j=>{ const nl=await pmBuildLegs(j.slug,key,j.title,j.short).catch(()=>null); if(!nl) return;
-      await col.doc(j.id).update({legs:nl.map(l=>({...l,result:j.status==="won"?"won":null})), legsV:4}).catch(()=>{}); n++; }); })();
+      await col.doc(j.id).update({legs:nl.map(l=>({...l,result:j.status==="won"?"won":(j.status==="lost"&&nl.length===1)?"lost":null})), legsV:5}).catch(()=>{}); n++; }); })();
   }catch(e){ if(e.message==="401") note("Polymarket US didn't accept your key for history. Reconnect it from “Connect Polymarket”."); else if(force) note("Couldn't read Polymarket history: "+(e.message||e)); }
   finally{ pmHistBusy=false; if(tab==="me") renderMe(); }
 }
@@ -2688,9 +2694,9 @@ async function syncPmus(force){
       const ex=have.get(id) || mineOld.find(x=>x.id.endsWith("_"+String(slug).replace(/[^A-Za-z0-9_\-]/g,"_").slice(0,120)));
       const buildLegs=()=>pmBuildLegs(slug,key,md.title,net<0);
       const goodLegs=l=>l.length>1||l[0]?.kind!=="pmus"||!/^(crossd|caoc)-/i.test(slug);
-      if(ex && (ex.legsV||0)<4){
-        let legs=await buildLegs(); if(ex.status==="won") legs=legs.map(l=>({...l,result:"won"}));
-        await col.doc(ex.id).update({legs, legsV:goodLegs(legs)?4:1}).catch(()=>{}); continue;
+      if(ex && (ex.legsV||0)<5){
+        let legs=await buildLegs(); if(ex.status==="won") legs=legs.map(l=>({...l,result:"won"})); else if(ex.status==="lost"&&legs.length===1) legs=legs.map(l=>({...l,result:"lost"}));
+        await col.doc(ex.id).update({legs, legsV:goodLegs(legs)?5:1}).catch(()=>{}); continue;
       }
       if(!ex){
         if(net===0 && !settled) continue;
@@ -2699,7 +2705,7 @@ async function syncPmus(force){
         if(!sportsy && !all) continue;
         if(status!=="open") legs=legs.map(l=>({...l,result:l.result||status}));
         await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100,
-          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, short:net<0, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?4:1, ...live,
+          payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, short:net<0, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?5:1, ...live,
           ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
       } else if(status!=="open" && (ex.status==="open" || ex.pnl!==pnl)){
         await col.doc(ex.id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
@@ -3293,8 +3299,10 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=29;
+const APP_VERSION=30;
 const RELEASES=[
+  {v:30, date:"Nov 1", title:"History dates fixed",
+   news:["Polymarket bets now show on the day the game was played. Some of yesterday's bets were showing as today because their results were recorded late.", "Older Polymarket slips get re-read with the newer market reader, so legs like a first-half spread no longer show as a plain team win."]},
   {v:29, date:"Nov 1", title:"Clear losses yourself",
    news:["Polymarket slow to clear a loss? Open your Polymarket slip and tap <b>Mark lost now</b> to move it to history right away. It counts as a loss of your stake until Polymarket's final numbers replace it, and <b>Move back to open</b> undoes it."]},
   {v:28, date:"Nov 1", title:"Mix sports in prop parlays",
@@ -3804,7 +3812,7 @@ $("#pmRefresh").onclick=async()=>{ const b=$("#pmRefresh"); if(!getPmKey()){ not
 function toCsv(list){
   const q=v=>{ const t=v==null?"":String(v); return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t; };
   const head=["Date","Name","Status","Sport","Legs","Stake","Payout","Profit","Source","Details"];
-  const rows=list.map(s=>{ const d=(s.settledAt||s.createdAt)?.toDate?.(); return [d?d.toISOString().slice(0,10):"", s.name, s.status, slipCategory(s), (s.legs||[]).length,
+  const rows=list.map(s=>{ const d=(s.settledAt||s.createdAt)? new Date(settledAt(s)) : null; return [d?d.toISOString().slice(0,10):"", s.name, s.status, slipCategory(s), (s.legs||[]).length,
     showMoney(s.name)?s.stake:"", showMoney(s.name)?s.payout:"", s.status==="open"?"":(showMoney(s.name)?profitOf(s).toFixed(2):""), s.source||"manual", (s.legs||[]).map(l=>(l.result?l.result.toUpperCase()+" ":"")+legTitle(l)).join(" | ")]; });
   return [head,...rows].map(r=>r.map(q).join(",")).join("\n");
 }
