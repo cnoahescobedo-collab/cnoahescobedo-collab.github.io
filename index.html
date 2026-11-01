@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-ApdvUjZQs455yn592G258n70VSu4QNgB8x964A7Txuc=' 'sha256-TOm+1Nc++muHodZbK+YhOzQABXFTOjCbATjEa5t+niE=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-xi2cO8XSO7Xy58VUNPIzf80EQX7HMSSC7EVdof3E5nY=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bet Tracker">
 <title>Live Bet Tracker</title>
@@ -143,6 +146,21 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .recap{gap:10px}.recap .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.recap .big div{background:var(--chip,rgba(127,127,127,.08));border-radius:10px;padding:8px 10px}
 .recap .big b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.recap .big small{color:var(--muted);font-size:12px}.recap ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
 a.btn{text-decoration:none}.btn.small{min-height:32px;padding:5px 10px;font-size:13px}.btn.ghost{background:none;border:none;color:var(--muted);font-weight:500;font-size:13px;padding:6px 8px;min-height:0}
+.grade{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.grade-top{display:flex;gap:12px;align-items:center}.gl{font:700 30px var(--display,inherit);width:46px;height:46px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff}
+.gA{background:var(--win)}.gB{background:#4f9a5a}.gC{background:#b98a1d}.gD{background:var(--live)}.gF{background:var(--loss)}
+.tag.gA,.tag.gB,.tag.gC,.tag.gD,.tag.gF{color:#fff;border-color:transparent}
+.grade-legs{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13.5px}.grade-legs li{display:grid;grid-template-columns:1fr auto;gap:0 8px}.grade-legs small{grid-column:1/3;color:var(--muted);font-size:12px}
+table.mini{width:100%;border-collapse:collapse;font-size:13.5px}table.mini th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line)}table.mini th,table.mini td{text-align:left!important}table.mini td{padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}table.mini tr:last-child td{border-bottom:0}
+.season{gap:8px}.mu{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px}.mu>div{display:flex;flex-direction:column}.mu>div:last-child{text-align:right}
+.mu span{font-size:14px;font-variant-numeric:tabular-nums}.mu small{color:var(--muted);font-size:11.5px}.mu .vs{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.mu .lead b{color:var(--win)}.mu.bye{grid-template-columns:1fr auto}
+.pe-mine{display:flex;gap:10px;align-items:center;justify-content:space-between}.pe-games{display:flex;flex-direction:column;gap:6px;margin-top:8px}.pe-game{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pe-game .chip small{font-weight:500;opacity:.8}
+.pe-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.sweatcard{padding:0;overflow:hidden}.sw-h{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}.sw-h.in{background:rgba(196,84,26,.08)}
+.sw-t{display:flex;gap:10px;align-items:baseline;font:700 15px var(--body)}.sw-t b{font-size:26px;font-variant-numeric:tabular-nums}.sw-t.r{justify-content:flex-end}.sw-mid{display:flex;flex-direction:column;align-items:center;gap:2px}.sw-mid small{color:var(--muted);font-size:12px}
+.sw-sum{padding:6px 14px}.sw-p{padding:8px 14px;border-top:1px solid var(--line)}.sw-pn{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.sw-l{display:grid;grid-template-columns:18px 1fr auto;gap:2px 8px;align-items:baseline;font-size:14px;padding:3px 0}.sw-l .m{color:var(--muted)}.sw-l.won .m{color:var(--win)}.sw-l.lost .m{color:var(--loss)}.sw-l.lost .t{text-decoration:line-through;color:var(--muted)}
+.sw-l .t small{color:var(--live);font-size:12px}.sw-l .v{font-weight:700;font-variant-numeric:tabular-nums}.sw-l .v small{color:var(--muted);font-weight:500}.sw-l .bar{grid-column:2/4;height:4px;margin:2px 0 0}
 .badge{display:inline-block;font-size:12px;margin-left:4px}.leak{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}.leak:last-child{border-bottom:0}.leak small{grid-column:2/4;color:var(--muted);font-size:12.5px}
 .sig{font-size:11.5px;font-weight:700;padding:2px 6px;border-radius:6px;background:var(--chip,rgba(127,127,127,.12));margin-left:4px;white-space:nowrap}.sig.up{color:var(--win)}.sig.dn{color:var(--loss)}
 .hsum{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted)}.hsum b{color:var(--ink,inherit)}
@@ -242,6 +260,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     <div class="pulse" id="pulse"><i></i><span id="pulseText">Ready</span></div>
   </header>
 
+  <div class="notice" id="moved" hidden><b>The app has a new address.</b> Open <a href="https://live-bet-tracker-b4f3f.web.app" id="movedLink">live-bet-tracker-b4f3f.web.app</a>, sign in, and add it to your home screen. You'll need to connect Polymarket again there. This old address keeps working for now.</div>
   <div class="notice" id="notice" hidden></div>
 
   <!-- Join screen -->
@@ -331,6 +350,16 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
           <div class="row-end"><button type="button" class="small" id="syncCopy">Copy unlock key</button><button type="button" class="ghost small" id="syncHide">I've saved it. Hide</button></div>
         </div>
       </div>
+      <div id="pushOwner" hidden style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;flex-direction:column;gap:8px">
+        <h3 style="margin:0;font-size:15px">Phone alerts setup (owner)</h3>
+        <p class="fine" id="pushOwnerStatus"></p>
+        <div class="row-end"><button type="button" class="small" id="pushSetupBtn">Create phone-alert key</button></div>
+        <div id="pushSecretBox" hidden style="display:flex;flex-direction:column;gap:8px">
+          <p class="fine"><b>Copy this key now. It's shown only once.</b> Paste it into GitHub (bet-tracker-sync → Settings → Secrets) as the secret <b>VAPID_PRIVATE_KEY</b>. Don't send it to anyone.</p>
+          <textarea id="pushSecret" readonly rows="2" style="font-family:monospace;font-size:13px;width:100%"></textarea>
+          <div class="row-end"><button type="button" class="small" id="pushCopy">Copy key</button><button type="button" class="ghost small" id="pushHide">I've saved it. Hide</button></div>
+        </div>
+      </div>
     </section>
 
     <div class="tabs" role="tablist">
@@ -381,6 +410,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
           <label class="f c2">Payout $<input id="payout" inputmode="decimal" placeholder="55"></label>
         </div>
         <div id="reviewList"></div>
+        <div class="grade" id="gradeBox" hidden></div>
         <div class="row-end">
           <button type="button" id="cancelReview" class="ghost">Cancel</button>
           <button type="button" id="addLegRow">+ Leg</button>
@@ -487,13 +517,21 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="panel recap" id="meWeek"></div>
       <div class="section-head"><h2>Leak finder</h2><span class="statline">Only you see this</span></div>
       <div class="panel" id="leaks"></div>
+      <div class="section-head"><h2>Close calls</h2><span class="statline">Only you see this</span></div>
+      <div class="panel recap" id="meClose"></div>
       <div class="section-head"><h2>Watching</h2><span class="statline">Alerts when a price moves 5¢ or a player is ruled out</span></div>
       <div class="panel" id="watchList"></div>
+      <div class="section-head"><h2>Phone alerts</h2></div>
+      <div class="panel" style="gap:10px">
+        <p id="pushState" style="margin:0"></p>
+        <label class="toggle"><input type="checkbox" id="pushToggle"> Send alerts to this phone, even when the app is closed</label>
+        <p class="fine">Reactions, one leg away, cashed bets, injuries and watched lines. Checked about once an hour. On iPhone this works only from the home-screen icon (Share → Add to Home Screen), iOS 16.4 or newer. Turn it on separately on each phone.</p>
+      </div>
       <div class="section-head"><h2>Background sync</h2></div>
       <div class="panel" style="gap:10px" id="syncCard">
         <p id="syncState" style="margin:0"></p>
         <label class="toggle"><input type="checkbox" id="syncToggle"> Keep my Polymarket bets syncing when the app is closed</label>
-        <p class="fine" id="syncFine">Your key is locked on this phone with the group's server lock, so Firebase only stores a scrambled copy and nobody can read it in the app. Every 30 minutes the group's sync job unlocks it to <b>read</b> your positions and results. It never places trades. The group owner runs that job, so turn this on only if you trust them. You can turn it off anytime, or delete the key at polymarket.us/developer.</p>
+        <p class="fine" id="syncFine">Your key is locked on this phone with the group's server lock, so Firebase only stores a scrambled copy and nobody can read it in the app. About once an hour the group's sync job unlocks it to <b>read</b> your positions and results. It never places trades. The group owner runs that job, so turn this on only if you trust them. You can turn it off anytime, or delete the key at polymarket.us/developer.</p>
       </div>
       <div class="section-head"><h2>Account</h2></div>
       <div class="panel" style="gap:12px">
@@ -527,6 +565,12 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <div class="panel recap" id="weekRecap"></div>
       <div class="section-head"><h2>This week's challenges</h2><span class="statline">Resets Monday</span></div>
       <div class="cat-grid" id="challenges"></div>
+      <div class="section-head"><h2 id="seasonTitle">Season</h2><span class="statline" id="seasonSub"></span></div>
+      <div class="panel season" id="season"></div>
+      <div class="section-head"><h2>Daily pick'em</h2><span class="statline">Free · one pick a day</span></div>
+      <div class="panel" id="pickem"></div>
+      <div class="section-head"><h2>Close calls</h2><span class="statline">Lost by one leg</span></div>
+      <div class="panel" id="closeCalls"></div>
       <div class="chips" id="boardRange"></div>
       <div class="section-head"><h2 id="plTitle">All-time profit &amp; loss</h2></div>
       <div class="pl-grid" id="plGrid"></div>
@@ -702,7 +746,10 @@ function marketFor(league, text){
 function toGame(e){
   const c=e.competitions?.[0]||{}; const s=e.status?.type||{};
   const teams=(c.competitors||[]).map(t=>({abbr:t.team?.abbreviation, name:t.team?.displayName, short:t.team?.shortDisplayName, nick:t.team?.name, id:t.team?.id, score:Number(t.score||0), winner:t.winner, home:t.homeAway==="home"}));
-  return {id:e.id, name:e.shortName, state:s.state, final:!!s.completed, half:s.name==="STATUS_HALFTIME", detail:s.shortDetail||s.detail||"", clock:e.status?.displayClock, period:e.status?.period, date:e.date, teams};
+  const o=(c.odds||[])[0]; let odds=null;
+  if(o){ const n=v=>{ const x=Number(String(v??"").replace(/[^\d.+\-]/g,"")); return isFinite(x)&&String(v??"").trim()!==""?x:null; };
+    odds={homeLine:n(o.pointSpread?.home?.close?.line)??n(o.spread), total:n(o.overUnder)??n(o.total?.over?.close?.line), mlHome:n(o.moneyline?.home?.close?.odds), mlAway:n(o.moneyline?.away?.close?.odds)}; }
+  return {id:e.id, name:e.shortName, state:s.state, final:!!s.completed, half:s.name==="STATUS_HALFTIME", detail:s.shortDetail||s.detail||"", clock:e.status?.displayClock, period:e.status?.period, date:e.date, teams, odds};
 }
 function tennisGames(d){
   const out=[];
@@ -1029,20 +1076,66 @@ function startGroup(){
   if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
   unsub.push(gref().collection("members").onSnapshot(s=>{ members={}; s.forEach(d=>members[d.id]=d.data()); renderMembers(); $("#polyBtn").textContent=(members[uid]?.polyAddress||members[uid]?.pmus)?"Polymarket ✓":"Connect Polymarket"; renderAll(); syncPoly(false); syncPmus(false); }, e=>note("Couldn't load your group: "+e.message)));
   let wnChecked=false;
-  unsub.push(gref().onSnapshot(d=>{ groupDoc=d.data()||null; if(!wnChecked){ wnChecked=true; setTimeout(maybeWhatsNew,600); } if(tab==="me") renderSync(); if(!$("#membersPanel").hidden) renderMembers(); },()=>{}));
+  unsub.push(gref().onSnapshot(d=>{ groupDoc=d.data()||null; if(!wnChecked){ wnChecked=true; setTimeout(maybeWhatsNew,600); } if(tab==="me"){ renderSync(); renderPush(); } if(!$("#membersPanel").hidden) renderMembers(); },()=>{}));
+  unsub.push(gref().collection("push").doc(uid).onSnapshot(d=>{ pushDoc=d.exists? d.data() : null; if(tab==="me") renderPush(); },()=>{ pushDoc=null; }));
+  subscribePicks();
   unsub.push(gref().collection("vault").doc(uid).onSnapshot(d=>{ myVault=d.exists? d.data() : null; if(tab==="me") renderSync(); },()=>{ myVault=null; }));
-  unsub.push(gref().collection("reactions").limit(2000).onSnapshot(q=>{ reactions=q.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{}));
+  unsub.push(gref().collection("reactions").where("at",">=",firebase.firestore.Timestamp.fromMillis(Date.now()-14*864e5)).onSnapshot(q=>{ reactions=q.docs.map(d=>({id:d.id,...d.data()})); renderAll(); },()=>{}));
   unsub.push(gref().collection("notifs").where("toName","==",me.name).limit(100).onSnapshot(q=>{
     notifs=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.at?.toMillis?.()||0)-(a.at?.toMillis?.()||0));
     const fresh=notifs.filter(n=>!n.read && !seenNotifs.has(n.id));
     fresh.forEach(n=>{ seenNotifs.add(n.id); const msg= n.text ? `${n.emoji||"🔔"} ${n.text}` : `${n.fromName} reacted ${n.emoji} to your ${n.label||"slip"}`; toast(msg);
       try{ if(window.Notification && Notification.permission==="granted") new Notification("Live Bet Tracker",{body:msg}); }catch{} });
     ls.set(KEY+".seenN",[...seenNotifs].slice(-300)); renderBell(); },()=>{}));
-  unsub.push(gref().collection("slips").orderBy("createdAt","desc").limit(800).onSnapshot(s=>{
-    slips=cleanSlips(s.docs.map(d=>({id:d.id,...d.data()})));
-    renderAll(); refresh(); tidyDuplicates();
-  }, e=>note("Couldn't load slips: "+e.message)));
+  startSlips();
 }
+/* ---- Slips: open bets live, settled bets cached on this phone (keeps the group under Firebase's free daily limit) ---- */
+const SLIP_CAP=800, FULL_EVERY=24*3600e3;
+let slipMap=new Map(), openIds=new Set(), deltaIds=new Set(), slipCacheKey="";
+const tsRep=(k,v)=> v && typeof v==="object" && typeof v.toMillis==="function" ? {__ts:v.toMillis()} : v;
+const tsRev=(k,v)=> v && typeof v==="object" && v.__ts!=null ? firebase.firestore.Timestamp.fromMillis(v.__ts) : v;
+function loadSlipCache(){ try{ const raw=localStorage.getItem(slipCacheKey); if(!raw) return null; return JSON.parse(raw,tsRev); }catch{ return null; } }
+let saveTimer=null, cacheFullAt=0;
+function saveSlipCache(full){
+  if(full) cacheFullAt=full;
+  clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ try{
+    const list=[...slipMap.values()].sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)).slice(0,SLIP_CAP);
+    const fullAt=cacheFullAt;
+    const maxSettled=Math.min(Date.now(), Math.max(0,...list.map(x=>Math.max(x.settledAt?.toMillis?.()||0, x.upd?.toMillis?.()||0))));
+    localStorage.setItem(slipCacheKey, JSON.stringify({fullAt, maxSettled, docs:list},tsRep));
+  }catch{ try{ localStorage.removeItem(slipCacheKey); }catch{} } },800);
+}
+function publishSlips(){
+  const raw=[...slipMap.values()].sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)).slice(0,SLIP_CAP);
+  slips=cleanSlips(raw); renderAll(); refresh(); tidyDuplicates();
+}
+async function startSlips(){
+  slipCacheKey=KEY+".slips."+me.group+"."+uid; slipMap=new Map(); openIds=new Set(); deltaIds=new Set();
+  const cache=loadSlipCache(); const col=gref().collection("slips"); cacheFullAt=cache?.fullAt||0;
+  if(cache?.docs?.length){ cache.docs.forEach(d=>slipMap.set(d.id,d)); publishSlips(); }
+  let since=cache?.maxSettled ? cache.maxSettled-6*3600e3 : Date.now()-3*864e5;
+  if(!cache || Date.now()-(cache.fullAt||0)>FULL_EVERY){
+    // Once a day: reload the latest slips in full (catches edits and deletes to old bets)
+    try{ const q=await col.orderBy("createdAt","desc").limit(SLIP_CAP).get(); slipMap=new Map(q.docs.map(d=>[d.id,{id:d.id,...d.data()}])); saveSlipCache(Date.now()); publishSlips(); since=Date.now()-6*3600e3; }
+    catch(e){ note("Couldn't load slips: "+e.message); }
+  }
+  const T=firebase.firestore.Timestamp;
+  unsub.push(col.where("status","==","open").onSnapshot(q=>{
+    const now=new Set(q.docs.map(d=>d.id));
+    q.docs.forEach(d=>slipMap.set(d.id,{id:d.id,...d.data()}));
+    // A bet that left the open list was either settled (the settled listener has it) or deleted
+    const gone=[...openIds].filter(id=>!now.has(id) && !deltaIds.has(id)); openIds=now;
+    gone.forEach(id=>col.doc(id).get().then(d=>{ if(d.exists) slipMap.set(id,{id,...d.data()}); else slipMap.delete(id); saveSlipCache(); publishSlips(); }).catch(()=>{}));
+    saveSlipCache(); publishSlips();
+  }, e=>note("Couldn't load slips: "+e.message)));
+  // Bets settled or corrected since your last visit (by time settled, or by time last changed)
+  const dA=new Set(), dB=new Set();
+  const onDelta=(set)=>q=>{ set.clear(); q.docs.forEach(d=>{ set.add(d.id); slipMap.set(d.id,{id:d.id,...d.data()}); }); deltaIds=new Set([...dA,...dB]); saveSlipCache(); publishSlips(); };
+  unsub.push(col.where("settledAt",">=",T.fromMillis(since)).onSnapshot(onDelta(dA),()=>{}));
+  unsub.push(col.where("upd",">=",T.fromMillis(since)).onSnapshot(onDelta(dB),()=>{}));
+}
+// Your own edits and deletes show right away (and stay right in the cache)
+function forgetSlip(id){ slipMap.delete(id); saveSlipCache(); publishSlips(); }
 function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?group="+encodeURIComponent(me.group)+"&name="+encodeURIComponent(me.name)); }catch{} }
 function genCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; const r=crypto.getRandomValues(new Uint8Array(6)); r.forEach(x=>c+=a[x%a.length]); return c; }
 
@@ -1437,14 +1530,14 @@ let tidyAt=0;
 function tidyDuplicates(){
   if(Date.now()-tidyAt<60000 || !dupIds.length) return; tidyAt=Date.now();
   const mine=x=> x.uid===uid || members[x.uid]?.linkedTo===uid;
-  dupIds.filter(mine).slice(0,50).forEach(x=>gref().collection("slips").doc(x.id).delete().catch(()=>{}));
+  dupIds.filter(mine).slice(0,50).forEach(x=>gref().collection("slips").doc(x.id).delete().then(()=>{ slipMap.delete(x.id); saveSlipCache(); }).catch(()=>{}));
 }
 function persistLegs(s){
   const rs=s.legs.map(l=>l.result||null);
   if(isPM(s)){ gref().collection("slips").doc(s.id).update({legs:s.legs.map(l=>({...l}))}).catch(()=>{}); return; }   // Polymarket settles these, not ESPN
   const status = rs.includes("lost") ? "lost" : rs.every(Boolean) ? slipStatus(rs) : "open";
   const upd={legs:s.legs.map(l=>({...l}))};
-  if(status!=="open" && s.status==="open"){ upd.status=status; upd.settledAt=firebase.firestore.FieldValue.serverTimestamp(); }
+  if(status!=="open" && s.status==="open"){ upd.status=status; upd.settledAt=upd.upd=firebase.firestore.FieldValue.serverTimestamp(); }
   gref().collection("slips").doc(s.id).update(upd).catch(()=>{});
 }
 setInterval(()=>{ if(!document.hidden) refresh(); },20000);
@@ -1540,7 +1633,7 @@ function slipHTML(s){
   const isOpen=openSlips.has(s.id);
   const canEdit = mine && !s.source;
   return `<details class="slip ${status==="open"?"":status}" data-sid="${esc(s.id)}" ${isOpen?"open":""}>
-    <summary class="sum"><div class="ttl">${s.legs.length}-leg ${esc(slipCategory(s))} <span class="tag">${esc(when)}</span>
+    <summary class="sum"><div class="ttl">${s.legs.length}-leg ${esc(slipCategory(s))} <span class="tag">${esc(when)}</span>${s.grade?` <span class="tag g${esc(s.grade)}" title="Price grade when posted">Grade ${esc(s.grade)}</span>`:""}
         <small>${s.stake?moneyAs(s.name,+s.stake):""}${s.payout?" → "+moneyAs(s.name,+s.payout):""}${s.odds?` · ${esc(s.odds)}`:""}</small></div>
       <div class="right"><span class="pill ${label[0]}">${label[1]}</span>${sweat?`<span class="sweat">${sweat}</span>`:""}<span class="chev" aria-hidden="true">▼</span></div>
       <div class="dots" aria-hidden="true">${dots}</div></summary>
@@ -1564,13 +1657,13 @@ function renderLive(){
   const sel=$("#whoSel"); const opts=[["all","Everyone"],["me","Just me"],...ppl.filter(([k])=>k!==norm(me.name))];
   sel.innerHTML=opts.map(([k,l])=>`<option value="${esc(k)}" ${k===whoLive?"selected":""}>${esc(l)}</option>`).join("");
   $("#sortSel").value=sortBy;
-  chipRow($("#liveView"),[["person","By person"],["game","By game"]],liveView,"lv");
+  chipRow($("#liveView"),[["person","By person"],["game","Sweat board"]],liveView,"lv");
   const {open}=liveSlips(); const list=$("#liveList");
   if(!open.length){
     list.innerHTML=`<div class="empty"><b>No open slips</b>${slips.length?"Everything's settled. Check History and the Board.":"Pick a sport, then scan a screenshot of your slip or add one by hand. Your friends will see it here live."}</div>`;
     return;
   }
-  if(liveView==="game"){ list.innerHTML=gamesHTML(open); return; }
+  if(liveView==="game"){ list.innerHTML=sweatHTML(open); return; }
   const by=new Map();
   for(const s of open){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.source!=="model"&&(s.uid===uid||k===norm(me.name)),slips:[]}); by.get(k).slips.push(s); }
   const groups=[...by.values()].sort((a,b)=>(b.mine-a.mine)||a.name.localeCompare(b.name));
@@ -1753,7 +1846,7 @@ $("#rankBy").addEventListener("click",e=>{const k=e.target.dataset.rb; if(!k) re
 function rangeStart(r){ const d=new Date(); d.setHours(0,0,0,0); if(r==="week"){ d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getTime(); } if(r==="month"){ d.setDate(1); return d.getTime(); } return 0; }
 $("#boardRange").addEventListener("click",e=>{const k=e.target.dataset.br; if(!k) return; boardRange=k; renderBoard();});
 function renderBoard(){
-  renderRecap(); renderChallenges();
+  renderRecap(); renderChallenges(); renderSeason(); renderPickem(); renderCloseCalls();
   const ppl=people().filter(([k])=>k!=="model");
   chipRow($("#boardRange"),[["all","All-time"],["month","This month"],["week","This week"]],boardRange,"br");
   $("#plTitle").textContent = boardRange==="week"?"This week's profit & loss":boardRange==="month"?"This month's profit & loss":"All-time profit & loss";
@@ -2197,7 +2290,7 @@ async function pmBackfill(force){
       const sportsy=legs.some(l=>l.kind!=="pmus"||l.cat!=="Other"); if(!sportsy && !all) continue;
       legs=legs.map(l=>({...l,result: status==="won"?"won":null}));
       const ts=firebase.firestore.Timestamp.fromMillis(x.t);
-      await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:4, backfill:true}).catch(()=>{});
+      await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"pmus", createdAt:ts, settledAt:ts, stake:x.stake, payout:x.stake?Math.round((x.stake+Math.max(0,x.pnl))*100)/100:null, odds:null, status, pnl:x.pnl, legs, legsV:4, backfill:true}).catch(()=>{});
       added++;
     }
     // 1) Save corrected results right away
@@ -2214,7 +2307,7 @@ async function pmBackfill(force){
       const won= s.short ? longLost : longWon; const stake=Number(s.stake)||0, pay=Number(s.payout)||0;
       const pnl=Math.round((won? pay-stake : -stake)*100)/100; const st= pnl>0.004?"won":pnl<-0.004?"lost":"push";
       const t=Date.parse(r?.settledAt||raw?.settledAt||"")||s.settledAt?.toMillis?.()||s.createdAt?.toMillis?.()||Date.now();
-      await col.doc(s.id).update({status:st, pnl, pnlSource:"settlement", settledAt:firebase.firestore.Timestamp.fromMillis(t), ...(won?{legs:(s.legs||[]).map(l=>({...l,result:"won"}))}:{})}).catch(()=>{});
+      await col.doc(s.id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), status:st, pnl, pnlSource:"settlement", settledAt:firebase.firestore.Timestamp.fromMillis(t), ...(won?{legs:(s.legs||[]).map(l=>({...l,result:"won"}))}:{})}).catch(()=>{});
       fixedBySettle++;
     });
     const fixed=fast.length+fixedBySettle;
@@ -2259,11 +2352,11 @@ async function syncPmus(force){
         const sportsy=legs.some(l=>l.kind!=="pmus"||l.cat!=="Other");
         if(!sportsy && !all) continue;
         if(status!=="open") legs=legs.map(l=>({...l,result:l.result||status}));
-        await col.doc(id).set({uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100,
+        await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"pmus", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(cost*100)/100,
           payout:Math.round(Math.abs(net||Number(p.qtyBoughtDecimal||0))*100)/100, odds:null, short:net<0, status, pnl: status==="open"?null:pnl, legs, legsV:goodLegs(legs)?4:1, ...live,
           ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
       } else if(status!=="open" && (ex.status==="open" || ex.pnl!==pnl)){
-        await col.doc(ex.id).update({status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
+        await col.doc(ex.id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), status, pnl, settledAt:firebase.firestore.FieldValue.serverTimestamp(), ...live}).catch(()=>{});
       } else if(ex.status==="open" && Math.abs((ex.liveValue||0)-live.liveValue)>=0.5){
         await col.doc(ex.id).update(live).catch(()=>{});
       }
@@ -2298,10 +2391,10 @@ async function importPoly(open, m){
     const status= resolved ? (p.curPrice>=0.5?"won":"lost") : "open";
     const pnl= resolved ? Math.round(((status==="won"?p.size:0)-p.initialValue)*100)/100 : null;
     if(!ex){
-      await col.doc(id).set({uid, name:me.name, source:"polymarket", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(p.initialValue*100)/100, payout:Math.round(p.size*100)/100,
+      await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"polymarket", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake:Math.round(p.initialValue*100)/100, payout:Math.round(p.size*100)/100,
         odds:p.avgPrice>0&&p.avgPrice<1?decToAm(1/p.avgPrice):null, status, pnl, legs:[leg(p,status==="open"?null:status)], ...(status!=="open"?{settledAt:firebase.firestore.FieldValue.serverTimestamp()}:{})}).catch(()=>{});
     } else if(ex.status==="open" && status!=="open"){
-      await col.doc(id).update({status, pnl, legs:[leg(p,status)], settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+      await col.doc(id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), status, pnl, legs:[leg(p,status)], settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
     }
   }
   for(const p of (closed||[]).filter(keep)){
@@ -2311,7 +2404,7 @@ async function importPoly(open, m){
     const stake=Math.round((p.totalBought||0)*(p.avgPrice||0)*100)/100;
     const data={status, pnl, legs:[leg(p,status)], settledAt:firebase.firestore.FieldValue.serverTimestamp()};
     if(ex) await col.doc(id).update(data).catch(()=>{});
-    else await col.doc(id).set({uid, name:me.name, source:"polymarket", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:Math.round((p.totalBought||0)*100)/100, odds:p.avgPrice>0&&p.avgPrice<1?decToAm(1/p.avgPrice):null, ...data}).catch(()=>{});
+    else await col.doc(id).set({upd:firebase.firestore.FieldValue.serverTimestamp(), uid, name:me.name, source:"polymarket", createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:Math.round((p.totalBought||0)*100)/100, odds:p.avgPrice>0&&p.avgPrice<1?decToAm(1/p.avgPrice):null, ...data}).catch(()=>{});
   }
 }
 setInterval(()=>{ if(!document.hidden && db && me) syncPoly(false); },20000);
@@ -2751,8 +2844,8 @@ $("#trendList").addEventListener("click",e=>{ const wi=e.target.dataset.twatch; 
 document.body.addEventListener("click",async e=>{
   const d=e.target.dataset;
   if(d.del){ const b=e.target; if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again to delete"; setTimeout(()=>{b.dataset.armed="";b.textContent="Delete";},3000); return; }
-    await gref().collection("slips").doc(d.del).delete().catch(err=>note("Couldn't delete: "+err.message)); }
-  if(d.settle){ const [id,res]=d.settle.split("|"); await gref().collection("slips").doc(id).update({status:res, manual:true, settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>note("Couldn't update: "+err.message)); }
+    await gref().collection("slips").doc(d.del).delete().then(()=>forgetSlip(d.del)).catch(err=>note("Couldn't delete: "+err.message)); }
+  if(d.settle){ const [id,res]=d.settle.split("|"); await gref().collection("slips").doc(id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), status:res, manual:true, settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>note("Couldn't update: "+err.message)); }
   if(d.copy){ const s=slips.find(x=>x.id===d.copy); if(!s) return;
     const lines=[`${s.name}'s ${s.legs.length}-leg ${slipCategory(s)}${s.odds?" ("+s.odds+")":""}`, ...s.legs.map(l=>"• "+legTitle(l)+(l.kind==="prop"?` ${(l.side||"over")==="over"?"over":"under"} ${l.line} ${l.market||""}`:l.kind==="spread"?` ${l.line>0?"+":""}${l.line}`:l.kind==="total"?` ${l.side} ${l.line}`:""))];
     if(s.stake&&showMoney(s.name)) lines.push(`$${s.stake} to pay $${s.payout||"?"}`);
@@ -2799,7 +2892,7 @@ $("#alertsBtn").onclick=async()=>{ if(!window.Notification){ note("This browser 
 const isOwner=()=> !!groupDoc && (groupDoc.createdBy===uid || members[groupDoc.createdBy]?.linkedTo===uid);
 const ownerKey=()=>{ const c=groupDoc?.createdBy; if(!c) return ""; const m=members[c]; if(m?.linkedTo && members[m.linkedTo]) return norm(members[m.linkedTo].name); return norm(m?.name||""); };
 function renderMembers(){
-  const own=isOwner(); renderSyncOwner();
+  const own=isOwner(); renderSyncOwner(); renderPushOwner();
   $("#membersNote").textContent = own ? "You own this group. Approve new people here, or remove someone (they and their slips disappear for everyone)." : "Only the group owner can approve or remove members.";
   const byName=new Map();
   Object.entries(members).forEach(([id,m])=>{ const k=norm(m.name||"?"); if(!byName.has(k)) byName.set(k,{name:m.name||"?",ids:[],removed:0,pending:0}); const g=byName.get(k); g.ids.push(id); if(m.removed) g.removed++; else if(m.status==="pending") g.pending++; });
@@ -2824,8 +2917,18 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=22;
+const APP_VERSION=23;
 const RELEASES=[
+  {v:23, date:"Nov 1", title:"Seasons, pick'em and phone alerts",
+   news:["<b>Season</b> on the Board: each week you're matched with someone. Higher ROI on that week's bets wins. The last week of the month is the playoff.",
+         "<b>Daily pick'em</b> on the Board: pick one team to win each day. It's free, with a monthly leaderboard and streaks.",
+         "<b>Slip grade</b>: when you add a slip, you see its real odds next to the payout and a grade from A to F, plus your record at that parlay size.",
+         "<b>Close calls</b>: how often bets lose by just one leg (Board), and what yours would have paid without that leg (Me tab).",
+         "<b>Sweat board</b> on the Live tab: every live game with the score and everyone's legs in it.",
+         "Opens faster: settled bets are saved on your phone, so only new results load."],
+   todo:["<b>New address:</b> live-bet-tracker-b4f3f.web.app. Open it, sign in, add it to your home screen, and connect Polymarket again there.",
+         "Turn on <b>Phone alerts</b> on the Me tab to get alerts with the app closed. On iPhone, open the app from its home-screen icon first.",
+         {owner:true, text:"To turn on phone alerts for the group: Members → Phone alerts setup → Create phone-alert key, then add it in GitHub as VAPID_PRIVATE_KEY."}]},
   {v:22, date:"Oct 31", title:"Sign-in and team fixes",
    news:["Signing in takes you straight to your group again, even from an old saved link. No more re-entering the group code.",
          "Fixed teams with similar names getting mixed up (like <b>Iowa</b> and <b>Iowa State</b>). Bets already linked to the wrong game fix themselves."]},
@@ -2895,7 +2998,7 @@ $("#syncToggle").addEventListener("change",async e=>{
     if(!on){ await ref.delete(); toast("Background sync is off. Your key was removed from the server."); return; }
     const key=getPmKey(); if(!key){ e.target.checked=false; note(rawPm()?"Unlock your Polymarket key with your PIN first, then try again.":"Connect Polymarket US on this phone first."); return; }
     await ref.set({enc:await sealKey(key, groupDoc.syncPub), at:firebase.firestore.FieldValue.serverTimestamp()});
-    toast("Background sync is on. Your bets will update every 30 minutes.");
+    toast("Background sync is on. Your bets will update about once an hour.");
   }catch(err){ e.target.checked=!on; note("Couldn't change background sync: "+err.message); }
 });
 // Owner: create the server lock (public half saved to the group, private half shown once)
@@ -2917,11 +3020,329 @@ $("#syncSetupBtn").onclick=async()=>{
 $("#syncCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText($("#syncSecret").value); toast("Unlock key copied."); }catch{ $("#syncSecret").select(); note("Select the key and copy it."); } };
 $("#syncHide").onclick=()=>{ $("#syncSecret").value=""; $("#syncSecretBox").hidden=true; };
 
+/* ---------- Slip grade (before you post) ---------- */
+const normCdf=z=>{ const t=1/(1+0.2316419*Math.abs(z)); const d=0.3989423*Math.exp(-z*z/2); const p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274)))); return z>0?1-p:p; };
+const amImp=a=> a==null?null : a>0? 100/(a+100) : -a/(-a+100);
+const MARGIN_SD={nba:12,wnba:11,ncaamb:11,ncaawb:11,nfl:13.5,ncaafb:16,nhl:2.4,mlb:4.4};
+const TOTAL_SD={nba:18,wnba:15,ncaamb:16,ncaawb:15,nfl:13.5,ncaafb:17,nhl:1.9,mlb:3.2};
+const athIdCache=new Map();
+async function findAthleteId(lg,name){
+  const k=lg+":"+norm(name); if(athIdCache.has(k)) return athIdCache.get(k);
+  for(const ts of trendCacheByLg.values()) for(const x of [...(ts.items||[]),...(ts.statItems||[])]) if(ts.lg===lg && x.ath?.id && sameName(x.player,name)){ athIdCache.set(k,x.ath.id); return x.ath.id; }
+  const want=(LEAGUES[lg]?.path||"").split("/")[1];
+  const d=await getJSON("https://site.web.api.espn.com/apis/common/v3/search?type=player&limit=8&query="+encodeURIComponent(name)).catch(()=>null);
+  const hit=(d?.items||[]).find(x=>x.league===want && sameName(x.displayName,name));
+  const id=hit?.id||null; athIdCache.set(k,id); return id;
+}
+async function gameForTeam(lg,team){
+  let g=findTeamGame((boards[lg]||[]).filter(x=>x.state==="pre"||x.state==="in"),team);
+  if(!g && LEAGUES[lg]?.path){ await loadBoard(lg,etDay().replace(/-/g,"")).catch(()=>{}); g=findTeamGame((boards[lg]||[]).filter(x=>x.state!=="post"),team); }
+  if(!g && LEAGUES[lg]?.path){ const t=new Date(Date.now()+864e5); await loadBoard(lg,etDay(t).replace(/-/g,"")).catch(()=>{}); g=findTeamGame((boards[lg]||[]).filter(x=>x.state!=="post"),team); }
+  return g;
+}
+function myLegRate(kind){
+  let w=0,t=0; vis().filter(isMineSlip).forEach(s=>(s.legs||[]).forEach(l=>{ if(l.kind!==kind) return; if(l.result==="won"||l.result==="lost"){ t++; if(l.result==="won") w++; } }));
+  return t>=15? {p:Math.min(0.75,Math.max(0.25,w/t)), src:`your ${KIND_LABEL[kind]?.toLowerCase()||"past"} legs hit ${Math.round(w/t*100)}%`} : {p:0.5, src:"rough guess"};
+}
+async function legProb(d){
+  const lg=d.league, side=d.side||"over", line=Number(d.line);
+  try{
+    if(d.kind==="prop" && d.player){
+      const mk=marketFor(lg,d.market);
+      const ts=trendCacheByLg.get(lg);
+      const it=mk && ts?.items?.find(x=>sameName(x.player,d.player) && x.label===mk.label && Math.abs(Number(x.line)-line)<0.01);
+      if(it){ const mid= side==="under"? it.midNo : it.midYes; if(mid>0&&mid<1) return {p:mid, src:"Polymarket price"}; }
+      if(mk && isFinite(line)){ const id=await findAthleteId(lg,d.player); if(id){ const log=await playerLog(lg,id).catch(()=>null); if(log){ const S=lineStats(log,mk.keys,line,side); if(S.p!=null) return {p:S.p, src:`his game log${S.l10?.n?` (${S.l10.h}/${S.l10.n} last 10)`:""}`}; } } }
+      return myLegRate("prop");
+    }
+    if((d.kind==="moneyline"||d.kind==="spread"||d.kind==="total") && d.team){
+      const g=await gameForTeam(lg,d.team); const o=g?.odds;
+      if(g && o){
+        const mine=teamMatch(g,d.team); const home=mine? !!mine.home : null;
+        if(d.kind==="moneyline" && o.mlHome!=null && o.mlAway!=null && home!=null){ const h=amImp(o.mlHome), a=amImp(o.mlAway); const p=(home?h:a)/(h+a); return {p, src:"sportsbook odds (ESPN)"}; }
+        if(d.kind==="spread" && o.homeLine!=null && home!=null && MARGIN_SD[lg] && isFinite(line)){ const mu= home? -o.homeLine : o.homeLine; return {p:normCdf((mu+line)/MARGIN_SD[lg]), src:`sportsbook line ${home?(o.homeLine>0?"+":"")+o.homeLine:(-o.homeLine>0?"+":"")+(-o.homeLine)}`}; }
+        if(d.kind==="total" && o.total!=null && TOTAL_SD[lg] && isFinite(line)){ const z=(line-o.total)/TOTAL_SD[lg]; return {p: side==="under"? normCdf(z) : 1-normCdf(z), src:`sportsbook total ${o.total}`}; }
+      }
+    }
+  }catch{}
+  return myLegRate(d.kind);
+}
+const gradeOf=ev=> ev>=1?"A":ev>=0.9?"B":ev>=0.75?"C":ev>=0.55?"D":"F";
+const decToAmTxt=dec=> dec>=2? "+"+Math.round((dec-1)*100) : "-"+Math.round(100/(dec-1));
+const sizeBucket=n=> n===1?"single bets":n<=3?"2–3 leg parlays":n<=6?"4–6 leg parlays":"7+ leg parlays";
+let gradeSeq=0, lastGrade=null;
+async function updateGrade(){
+  const box=$("#gradeBox"); if(!box || $("#review").hidden) return;
+  readDrafts(); const legs=drafts.filter(d=>d.kind!=="manual" ? (d.player||d.team) : d.market);
+  if(!legs.length){ box.hidden=true; lastGrade=null; return; }
+  const seq=++gradeSeq; box.hidden=false; box.innerHTML=`<div class="fine">Grading this slip…</div>`;
+  const P=await Promise.all(legs.map(legProb)); if(seq!==gradeSeq) return;
+  const prob=P.reduce((m,x)=>m*x.p,1), fair=1/prob;
+  const stake=Number($("#stake").value)||0, payout=Number($("#payout").value)||0;
+  let offered= stake&&payout? payout/stake : null;
+  if(!offered){ const o=Number(String($("#odds").value).replace(/[^\d.+\-]/g,"")); if(Math.abs(o)>=100) offered= o>0? 1+o/100 : 1+100/Math.abs(o); }
+  const ev= offered? offered*prob : null; const gr= ev!=null? gradeOf(ev) : null;
+  const n=legs.length; const mine=vis().filter(isMineSlip).filter(s=>s.status!=="open"&&s.status!=="void"&&sizeBucket((s.legs||[]).length)===sizeBucket(n));
+  const t=tally(mine); const close=mine.filter(closeMiss).length;
+  lastGrade= gr? {grade:gr, ev:Math.round(ev*100)/100, fair:Math.round(fair*100)/100} : null;
+  box.innerHTML=`<div class="grade-top">${gr?`<span class="gl g${gr}">${gr}</span>`:""}<div>
+      ${offered?`<b>Pays ${decToAmTxt(offered)} · real odds about ${decToAmTxt(fair)}</b>`:`<b>Real odds about ${decToAmTxt(fair)}</b>`}
+      <div class="fine">${ev!=null?`On average you'd get back about <b>${Math.round(ev*100)}¢ per $1</b>. ${ev>=1?"That's a good price.":ev>=0.9?"About a fair price.":"The price is worse than the real odds."}`:"Add your stake and payout (or odds) to see a grade."}</div></div></div>
+    <ul class="grade-legs">${legs.map((d,i)=>`<li><span>${esc(legTitle({...d,line:d.line===""?null:Number(d.line)}))}</span><b>${Math.round(P[i].p*100)}%</b><small>${esc(P[i].src)}</small></li>`).join("")}</ul>
+    ${t.n+t.p>=3?`<div class="fine">Your record on ${sizeBucket(n)}: <b>${t.w}-${t.l}${t.p?"-"+t.p:""}</b>${t.roi!=null?`, ROI ${Math.round(t.roi*100)}%`:""}${close?` · lost ${close} by one leg`:""}.</div>`:""}
+    ${n>=2?`<div class="fine">Estimates treat each leg as separate, so legs from the same game that move together can be off.</div>`:""}`;
+}
+let gradeTimer=null; const gradeSoon=()=>{ clearTimeout(gradeTimer); gradeTimer=setTimeout(updateGrade,700); };
+
+/* ---------- Close calls (lost by one leg) ---------- */
+function closeMiss(s){ const L=s.legs||[]; if(s.status!=="lost"||L.length<2) return false; const lost=L.filter(l=>l.result==="lost").length; return lost===1 && L.every(l=>l.result==="lost"||l.result==="won"||l.result==="push"); }
+function wouldHavePaid(s){
+  const L=s.legs||[], st=Number(s.stake)||0, po=Number(s.payout)||0; if(!st||!po) return null;
+  const miss=L.find(l=>l.result==="lost"); const legDec= miss?.price>0&&miss.price<1 ? 1/miss.price : Math.pow(po/st,1/L.length);
+  return Math.max(0, po/legDec - st);
+}
+function closeStats(list){
+  const done=list.filter(s=>s.status!=="open"&&s.status!=="void"); const losses=done.filter(s=>s.status==="lost"); const cm=done.filter(closeMiss);
+  const sizes=[1,2,3,4].map(i=>{ const f=[s=>s.legs.length===1,s=>s.legs.length>=2&&s.legs.length<=3,s=>s.legs.length>=4&&s.legs.length<=6,s=>s.legs.length>=7][i-1]; return {label:["Singles","2–3 legs","4–6 legs","7+ legs"][i-1], t:tally(done.filter(f))}; });
+  const would=cm.map(wouldHavePaid).filter(x=>x!=null); return {done,losses,cm,sizes,wouldSum:would.reduce((m,x)=>m+x,0),wouldN:would.length};
+}
+function renderCloseCalls(){
+  const ppl=people().filter(([k])=>k!=="model");
+  const rows=ppl.map(([k,name])=>({name,c:closeStats(peopleSlips().filter(s=>norm(s.name)===k))})).filter(r=>r.c.losses.length>=5).sort((a,b)=>b.c.cm.length/b.c.losses.length-a.c.cm.length/a.c.losses.length);
+  $("#closeCalls").innerHTML= rows.length? `<div class="tablewrap" style="border:0"><table class="mini"><thead><tr><th>Who</th><th>Lost by 1 leg</th><th>1–3 legs</th><th>4+ legs</th></tr></thead><tbody>${rows.map(r=>{ const d=r.c.done; const cell=t=>t.n?`${Math.round(t.pct*100)}% won`:"–";
+      return `<tr><td><b>${esc(r.name)}</b></td><td>${r.c.cm.length} of ${r.c.losses.length} (${Math.round(r.c.cm.length/r.c.losses.length*100)}%)</td><td>${cell(tally(d.filter(s=>s.legs.length<=3)))}</td><td>${cell(tally(d.filter(s=>s.legs.length>=4)))}</td></tr>`; }).join("")}</tbody></table></div>
+    <p class="fine">How often each person's losing parlays missed by a single leg, and how often shorter vs longer parlays cash.</p>`
+    : `<div class="empty"><b>Not enough results yet</b>Shows up once people have at least 5 losing bets.</div>`;
+}
+function renderMeClose(){
+  const c=closeStats(vis().filter(isMineSlip));
+  if(c.done.length<5){ $("#meClose").innerHTML=`<div class="empty"><b>Not enough bets yet</b>Needs at least 5 settled bets.</div>`; return; }
+  const all=tally(c.done), short=tally(c.done.filter(s=>s.legs.length<=3));
+  $("#meClose").innerHTML=`<div class="big"><div><small>Lost by one leg</small><b>${c.cm.length}</b></div><div><small>Share of your losses</small><b>${c.losses.length?Math.round(c.cm.length/c.losses.length*100)+"%":"–"}</b></div></div>
+    <ul>${c.wouldN?`<li>Without the leg that missed, those ${c.wouldN} slips would have won about <b>${money(c.wouldSum)}</b> (estimated).</li>`:""}
+      ${short.n>=3&&all.roi!=null&&short.roi!=null?`<li>Your ROI on 1–3 leg bets is <b>${Math.round(short.roi*100)}%</b>, vs <b>${Math.round(all.roi*100)}%</b> overall.</li>`:""}</ul>
+    <div class="tablewrap" style="border:0"><table class="mini"><thead><tr><th>Size</th><th>Record</th><th>Won</th><th>ROI</th></tr></thead><tbody>${c.sizes.filter(x=>x.t.n+x.t.p).map(x=>`<tr><td>${x.label}</td><td>${x.t.w}-${x.t.l}${x.t.p?"-"+x.t.p:""}</td><td>${pct(x.t.pct)}</td><td class="${(x.t.roi||0)>0?"pos":(x.t.roi||0)<0?"neg":""}">${x.t.roi!=null?Math.round(x.t.roi*100)+"%":"–"}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
+/* ---------- Season (monthly head-to-head by ROI) ---------- */
+function seasonOf(t){
+  const mon=new Date(t); const y=mon.getFullYear(), m=mon.getMonth();
+  const first=new Date(y,m,1); const d=new Date(first); d.setDate(1+((8-first.getDay())%7));
+  const weeks=[]; while(d.getMonth()===m){ weeks.push(d.getTime()); d.setDate(d.getDate()+7); }
+  return {y,m,weeks,name:first.toLocaleDateString(undefined,{month:"long"})};
+}
+function seasonPlayers(){
+  const seen=new Map(); Object.values(members).filter(m=>m.name && !m.removed && m.status!=="pending" && !m.linkedTo).sort((a,b)=>(a.joinedAt?.toMillis?.()||0)-(b.joinedAt?.toMillis?.()||0)||a.name.localeCompare(b.name)).forEach(m=>{ const k=norm(m.name); if(!seen.has(k)) seen.set(k,m.name); });
+  return [...seen].map(([k,name])=>({k,name}));
+}
+function roundRobin(players,r){
+  const a=[...players]; if(a.length%2) a.push(null); const n=a.length; if(n<2) return [];
+  const rest=a.slice(1); const rot=rest.map((_,i)=>rest[(i+r)%rest.length]); const arr=[a[0],...rot];
+  const out=[]; for(let i=0;i<n/2;i++) out.push([arr[i],arr[n-1-i]]); return out;
+}
+function weekScore(k,w){ const l=settledIn(peopleSlips().filter(s=>norm(s.name)===k),[w,w+7*864e5]); const t=tally(l); return l.length&&t.staked? {roi:t.roi, n:l.length} : null; }
+function playMatch(a,b,w){
+  const sa=a?weekScore(a.k,w):null, sb=b?weekScore(b.k,w):null;
+  const win= !a||!b ? null : !sa&&!sb ? 0 : !sb ? 1 : !sa ? -1 : sa.roi>sb.roi+1e-9 ? 1 : sb.roi>sa.roi+1e-9 ? -1 : 0;
+  return {a,b,sa,sb,win};
+}
+function runSeason(S){
+  const P=seasonPlayers(); const now=Date.now(); const reg=S.weeks.slice(0,Math.max(1,S.weeks.length-1)); const po=S.weeks.length>1? S.weeks[S.weeks.length-1] : null;
+  const rec=new Map(P.map(p=>[p.k,{...p,w:0,l:0,t:0,profit:0,staked:0}]));
+  const weeks=reg.map((w,i)=>({w,i,games:roundRobin(P,i).map(([a,b])=>playMatch(a,b,w)),done:now>=w+7*864e5,live:now>=w&&now<w+7*864e5}));
+  for(const wk of weeks) if(wk.done) for(const g of wk.games){ if(!g.a||!g.b) continue; const A=rec.get(g.a.k),B=rec.get(g.b.k); if(g.win===1){A.w++;B.l++;} else if(g.win===-1){B.w++;A.l++;} else {A.t++;B.t++;} }
+  const seasonEnd=po? po : reg[reg.length-1]+7*864e5;
+  for(const r of rec.values()){ const t=tally(settledIn(peopleSlips().filter(s=>norm(s.name)===r.k),[S.weeks[0],seasonEnd])); r.roi=t.roi; }
+  const table=[...rec.values()].sort((a,b)=>(b.w+b.t/2)-(a.w+a.t/2)||(b.roi??-9)-(a.roi??-9));
+  let playoffs=null;
+  if(po && table.length>=2){ const seed=table.slice(0,4); playoffs={w:po, live:now>=po&&now<po+7*864e5, done:now>=po+7*864e5, final:playMatch(seed[0],seed[1],po), third: seed.length>=4? playMatch(seed[2],seed[3],po) : null}; }
+  return {P,weeks,table,playoffs};
+}
+function matchHTML(g,live){
+  const sc=x=>x? `${Math.round(x.roi*100)}%<small> ROI · ${x.n} bet${x.n===1?"":"s"}</small>` : `<small>no bets yet</small>`;
+  if(!g.a||!g.b) return `<div class="mu bye"><b>${esc((g.a||g.b)?.name||"")}</b><span class="fine">Bye week</span></div>`;
+  const lead=g.win===1?"a":g.win===-1?"b":"";
+  return `<div class="mu"><div class="${lead==="a"?"lead":""}"><b>${esc(g.a.name)}</b><span>${sc(g.sa)}</span></div><span class="vs">${live?(lead?"leading":"vs"):(g.win===0?"tie":"vs")}</span><div class="${lead==="b"?"lead":""}"><b>${esc(g.b.name)}</b><span>${sc(g.sb)}</span></div></div>`;
+}
+function renderSeason(){
+  const S=seasonOf(weekStart(0)); const R=runSeason(S);
+  const prevS=seasonOf(new Date(S.y,S.m,0).getTime()); const prevR=Date.now()<S.weeks[0]+7*864e5 ? runSeason(prevS) : null;
+  const champ=prevR?.playoffs?.done && prevR.playoffs.final.win!==0 ? (prevR.playoffs.final.win===1?prevR.playoffs.final.a:prevR.playoffs.final.b) : null;
+  const cur=R.weeks.find(w=>w.live); const inPO=R.playoffs?.live;
+  $("#seasonTitle").textContent=`${S.name} season`;
+  $("#seasonSub").textContent= inPO? "Playoff week" : cur? `Week ${cur.i+1} of ${R.weeks.length} · then playoffs` : "";
+  if(R.P.length<2){ $("#season").innerHTML=`<div class="empty"><b>Needs at least 2 members</b>Each week you're matched with someone. Higher ROI on bets settled that week wins.</div>`; return; }
+  const past=R.weeks.filter(w=>w.done);
+  $("#season").innerHTML=`${champ?`<div class="fine">🏆 ${esc(prevS.name)} champion: <b>${esc(champ.name)}</b></div>`:""}
+    ${inPO? `<div class="fine"><b>Final</b> (#1 vs #2)</div>${matchHTML(R.playoffs.final,true)}${R.playoffs.third?`<div class="fine"><b>3rd place</b></div>${matchHTML(R.playoffs.third,true)}`:""}`
+      : cur? `<div class="fine"><b>This week</b> · ${fmtDay(cur.w)} – ${fmtDay(cur.w+6*864e5)}</div>${cur.games.map(g=>matchHTML(g,true)).join("")}` : ""}
+    ${R.playoffs?.done?`<div class="fine">Final: ${matchHTML(R.playoffs.final,false)}</div>`:""}
+    <div class="tablewrap" style="border:0"><table class="mini"><thead><tr><th>#</th><th>Standings</th><th>W-L-T</th><th>Season ROI</th></tr></thead><tbody>${R.table.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc(r.name)}</b>${!inPO&&R.playoffs&&i<2?' <span class="tag">TOP 2</span>':""}</td><td>${r.w}-${r.l}-${r.t}</td><td class="${(r.roi||0)>0?"pos":(r.roi||0)<0?"neg":""}">${r.roi!=null?Math.round(r.roi*100)+"%":"–"}</td></tr>`).join("")}</tbody></table></div>
+    ${past.length?`<details class="fine"><summary>Past weeks</summary>${past.slice().reverse().map(w=>`<div class="fine" style="margin-top:8px"><b>Week ${w.i+1}</b> · ${fmtDay(w.w)}</div>${w.games.map(g=>matchHTML(g,false)).join("")}`).join("")}</details>`:""}
+    <p class="fine">Each week you're matched with someone. Higher ROI on bets settled that week wins; no bets is a loss. The last week of the month is the playoff: #1 vs #2 for the title.</p>`;
+}
+
+/* ---------- Daily pick'em (free) ---------- */
+let pickDocs=[], pickOpen=false, pickLg=null, pickUnsub=null;
+const PE_LEAGUES=["nfl","ncaafb","nba","ncaamb","nhl","mlb","wnba","ncaawb","epl","mls","ucl"];
+const monthKey=(t)=>etDay(t).slice(0,7);
+function subscribePicks(){
+  if(pickUnsub) pickUnsub();
+  pickUnsub=gref().collection("picks").where("month","==",monthKey()).onSnapshot(q=>{ pickDocs=q.docs.map(d=>({id:d.id,...d.data()})); if(tab==="board") renderPickem(); settlePicks(); },()=>{});
+  unsub.push(()=>{ if(pickUnsub){ pickUnsub(); pickUnsub=null; } });
+}
+let settleBusy=false, lastSettle=0;
+async function settlePicks(){
+  if(settleBusy || Date.now()-lastSettle<60000) return; settleBusy=true; lastSettle=Date.now();
+  try{
+    const due=pickDocs.filter(p=>!p.result && (p.lockAt?.toMillis?.()||0)<Date.now());
+    for(const p of due){
+      let g=(boards[p.league]||[]).find(x=>String(x.id)===String(p.gameId));
+      if(!g?.final){ await loadBoard(p.league,String(p.day).replace(/-/g,"")).catch(()=>{}); g=(boards[p.league]||[]).find(x=>String(x.id)===String(p.gameId)); }
+      if(!g?.final) continue;
+      const late=(p.at?.toMillis?.()||0) > Date.parse(g.date)+60000;
+      const mine=g.teams.find(t=>t.abbr===p.team), opp=g.teams.find(t=>t!==mine);
+      const result= late? "void" : !mine||!opp? "void" : mine.score>opp.score? "won" : mine.score<opp.score? "lost" : "push";
+      await gref().collection("picks").doc(p.id).update({result, settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+    }
+  } finally{ settleBusy=false; }
+}
+async function loadPickGames(){
+  const day=etDay().replace(/-/g,""); const out={};
+  await Promise.all(PE_LEAGUES.map(async lg=>{ const gs=await loadBoard(lg,day).catch(()=>[]); const up=(gs||[]).filter(g=>g.state==="pre" && etDay(g.date)===etDay() && g.teams.length===2); if(up.length) out[lg]=up.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)); }));
+  return out;
+}
+let pickGames=null;
+const timeOf=d=>new Date(d).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+function pickBoard(){
+  const by=new Map(); pickDocs.filter(p=>p.result && p.result!=="void").forEach(p=>{ const k=norm(p.name); if(!by.has(k)) by.set(k,{name:p.name,list:[]}); by.get(k).list.push(p); });
+  return [...by.values()].map(x=>{ const w=x.list.filter(p=>p.result==="won").length, l=x.list.filter(p=>p.result==="lost").length; const ord=[...x.list].sort((a,b)=>String(b.day).localeCompare(String(a.day))); let streak=0; for(const p of ord){ if(p.result==="won") streak++; else if(p.result==="lost") break; } return {...x,w,l,streak,pct:w+l?w/(w+l):0}; })
+    .sort((a,b)=>b.w-a.w||b.pct-a.pct);
+}
+function renderPickem(){
+  const el=$("#pickem"); if(!el) return; const today=etDay(); const mine=pickDocs.find(p=>p.uid===uid&&p.day===today);
+  const locked=p=>(p.lockAt?.toMillis?.()||0)<=Date.now();
+  const todays=pickDocs.filter(p=>p.day===today).sort((a,b)=>a.name.localeCompare(b.name));
+  const pickTxt=p=>`<b>${esc(p.teamName||p.team)}</b> over ${esc(p.oppName||p.opp)}`;
+  const resPill=p=>p.result==="won"?`<span class="pill won">Right</span>`:p.result==="lost"?`<span class="pill lost">Wrong</span>`:p.result==="push"||p.result==="void"?`<span class="pill wait">${p.result==="void"?"Late pick":"Tie"}</span>`:locked(p)?`<span class="pill live">Live</span>`:"";
+  let chooser="";
+  if(pickOpen){
+    if(!pickGames) chooser=`<div class="fine">Loading today's games…</div>`;
+    else { const lgs=Object.keys(pickGames); if(!lgs.length) chooser=`<div class="fine">No games left to pick today.</div>`;
+      else { if(!pickLg||!pickGames[pickLg]) pickLg=lgs[0];
+        chooser=`<div class="chips" id="peLg">${lgs.map(k=>`<button type="button" class="chip" data-pelg="${k}" aria-pressed="${k===pickLg}">${esc(LEAGUES[k].label)}</button>`).join("")}</div>
+          <div class="pe-games">${pickGames[pickLg].map(g=>{ const a=g.teams.find(t=>!t.home)||g.teams[0], h=g.teams.find(t=>t.home)||g.teams[1]; const ml=t=>{ const v=t===h?g.odds?.mlHome:g.odds?.mlAway; return v!=null?` <small>${v>0?"+":""}${v}</small>`:""; };
+            const sel=t=>mine&&String(mine.gameId)===String(g.id)&&mine.team===t.abbr;
+            return `<div class="pe-game"><span class="fine">${esc(timeOf(g.date))}</span><button type="button" class="chip" data-pick="${pickLg}|${g.id}|${esc(a.abbr)}" aria-pressed="${sel(a)}">${esc(a.short||a.abbr)}${ml(a)}</button><span class="fine">@</span><button type="button" class="chip" data-pick="${pickLg}|${g.id}|${esc(h.abbr)}" aria-pressed="${sel(h)}">${esc(h.short||h.abbr)}${ml(h)}</button></div>`; }).join("")}</div>`; } }
+  }
+  const lb=pickBoard();
+  el.innerHTML=`<div class="pe-mine">${mine? `<div>Your pick today: ${pickTxt(mine)} ${resPill(mine)}<div class="fine">${locked(mine)?"Locked in.":"You can change it until "+esc(timeOf(mine.lockAt.toMillis()))+"."}</div></div>` : `<div><b>No pick yet today.</b><div class="fine">Pick one team to win. No money, just bragging rights.</div></div>`}
+      ${!mine||!locked(mine)?`<button type="button" class="small" id="peOpen">${pickOpen?"Close":mine?"Change pick":"Make today's pick"}</button>`:""}</div>
+    ${chooser}
+    ${todays.length?`<div class="fine" style="margin-top:6px"><b>Today</b></div><ul class="pe-list">${todays.map(p=>`<li><b>${esc(p.name)}:</b> ${locked(p)||p.uid===uid? pickTxt(p)+" "+resPill(p) : `<span class="fine">picked ✓ (shown at game time)</span>`}</li>`).join("")}</ul>`:""}
+    ${lb.length?`<div class="tablewrap" style="border:0"><table class="mini"><thead><tr><th>${esc(new Date().toLocaleDateString(undefined,{month:"long"}))}</th><th>Right-Wrong</th><th>%</th><th>Streak</th></tr></thead><tbody>${lb.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${r.w}-${r.l}</td><td>${Math.round(r.pct*100)}%</td><td>${r.streak?r.streak+"🔥":"–"}</td></tr>`).join("")}</tbody></table></div>`:""}`;
+}
+$("#pickem")?.addEventListener("click",async e=>{
+  if(e.target.closest("#peOpen")){ pickOpen=!pickOpen; renderPickem(); if(pickOpen&&!pickGames){ pickGames=await loadPickGames(); renderPickem(); } return; }
+  const lgb=e.target.closest("[data-pelg]"); if(lgb){ pickLg=lgb.dataset.pelg; renderPickem(); return; }
+  const b=e.target.closest("[data-pick]"); if(!b) return;
+  const [lg,gid,abbr]=b.dataset.pick.split("|"); const g=(pickGames?.[lg]||[]).find(x=>String(x.id)===gid); if(!g) return;
+  if(Date.parse(g.date)<=Date.now()){ note("That game already started. Pick another one."); return; }
+  const t=g.teams.find(x=>x.abbr===abbr), o=g.teams.find(x=>x!==t); const day=etDay();
+  b.disabled=true;
+  try{
+    await gref().collection("picks").doc(uid+"_"+day).set({uid, name:me.name, day, month:day.slice(0,7), league:lg, gameId:String(g.id), team:t.abbr, teamName:t.short||t.name||t.abbr, opp:o.abbr, oppName:o.short||o.name||o.abbr,
+      lockAt:firebase.firestore.Timestamp.fromMillis(Date.parse(g.date)), at:firebase.firestore.FieldValue.serverTimestamp(), result:null});
+    pickOpen=false; toast(`Picked ${t.short||t.abbr}.`);
+  }catch(err){ note("Couldn't save your pick: "+err.message); }
+  finally{ b.disabled=false; }
+});
+
+/* ---------- Phone alerts (Web Push) ---------- */
+const b64u=u=>b64e(u).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent);
+const standalone=()=> window.matchMedia?.("(display-mode: standalone)").matches || navigator.standalone===true;
+const pushSupported=()=> "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+let pushDoc=null;
+async function subHash(endpoint){ const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(endpoint)); return b64u(new Uint8Array(h)).slice(0,16); }
+async function currentSub(){ if(!pushSupported()) return null; const reg=await navigator.serviceWorker.getRegistration(); return reg? reg.pushManager.getSubscription() : null; }
+async function renderPush(){
+  const st=$("#pushState"), tg=$("#pushToggle"); if(!st) return;
+  if(!groupDoc?.vapidPub){ st.textContent= isOwner()? "Not set up yet. Open Members to create the phone-alert key first." : "The group owner hasn't set up phone alerts yet."; tg.disabled=true; tg.checked=false; return; }
+  if(!pushSupported()){ st.textContent= isIOS&&!standalone()? "On iPhone, open the app from its home-screen icon to turn this on (Share → Add to Home Screen)." : "This browser can't receive phone alerts."; tg.disabled=true; tg.checked=false; return; }
+  tg.disabled=false;
+  const sub=await currentSub().catch(()=>null); const id=sub? await subHash(sub.endpoint) : null;
+  const on=!!(id && pushDoc?.subs?.[id]); tg.checked=on;
+  st.textContent= on? "On for this phone. You'll get alerts within about an hour, even with the app closed." : Notification.permission==="denied"? "Alerts are blocked for this site in your phone's settings." : "Off for this phone.";
+}
+$("#pushToggle")?.addEventListener("change",async e=>{
+  const on=e.target.checked; const ref=gref().collection("push").doc(uid); e.target.disabled=true;
+  try{
+    if(on){
+      const perm=await Notification.requestPermission(); if(perm!=="granted") throw new Error("You didn't allow notifications.");
+      const reg=await navigator.serviceWorker.register("sw.js"); await navigator.serviceWorker.ready;
+      const key=b64d(groupDoc.vapidPub); let sub=await reg.pushManager.getSubscription();
+      const cur=sub?.options?.applicationServerKey? new Uint8Array(sub.options.applicationServerKey) : null;
+      if(sub && cur && b64e(cur)!==b64e(key)){ await sub.unsubscribe(); sub=null; }
+      if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:key});
+      const j=sub.toJSON(); const id=await subHash(j.endpoint);
+      const subs={...(pushDoc?.subs||{})}; subs[id]={endpoint:j.endpoint, keys:j.keys, at:Date.now(), dev:(isIOS?"iPhone":/Android/.test(navigator.userAgent)?"Android":"Computer")};
+      await ref.set({subs, at:firebase.firestore.FieldValue.serverTimestamp()});
+      toast("Phone alerts are on.");
+    } else {
+      const sub=await currentSub(); if(sub){ const id=await subHash(sub.endpoint); const subs={...(pushDoc?.subs||{})}; delete subs[id]; await sub.unsubscribe().catch(()=>{}); await ref.set({subs, at:firebase.firestore.FieldValue.serverTimestamp()}); }
+      toast("Phone alerts are off for this phone.");
+    }
+  }catch(err){ e.target.checked=!on; note("Couldn't change phone alerts: "+(err.message||err)); }
+  finally{ e.target.disabled=false; renderPush(); }
+});
+// Owner: create the phone-alert key (public half saved to the group, private half shown once for GitHub)
+function renderPushOwner(){
+  const own=isOwner(); $("#pushOwner").hidden=!own; if(!own) return;
+  $("#pushOwnerStatus").textContent= groupDoc?.vapidPub ? "Phone-alert key is set. Replacing it turns phone alerts off for everyone until they turn them back on." : "Create the phone-alert key, then add it to GitHub. Members can then turn on phone alerts from their Me tab.";
+  $("#pushSetupBtn").textContent= groupDoc?.vapidPub ? "Replace phone-alert key" : "Create phone-alert key";
+}
+$("#pushSetupBtn").onclick=async()=>{
+  const b=$("#pushSetupBtn");
+  if(groupDoc?.vapidPub && b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again to replace"; setTimeout(()=>{ b.dataset.armed=""; renderPushOwner(); },3000); return; }
+  try{
+    const kp=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},true,["sign","verify"]);
+    const pub=new Uint8Array(await crypto.subtle.exportKey("raw",kp.publicKey)); const jwk=await crypto.subtle.exportKey("jwk",kp.privateKey);
+    await gref().update({vapidPub:b64u(pub)});
+    $("#pushSecret").value=jwk.d; $("#pushSecretBox").hidden=false; b.dataset.armed="";
+    toast("Phone-alert key created. Copy it now.");
+  }catch(err){ note("Couldn't create the phone-alert key: "+err.message); }
+};
+$("#pushCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText($("#pushSecret").value); toast("Key copied."); }catch{ $("#pushSecret").select(); note("Select the key and copy it."); } };
+$("#pushHide").onclick=()=>{ $("#pushSecret").value=""; $("#pushSecretBox").hidden=true; };
+
+/* ---------- Sweat board (live games, every leg in the group) ---------- */
+function sweatHTML(open){
+  const games=new Map(); const loose=[];
+  for(const s of open) s.legs.forEach((l,i)=>{ const g=gameOf(l); if(g){ if(!games.has(g.id)) games.set(g.id,{g,rows:[]}); games.get(g.id).rows.push({s,l,i}); } else if(!l.result) loose.push({s,l,i}); });
+  const rank=g=>g.state==="in"?0:g.state==="pre"?1:2;
+  const order=[...games.values()].filter(x=>x.rows.some(r=>!r.l.result)||x.g.state==="in").sort((a,b)=>rank(a.g)-rank(b.g)||Date.parse(a.g.date)-Date.parse(b.g.date));
+  if(!order.length && !loose.length) return `<div class="empty"><b>Nothing to sweat</b>Open legs show up here grouped by game.</div>`;
+  const card=x=>{
+    const g=x.g; const [A,B]=[g.teams.find(t=>!t.home)||g.teams[0], g.teams.find(t=>t.home)||g.teams[1]];
+    const ppl=new Map(); x.rows.forEach(r=>{ const k=r.s.name; if(!ppl.has(k)) ppl.set(k,{name:k,legs:[],riding:0,slips:new Set()}); const P=ppl.get(k); P.legs.push(r); if(!P.slips.has(r.s.id)){ P.slips.add(r.s.id); P.riding+=Number(r.s.stake)||0; } });
+    const st=r=>legState(r.s,r.l);
+    const hitN=x.rows.filter(r=>{ const z=st(r); return z.res==="won"; }).length, missN=x.rows.filter(r=>st(r).res==="lost").length;
+    const head=`<div class="sw-h ${g.state}"><div class="sw-t"><span>${esc(A?.abbr||"")}</span><b>${g.state==="pre"?"":A?.score??""}</b></div><div class="sw-mid">${g.state==="in"?`<span class="pill live">Live</span>`:g.state==="pre"?`<span class="fine">${esc(timeOf(g.date))}</span>`:`<span class="pill wait">Final</span>`}<small>${esc(g.state==="pre"?LEAGUES[x.rows[0].l.league]?.label||"":g.detail||"")}</small></div><div class="sw-t r"><b>${g.state==="pre"?"":B?.score??""}</b><span>${esc(B?.abbr||"")}</span></div></div>`;
+    const sum=`<div class="fine sw-sum">${x.rows.length} leg${x.rows.length===1?"":"s"} from ${ppl.size} ${ppl.size===1?"person":"people"}${hitN?` · ${hitN} hit`:""}${missN?` · ${missN} missed`:""}</div>`;
+    const body=[...ppl.values()].map(P=>`<div class="sw-p"><div class="sw-pn"><b>${esc(P.name)}</b>${P.riding&&showMoney(P.name)?`<span class="fine">${money(P.riding)} riding</span>`:""}</div>${P.legs.map(r=>{ const z=st(r), s2=z.st||{}; const res=z.res; const cur=s2.cur==null?"":Math.round(s2.cur*10)/10;
+        const need=s2.cur!=null&&!res? needText(r.l,s2) : "";
+        return `<div class="sw-l ${res||""}"><span class="m">${res==="won"?"✓":res==="lost"?"✗":res==="push"?"–":z.live?"●":"·"}</span><span class="t">${esc(legTitle(r.l))}${need?` <small>${esc(need)}</small>`:""}</span><span class="v">${cur!==""?`${cur}${r.l.line!=null&&(r.l.kind==="prop"||r.l.kind==="total")?`<small>/${esc(r.l.line)}</small>`:""}`:""}</span>${z.pct!=null&&!res?`<div class="bar"><div class="fill" style="width:${(z.pct*100).toFixed(1)}%"></div></div>`:""}</div>`; }).join("")}</div>`).join("");
+    return `<article class="slip sweatcard">${head}${sum}${body}</article>`;
+  };
+  return order.map(card).join("") + (loose.length? `<article class="slip"><div class="game-h"><b>Other legs</b><span>Not matched to a game yet</span></div><div class="legs">${loose.map(r=>`<div><div class="owner" style="padding:10px 14px 0">${esc(r.s.name)}</div>${legHTML(r.s,r.l,r.i)}</div>`).join("")}</div></article>`:"");
+}
+
 /* ---------- Me tab ---------- */
 function statCard(k,v,sub,cls){ return `<div class="cat"><span class="k">${esc(k)}</span><span class="v ${cls||""}">${v}</span><span class="s">${sub||""}</span></div>`; }
 const signed=n=>(n>0?"+":"")+money(n);
 function renderMe(){
-  renderAccount(); renderSync(); renderMeWeek(); renderLeaks(); renderWatch();
+  renderAccount(); renderSync(); renderMeWeek(); renderLeaks(); renderMeClose(); renderWatch(); renderPush();
   const h=ls.get(KEY+".pmhist",null);
   const st=ls.get(KEY+".pmhistAt",0);
   $("#pmHistStatus").textContent = pmLocked() ? "Locked. Enter your PIN to refresh." : !rawPm() ? "Connect Polymarket US to see your full account history." : st ? "Updated "+new Date(st).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "Loading your history…";
@@ -3015,7 +3436,8 @@ function row(d,i){
   </div>`;
 }
 function readDrafts(){ document.querySelectorAll(".leg-edit").forEach(r=>{const d=drafts[+r.dataset.i]; r.querySelectorAll("[data-f]").forEach(el=>d[el.dataset.f]=el.value.trim());}); }
-function showReview(t){ $("#reviewTitle").textContent=t||"Check your slip"; $("#reviewList").innerHTML=drafts.map(row).join(""); $("#review").hidden=false; }
+function showReview(t){ $("#reviewTitle").textContent=t||"Check your slip"; $("#reviewList").innerHTML=drafts.map(row).join(""); $("#review").hidden=false; gradeSoon(); }
+$("#review").addEventListener("input",e=>{ if(e.target.matches("input,select")) gradeSoon(); }); $("#review").addEventListener("change",e=>{ if(e.target.matches("input,select")) gradeSoon(); });
 $("#reviewList").addEventListener("change",e=>{ if(e.target.dataset.f==="league"||e.target.dataset.f==="kind"){ readDrafts(); showReview($("#reviewTitle").textContent); }});
 $("#reviewList").addEventListener("click",e=>{const i=e.target.dataset.rm; if(i==null) return; readDrafts(); drafts.splice(+i,1); if(!drafts.length) drafts.push(blank()); showReview($("#reviewTitle").textContent);});
 const blank=()=>({league:scanLeague,kind:kindsFor(scanLeague)[0],side:"over"});
@@ -3042,8 +3464,9 @@ $("#saveSlip").onclick=async()=>{
   const legs=drafts.map(d=>({league:d.league, kind:d.kind, side:d.side||"over", player:d.player||null, team:d.team||null, market:d.market||null, line:(d.line===""||d.line==null)?null:Number(d.line), gameId:null, result:null}));
   $("#saveSlip").disabled=true;
   try{
-    if(editingId){ await gref().collection("slips").doc(editingId).update({stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs, edited:true}); editingId=null; $("#saveSlip").textContent="Post slip"; }
-    else await gref().collection("slips").add({uid, name:me.name, createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs});
+    clearTimeout(gradeTimer); await updateGrade().catch(()=>{}); const gfx=lastGrade? {grade:lastGrade.grade, ev:lastGrade.ev} : {grade:null, ev:null};
+    if(editingId){ await gref().collection("slips").doc(editingId).update({stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs, edited:true, ...gfx}); editingId=null; $("#saveSlip").textContent="Post slip"; }
+    else await gref().collection("slips").add({uid, name:me.name, createdAt:firebase.firestore.FieldValue.serverTimestamp(), stake, payout:payout||null, odds:$("#odds").value.trim()||null, status:"open", legs, ...gfx});
     drafts=[]; $("#review").hidden=true;
   }catch(e){ note("Couldn't post the slip: "+e.message); }
   finally{ $("#saveSlip").disabled=false; }
@@ -3091,6 +3514,7 @@ $("#shot").addEventListener("change",async e=>{
 
 /* ---------- Boot ---------- */
 renderSportChips();
+if(/github\.io$/.test(location.hostname)) $("#moved").hidden=false;
 (async()=>{
   try{ await initFirebase(); }
   catch(e){ showOnly("authPanel"); note(e.message==="setup"?"The group database isn't set up yet.":"Couldn't connect to the group database: "+e.message); $("#notice").dataset.sticky="1"; return; }
