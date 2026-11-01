@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-KL1hKBMjRm6vtqX0mo/K02BBd/ptYNFIQhDAMKCCFHk=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-AOmUt3VPBKnsz6Wp6Szzonw0FFW27VUjOyhvOKpzW88=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -310,6 +310,13 @@ button,.btn{border-radius:12px}
 .live-tools{flex-wrap:nowrap}
 .live-tools select.pick{flex:1 1 0;min-width:0;text-overflow:ellipsis}
 .live-tools #toggleAll{white-space:nowrap}
+/* Sub-page tabs */
+.subtabs,#pickMode{display:flex;gap:2px;background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:3px;position:sticky;top:calc(env(safe-area-inset-top) + 62px);z-index:30;overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button,#pickMode .chip{flex:1 0 auto;min-height:38px;border:none;border-radius:11px;background:transparent;color:var(--muted);font:600 14px var(--body);padding:8px 10px;white-space:nowrap}
+.subtabs button[aria-selected="true"],#pickMode .chip[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.subpage{display:flex;flex-direction:column;gap:14px;animation:fadeIn .15s ease}
+.section-head,.panel,.cat-grid,.pl-grid{scroll-margin-top:120px}
 /* Floating add button */
 .fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));width:60px;height:60px;min-height:0;padding:0;border-radius:20px;border:none;
   background:var(--accent);color:#fff;box-shadow:0 10px 28px color-mix(in srgb,var(--accent) 45%,transparent),0 2px 6px rgba(0,0,0,.15);z-index:45;display:grid;place-items:center}
@@ -371,9 +378,9 @@ footer{margin-top:10px;font-size:11.5px;line-height:1.5}
     <div class="dr-g"><h4>Picks</h4>
       <button type="button" data-go="picks|pm:trends">Player trends</button><button type="button" data-go="picks|pm:news">Injuries &amp; news</button><button type="button" data-go="picks|pm:value">Value parlays</button></div>
     <div class="dr-g"><h4>Board</h4>
-      <button type="button" data-go="board|weekRecap">Weekly recap</button><button type="button" data-go="board|challenges">Challenges</button><button type="button" data-go="board|season">Season</button><button type="button" data-go="board|pickem">Daily pick'em</button><button type="button" data-go="board|closeCalls">Close calls</button><button type="button" data-go="board|plGrid">Profit &amp; loss</button><button type="button" data-go="board|rankList">Rankings</button><button type="button" data-go="board|catGrid">Best sport</button></div>
+      <button type="button" data-go="board|weekRecap">Recap &amp; challenges</button><button type="button" data-go="board|season">Season</button><button type="button" data-go="board|pickem">Daily pick'em</button><button type="button" data-go="board|boardRange">Standings</button><button type="button" data-go="board|closeCalls">Close calls</button></div>
     <div class="dr-g"><h4>Me (private)</h4>
-      <button type="button" data-go="me|meWeek">Your week</button><button type="button" data-go="me|leaks">Leak finder</button><button type="button" data-go="me|meClose">Close calls</button><button type="button" data-go="me|watchList">Watching</button><button type="button" data-go="me|pushCard">Phone alerts</button><button type="button" data-go="me|syncCard">Background sync</button><button type="button" data-go="me|rgCard">Play responsibly</button><button type="button" data-go="me|acctCard">Account</button><button type="button" data-go="me|setCard">Settings</button></div>
+      <button type="button" data-go="me|meAccount">My stats</button><button type="button" data-go="me|meWeek">Your week</button><button type="button" data-go="me|leaks">Leak finder</button><button type="button" data-go="me|meClose">Close calls</button><button type="button" data-go="me|watchList">Watching</button><button type="button" data-go="me|pushCard">Phone alerts</button><button type="button" data-go="me|syncCard">Background sync</button><button type="button" data-go="me|rgCard">Play responsibly</button><button type="button" data-go="me|acctCard">Account</button><button type="button" data-go="me|setCard">Settings</button></div>
     <div class="dr-g"><h4>Group</h4>
       <button type="button" data-go="act|bellBtn">Alerts</button><button type="button" data-go="act|membersBtn">Members</button><button type="button" data-go="act|inviteBtn">Invite friends</button><button type="button" data-go="act|polyBtn">Connect Polymarket</button></div>
     <div class="dr-g"><h4>Help</h4>
@@ -648,90 +655,106 @@ footer{margin-top:10px;font-size:11.5px;line-height:1.5}
 
     <!-- ME (private) -->
     <section id="view-me" hidden style="flex-direction:column;gap:14px">
-      <div class="panel"><h2>Just you</h2><p>Only you can see this tab. Your Polymarket account totals are read on this phone and never sent to the group.</p></div>
-      <div class="section-head"><h2>Polymarket US account</h2><span class="statline" id="pmHistStatus"></span></div>
-      <div class="cat-grid" id="meAccount"></div>
-      <div class="tablewrap"><table id="meAccountCats"></table></div>
-      <div class="section-head"><h2>Your tracked slips</h2></div>
-      <div class="cat-grid" id="meSlips"></div>
-      <div class="section-head"><h2>Your week</h2><div class="chips" id="meWeekPick"></div></div>
-      <div class="panel recap" id="meWeek"></div>
-      <div class="section-head"><h2>Leak finder</h2><span class="statline">Only you see this</span></div>
-      <div class="panel" id="leaks"></div>
-      <div class="section-head"><h2>Close calls</h2><span class="statline">Only you see this</span></div>
-      <div class="panel recap" id="meClose"></div>
-      <div class="section-head"><h2>Watching</h2><span class="statline">Alerts when a price moves 5¢ or a player is ruled out</span></div>
-      <div class="panel" id="watchList"></div>
-      <div class="section-head"><h2>Phone alerts</h2></div>
-      <div class="panel" style="gap:10px" id="pushCard">
-        <p id="pushState" style="margin:0"></p>
-        <label class="toggle"><input type="checkbox" id="pushToggle"> Send alerts to this phone, even when the app is closed</label>
-        <p class="fine">Reactions, one leg away, cashed bets, injuries and watched lines. Checked about once an hour. On iPhone this works only from the home-screen icon (Share → Add to Home Screen), iOS 16.4 or newer. Turn it on separately on each phone.</p>
+      <div class="subtabs" data-for="me" role="tablist" aria-label="Me sections"></div>
+      <div class="subpage" data-sub="stats">
+        <div class="panel"><h2>Just you</h2><p>Only you can see this tab. Your Polymarket account totals are read on this phone and never sent to the group.</p></div>
+        <div class="section-head"><h2>Polymarket US account</h2><span class="statline" id="pmHistStatus"></span></div>
+        <div class="cat-grid" id="meAccount"></div>
+        <div class="tablewrap"><table id="meAccountCats"></table></div>
+        <div class="section-head"><h2>Your tracked slips</h2></div>
+        <div class="cat-grid" id="meSlips"></div>
+        <div class="section-head"><h2>Your week</h2><div class="chips" id="meWeekPick"></div></div>
+        <div class="panel recap" id="meWeek"></div>
+        <div class="section-head"><h2>Close calls</h2><span class="statline">Only you see this</span></div>
+        <div class="panel recap" id="meClose"></div>
       </div>
-      <div class="section-head"><h2>Background sync</h2></div>
-      <div class="panel" style="gap:10px" id="syncCard">
-        <p id="syncState" style="margin:0"></p>
-        <label class="toggle"><input type="checkbox" id="syncToggle"> Keep my Polymarket bets syncing when the app is closed</label>
-        <p class="fine" id="syncFine">Your key is locked on this phone with the group's server lock, so Firebase only stores a scrambled copy and nobody can read it in the app. About once an hour the group's sync job unlocks it to <b>read</b> your positions and results. It never places trades. The group owner runs that job, so turn this on only if you trust them. You can turn it off anytime, or delete the key at polymarket.us/developer.</p>
+      <div class="subpage" data-sub="insights">
+        <div class="section-head"><h2>Leak finder</h2><span class="statline">Only you see this</span></div>
+        <div class="panel" id="leaks"></div>
+        <div class="section-head"><h2>Watching</h2><span class="statline">Alerts when a price moves 5¢ or a player is ruled out</span></div>
+        <div class="panel" id="watchList"></div>
       </div>
-      <div class="section-head"><h2>Play responsibly</h2></div>
-      <div class="panel rg" id="rgCard" style="gap:8px">
-        <p style="margin:0">Betting should stay fun. Set a budget before you start, never chase losses, and take breaks. If it stops being fun, help is free and confidential:</p>
-        <ul>
-          <li><b>National Problem Gambling Helpline:</b> call or text <a href="tel:18006973738">1-800-MY-RESET</a> (1-800-697-3738), or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>. Open 24/7.</li>
-          <li><b>Oregon:</b> <a href="tel:18776954648">1-877-MY-LIMIT</a> or <a href="https://www.opgr.org" target="_blank" rel="noopener">opgr.org</a>.</li>
-          <li>Most betting apps, including Polymarket, let you set deposit limits or take a break in your account settings.</li>
-        </ul>
-      </div>
-      <div class="section-head"><h2>Account</h2></div>
-      <div class="panel" style="gap:12px" id="acctCard">
-        <div class="acct-line"><span>Signed in as <b id="acctEmail"></b></span><span class="pill" id="acctVerified"></span></div>
-        <div id="pwChangeBox" style="display:flex;flex-direction:column;gap:10px">
-          <div class="grid6">
-            <label class="f c2">Current password<input id="pwOld" type="password" autocomplete="current-password"></label>
-            <label class="f c2">New password<input id="pwNew" type="password" autocomplete="new-password"></label>
-            <label class="f c2">Confirm new<input id="pwNew2" type="password" autocomplete="new-password"></label>
+      <div class="subpage" data-sub="settings">
+        <div class="section-head"><h2>Phone alerts</h2></div>
+        <div class="panel" style="gap:10px" id="pushCard">
+          <p id="pushState" style="margin:0"></p>
+          <label class="toggle"><input type="checkbox" id="pushToggle"> Send alerts to this phone, even when the app is closed</label>
+          <p class="fine">Reactions, one leg away, cashed bets, injuries and watched lines. Checked about once an hour. On iPhone this works only from the home-screen icon (Share → Add to Home Screen), iOS 16.4 or newer. Turn it on separately on each phone.</p>
+        </div>
+        <div class="section-head"><h2>Background sync</h2></div>
+        <div class="panel" style="gap:10px" id="syncCard">
+          <p id="syncState" style="margin:0"></p>
+          <label class="toggle"><input type="checkbox" id="syncToggle"> Keep my Polymarket bets syncing when the app is closed</label>
+          <p class="fine" id="syncFine">Your key is locked on this phone with the group's server lock, so Firebase only stores a scrambled copy and nobody can read it in the app. About once an hour the group's sync job unlocks it to <b>read</b> your positions and results. It never places trades. The group owner runs that job, so turn this on only if you trust them. You can turn it off anytime, or delete the key at polymarket.us/developer.</p>
+        </div>
+        <div class="section-head"><h2>Play responsibly</h2></div>
+        <div class="panel rg" id="rgCard" style="gap:8px">
+          <p style="margin:0">Betting should stay fun. Set a budget before you start, never chase losses, and take breaks. If it stops being fun, help is free and confidential:</p>
+          <ul>
+            <li><b>National Problem Gambling Helpline:</b> call or text <a href="tel:18006973738">1-800-MY-RESET</a> (1-800-697-3738), or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>. Open 24/7.</li>
+            <li><b>Oregon:</b> <a href="tel:18776954648">1-877-MY-LIMIT</a> or <a href="https://www.opgr.org" target="_blank" rel="noopener">opgr.org</a>.</li>
+            <li>Most betting apps, including Polymarket, let you set deposit limits or take a break in your account settings.</li>
+          </ul>
+        </div>
+        <div class="section-head"><h2>Account</h2></div>
+        <div class="panel" style="gap:12px" id="acctCard">
+          <div class="acct-line"><span>Signed in as <b id="acctEmail"></b></span><span class="pill" id="acctVerified"></span></div>
+          <div id="pwChangeBox" style="display:flex;flex-direction:column;gap:10px">
+            <div class="grid6">
+              <label class="f c2">Current password<input id="pwOld" type="password" autocomplete="current-password"></label>
+              <label class="f c2">New password<input id="pwNew" type="password" autocomplete="new-password"></label>
+              <label class="f c2">Confirm new<input id="pwNew2" type="password" autocomplete="new-password"></label>
+            </div>
+            <div class="row-end"><button type="button" class="small" id="pwChangeBtn">Change password</button></div>
           </div>
-          <div class="row-end"><button type="button" class="small" id="pwChangeBtn">Change password</button></div>
+          <div class="row-end">
+            <button type="button" class="small" id="acctResend" hidden>Resend verification email</button>
+            <button type="button" class="small" id="leaveBtn">Switch group</button>
+            <button type="button" class="small" id="acctSignOut">Sign out</button>
+            <button type="button" class="small" id="signOutBtn">Sign out &amp; forget my Polymarket key</button>
+          </div>
+          <details class="fine danger"><summary>Delete my account and data</summary>
+            <p>This permanently deletes your account, your bets, picks, reactions, alerts settings and any saved keys from this group. It can't be undone. Type <b>DELETE</b> to confirm.</p>
+            <div class="row-end"><input id="delConfirm" autocomplete="off" placeholder="DELETE" style="max-width:140px"><button type="button" class="small" id="delAcct">Delete everything</button></div>
+          </details>
         </div>
-        <div class="row-end">
-          <button type="button" class="small" id="acctResend" hidden>Resend verification email</button>
-          <button type="button" class="small" id="leaveBtn">Switch group</button>
-          <button type="button" class="small" id="acctSignOut">Sign out</button>
-          <button type="button" class="small" id="signOutBtn">Sign out &amp; forget my Polymarket key</button>
+        <div class="section-head"><h2>Settings</h2></div>
+        <div class="panel" style="gap:14px" id="setCard">
+          <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
+          <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
+          <div class="row-end"><button type="button" class="small" id="wnOpen">What's new</button><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
         </div>
-        <details class="fine danger"><summary>Delete my account and data</summary>
-          <p>This permanently deletes your account, your bets, picks, reactions, alerts settings and any saved keys from this group. It can't be undone. Type <b>DELETE</b> to confirm.</p>
-          <div class="row-end"><input id="delConfirm" autocomplete="off" placeholder="DELETE" style="max-width:140px"><button type="button" class="small" id="delAcct">Delete everything</button></div>
-        </details>
-      </div>
-      <div class="section-head"><h2>Settings</h2></div>
-      <div class="panel" style="gap:14px" id="setCard">
-        <label class="toggle"><input type="checkbox" id="hideMoney"> Hide my dollar amounts from the group (friends still see wins, losses and percentages)</label>
-        <div class="grid6"><label class="f c3">Display name<input id="renameInput" maxlength="24" autocomplete="nickname"></label><div class="c3" style="display:flex;align-items:flex-end"><button type="button" id="renameBtn">Change name</button></div></div>
-        <div class="row-end"><button type="button" class="small" id="wnOpen">What's new</button><button type="button" class="small" id="exportMine">Export my history (CSV)</button><button type="button" class="small" id="alertsBtn">Turn on alerts</button><button type="button" class="small" id="pmRefresh">Re-check Polymarket history</button></div>
       </div>
     </section>
 
     <!-- LEADERBOARD -->
     <section id="view-board" hidden style="flex-direction:column;gap:16px">
-      <div class="section-head"><h2>Weekly recap</h2><div class="chips" id="recapWeek"></div></div>
-      <div class="panel recap" id="weekRecap"></div>
-      <div class="section-head"><h2>This week's challenges</h2><span class="statline">Resets Monday</span></div>
-      <div class="cat-grid" id="challenges"></div>
-      <div class="section-head"><h2 id="seasonTitle">Season</h2><span class="statline" id="seasonSub"></span></div>
-      <div class="panel season" id="season"></div>
-      <div class="section-head"><h2>Daily pick'em</h2><span class="statline">Free · one pick a day</span></div>
-      <div class="panel" id="pickem"></div>
-      <div class="section-head"><h2>Close calls</h2><span class="statline">Lost by one leg</span></div>
-      <div class="panel" id="closeCalls"></div>
-      <div class="chips" id="boardRange"></div>
-      <div class="section-head"><h2 id="plTitle">All-time profit &amp; loss</h2></div>
-      <div class="pl-grid" id="plGrid"></div>
-      <div class="section-head"><h2>Rankings</h2><div class="chips" id="rankBy"></div></div>
-      <div class="list" id="rankList" style="gap:8px"></div>
-      <div class="section-head"><h2>Best sport</h2><div class="chips" id="boardWho"></div></div>
-      <div class="cat-grid" id="catGrid"></div>
+      <div class="subtabs" data-for="board" role="tablist" aria-label="Board sections"></div>
+      <div class="subpage" data-sub="recap">
+        <div class="section-head"><h2>Weekly recap</h2><div class="chips" id="recapWeek"></div></div>
+        <div class="panel recap" id="weekRecap"></div>
+        <div class="section-head"><h2>This week's challenges</h2><span class="statline">Resets Monday</span></div>
+        <div class="cat-grid" id="challenges"></div>
+      </div>
+      <div class="subpage" data-sub="season">
+        <div class="section-head"><h2 id="seasonTitle">Season</h2><span class="statline" id="seasonSub"></span></div>
+        <div class="panel season" id="season"></div>
+      </div>
+      <div class="subpage" data-sub="pickem">
+        <div class="section-head"><h2>Daily pick'em</h2><span class="statline">Free · one pick a day</span></div>
+        <div class="panel" id="pickem"></div>
+      </div>
+      <div class="subpage" data-sub="standings">
+        <div class="chips" id="boardRange"></div>
+        <div class="section-head"><h2 id="plTitle">All-time profit &amp; loss</h2></div>
+        <div class="pl-grid" id="plGrid"></div>
+        <div class="section-head"><h2>Rankings</h2><div class="chips" id="rankBy"></div></div>
+        <div class="list" id="rankList" style="gap:8px"></div>
+        <div class="section-head"><h2>Best sport</h2><div class="chips" id="boardWho"></div></div>
+        <div class="cat-grid" id="catGrid"></div>
+        <div class="section-head"><h2>Close calls</h2><span class="statline">Lost by one leg</span></div>
+        <div class="panel" id="closeCalls"></div>
+      </div>
     </section>
   </div>
 
@@ -1485,8 +1508,10 @@ $("#drawer").addEventListener("click",e=>{
     else if(what==="add"){ $("#manualBtn").click(); return; }
     else if(what.startsWith("pm:")){ pickMode=what.slice(3); ls.set(KEY+".pickMode",pickMode); renderPickMode(); el=$("#pickMode"); }
     else el=$("#"+what);
-    if(!el) return; const head=el.previousElementSibling?.classList?.contains("section-head")? el.previousElementSibling : el;
-    head.scrollIntoView({behavior:"smooth",block:"start"});
+    if(!el) return;
+    const sp=el.closest(".subpage"); if(sp){ const v=sp.closest("section[id^='view-']").id.slice(5); if(subState[v]!==sp.dataset.sub) setSub(v,sp.dataset.sub,true); }
+    const head=el.previousElementSibling?.classList?.contains("section-head")? el.previousElementSibling : el;
+    if(sp && sp.firstElementChild===head) window.scrollTo({top:0,behavior:"smooth"}); else head.scrollIntoView({behavior:"smooth",block:"start"});
   },80);
 });
 
@@ -1507,6 +1532,28 @@ document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(!$("#ad
   document.addEventListener("touchmove",e=>{ if(sx==null) return; const t=e.touches[0]; if(t.clientX-sx>60 && Math.abs(t.clientY-sy)<40){ sx=null; openDrawer(true); } },{passive:true});
   let dx=null; $("#drawer").addEventListener("touchstart",e=>{ dx=e.touches[0].clientX; },{passive:true});
   $("#drawer").addEventListener("touchmove",e=>{ if(dx!=null && dx-e.touches[0].clientX>60){ dx=null; openDrawer(false); } },{passive:true});
+})();
+
+/* ---- Sub-pages: each area is its own screen ---- */
+const SUBS={board:[["recap","Recap"],["season","Season"],["pickem","Pick'em"],["standings","Standings"]], me:[["stats","My stats"],["insights","Insights"],["settings","Settings"]]};
+const subState={board:ls.get(KEY+".sub.board","recap"), me:ls.get(KEY+".sub.me","stats")};
+function renderSubtabs(view){
+  const el=document.querySelector(`.subtabs[data-for="${view}"]`); if(!el) return;
+  if(!SUBS[view].some(([k])=>k===subState[view])) subState[view]=SUBS[view][0][0];
+  el.innerHTML=SUBS[view].map(([k,l])=>`<button type="button" role="tab" data-sub-go="${k}" aria-selected="${subState[view]===k}">${esc(l)}</button>`).join("");
+  document.querySelectorAll(`#view-${view} .subpage`).forEach(p=>p.hidden=p.dataset.sub!==subState[view]);
+}
+function setSub(view,k,noScroll){ subState[view]=k; ls.set(KEY+".sub."+view,k); renderSubtabs(view); if(!noScroll) window.scrollTo({top:0}); }
+document.querySelectorAll(".subtabs").forEach(el=>el.addEventListener("click",e=>{ const b=e.target.closest("[data-sub-go]"); if(b) setSub(el.dataset.for,b.dataset.subGo); }));
+Object.keys(SUBS).forEach(v=>renderSubtabs(v));
+// Swipe left/right between sub-pages (Board, Me, Picks)
+(()=>{ let x0=null,y0=0;
+  document.addEventListener("touchstart",e=>{ const t=e.touches[0]; x0=(e.target.closest(".chips,.tablewrap,.subtabs,input,select,textarea,.drawer,.sheet,.sheetpanel") || t.clientX<24)? null : t.clientX; y0=t.clientY; },{passive:true});
+  document.addEventListener("touchend",e=>{ if(x0==null) return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null;
+    if(Math.abs(dx)<70 || Math.abs(dy)>45) return; const dir=dx<0?1:-1;
+    if(SUBS[tab]){ const ks=SUBS[tab].map(([k])=>k), i=ks.indexOf(subState[tab]), j=i+dir; if(j>=0&&j<ks.length) setSub(tab,ks[j]); }
+    else if(tab==="picks"){ const ks=["trends","news","value"], i=ks.indexOf(pickMode), j=i+dir; if(j>=0&&j<ks.length){ pickMode=ks[j]; ls.set(KEY+".pickMode",pickMode); renderPickMode(); window.scrollTo({top:0}); } }
+  },{passive:true});
 })();
 /* ---- Delete my account and data ---- */
 $("#delAcct").onclick=async()=>{
@@ -3179,8 +3226,12 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=25;
+const APP_VERSION=26;
 const RELEASES=[
+  {v:26, date:"Nov 1", title:"One thing per screen",
+   news:["Board and Me are now split into their own screens. Use the tabs at the top, or swipe left and right.",
+         "<b>Board:</b> Recap · Season · Pick'em · Standings. <b>Me:</b> My stats · Insights · Settings.",
+         "The menu jumps straight to the right screen."]},
   {v:25, date:"Nov 1", title:"A cleaner app",
    news:["New look: the top tabs are gone. Tap <b>☰</b> (or swipe in from the left edge) to get anywhere.",
          "Tap the orange <b>+</b> button to add a slip. Pick the sport, then scan a screenshot or type it in.",
