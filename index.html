@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-eQxupKwWW+RNaiqSrss3GrBSHN0k/Hl+aCzYOiCAFW0=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-S6DXuWppjq2cZz/vlI1dKY7sA0cbisfJRdF21pRl0Mw=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -1963,7 +1963,7 @@ function slipHTML(s){
       <div class="right"><span class="pill ${label[0]}">${label[1]}</span>${sweat?`<span class="sweat">${sweat}</span>`:""}<span class="chev" aria-hidden="true">▼</span></div>
       <div class="dots" aria-hidden="true">${dots}</div></summary>
     <div class="legs">${s.legs.map((l,i)=>legHTML(s,l,i)).join("")}</div>
-    <div class="slip-f">${(()=>{ const u=s.legs.map(pmEventUrl).find(Boolean); return u?`<a class="ghost btn small" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Open in Polymarket</a>`:""; })()}<button type="button" class="ghost" data-copy="${esc(s.id)}">Copy bet</button></div>
+    <div class="slip-f">${(()=>{ const u=s.legs.map(pmEventUrl).find(Boolean); return u?`<a class="ghost btn small" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Open in Polymarket</a>`:""; })()}<button type="button" class="ghost" data-copy="${esc(s.id)}">Copy bet</button>${(mine||members[s.uid]?.linkedTo===uid)&&isPM(s)&&s.status==="open"? `<span class="sp"></span><button type="button" class="ghost" data-pmlost="${esc(s.id)}">Mark lost now</button>` : ""}</div>
     ${reactBar(s)}
     ${mine&&s.source!=="polymarket"&&s.source!=="pmus"?`<div class="slip-f">${canEdit?`<button type="button" class="ghost" data-edit="${esc(s.id)}">Edit</button>`:""}<button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
   </details>`;
@@ -2053,7 +2053,7 @@ function renderHistory(){
     return `<details class="hist" data-sid="${esc(s.id)}" ${openHist.has(s.id)?"open":""}><summary><div class="r ${s.status}">${r}</div>
       <div class="t"><b>${esc(s.name)} · ${s.legs.length}-leg ${esc(slipCategory(s))}</b><span>${s.badMarket?`Market read wrong, not counted (was ${esc(s.realStatus)}) · `:s.oldPricing?`Old pricing, not counted (was ${esc(s.realStatus)}) · `:""}${esc(when)} · ${hits}/${s.legs.length} legs hit${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
       <div class="p ${p>0?"pos":p<0?"neg":""}">${s.status==="void"?"—":moneyAs(s.name,p,true)}${s.status==="won"&&showMoney(s.name)&&s.stake?`<small style="display:block;font-weight:500;font-size:11.5px;color:var(--muted)">returned ${money(Number(s.stake)+p)}</small>`:""}</div><span class="chev" aria-hidden="true">▼</span></summary>
-      <div class="hlegs">${legs}<div class="meta3">${esc(src)}${s.odds?` · odds ${esc(s.odds)}`:""}${s.payout&&showMoney(s.name)?` · paid ${money(+s.payout)}`:""}${d?` · ${d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}`:""}</div></div></details>`;
+      <div class="hlegs">${legs}<div class="meta3">${esc(src)}${s.odds?` · odds ${esc(s.odds)}`:""}${s.payout&&showMoney(s.name)?` · paid ${money(+s.payout)}`:""}${d?` · ${d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}`:""}</div>${s.clearedEarly&&s.pnl==null&&s.status==="lost"?`<div class="meta3">Marked lost by ${esc(s.name)} · Polymarket will confirm the final amount</div>${s.uid===uid||members[s.uid]?.linkedTo===uid?`<div class="row-end"><button type="button" class="ghost small" data-pmundo="${esc(s.id)}">Move back to open</button></div>`:""}`:""}</div></details>`;
   }).join("") + (done.length>300?`<div class="empty">Showing the first 300. Narrow the filters to see more.</div>`:"")
   : `<div class="empty"><b>${vis().some(s=>s.status!=="open")?"Nothing matches these filters":"No settled slips yet"}</b>${vis().some(s=>s.status!=="open")?"Try widening the filters or tap Reset filters.":"Slips land here once every leg is decided."}</div>`;
 }
@@ -3215,6 +3215,12 @@ document.body.addEventListener("click",async e=>{
   const d=e.target.dataset;
   if(d.del){ const b=e.target; if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again to delete"; setTimeout(()=>{b.dataset.armed="";b.textContent="Delete";},3000); return; }
     await gref().collection("slips").doc(d.del).delete().then(()=>forgetSlip(d.del)).catch(err=>note("Couldn't delete: "+err.message)); }
+  // Polymarket can take a while to clear a losing bet. The owner can move it to history now; Polymarket's numbers replace it when they arrive.
+  if(d.pmlost){ const b=e.target; if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Tap again: it lost"; setTimeout(()=>{b.dataset.armed="";b.textContent="Mark lost now";},3000); return; }
+    const FV=firebase.firestore.FieldValue;
+    await gref().collection("slips").doc(d.pmlost).update({upd:FV.serverTimestamp(), status:"lost", pnl:null, manual:true, clearedEarly:true, settledAt:FV.serverTimestamp()}).then(()=>toast("Moved to history as a loss. Polymarket will confirm the amount.")).catch(err=>note("Couldn't update: "+err.message)); }
+  if(d.pmundo){ const FV=firebase.firestore.FieldValue;
+    await gref().collection("slips").doc(d.pmundo).update({upd:FV.serverTimestamp(), status:"open", manual:false, clearedEarly:false, settledAt:null}).then(()=>toast("Back in open bets.")).catch(err=>note("Couldn't update: "+err.message)); }
   if(d.settle){ const [id,res]=d.settle.split("|"); await gref().collection("slips").doc(id).update({upd:firebase.firestore.FieldValue.serverTimestamp(), status:res, manual:true, settledAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(err=>note("Couldn't update: "+err.message)); }
   if(d.copy){ const s=slips.find(x=>x.id===d.copy); if(!s) return;
     const lines=[`${s.name}'s ${s.legs.length}-leg ${slipCategory(s)}${s.odds?" ("+s.odds+")":""}`, ...s.legs.map(l=>"• "+legTitle(l)+(l.kind==="prop"?` ${(l.side||"over")==="over"?"over":"under"} ${l.line} ${l.market||""}`:l.kind==="spread"?` ${l.line>0?"+":""}${l.line}`:l.kind==="total"?` ${l.side} ${l.line}`:""))];
@@ -3287,8 +3293,10 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=28;
+const APP_VERSION=29;
 const RELEASES=[
+  {v:29, date:"Nov 1", title:"Clear losses yourself",
+   news:["Polymarket slow to clear a loss? Open your Polymarket slip and tap <b>Mark lost now</b> to move it to history right away. It counts as a loss of your stake until Polymarket's final numbers replace it, and <b>Move back to open</b> undoes it."]},
   {v:28, date:"Nov 1", title:"Mix sports in prop parlays",
    news:["<b>Value parlays</b>: pick more than one sport (or tap <b>All</b>) and the suggested prop parlays can mix legs across them, like an NBA leg with an NFL leg.",
          "Skips props whose price looks stale on Polymarket, like a harder line priced the same as an easier one.", "Fixed for real this time: \"longest reception 20+\" no longer shows as \"19 or fewer receptions\". It now reads \"longest reception 20+ yds\" or \"longest reception 19 yds or less\", and model picks already saved with the wrong name now show the right market, but they aren't counted in the model's record since they were built on a misread."]},
