@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-sDhbIcXon3DYERgbKwvmps95KMqG08epMSpZH4ucCns=' 'sha256-pg1mDuI36ZFpoHAWudIb6eFK5hs+BzkXiJmjtW1D4fE=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-eQxupKwWW+RNaiqSrss3GrBSHN0k/Hl+aCzYOiCAFW0=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -889,7 +889,7 @@ const MARKETS = {
     [/rush(ing)?\s*(yds|yards)|rush\s*yd/,["rushingYards"],"rushing yds"],
     [/rush(ing)?\s*att|carries/,["rushingAttempts"],"rush attempts"],
     [/rec(eiving)?\s*(yds|yards)|rec\s*yd/,["receivingYards"],"receiving yds"],
-    [/longest\s*rec|long\s*rec/,["longReception"],"longest rec"],
+    [/longest\s*rec|long\s*rec/,["longReception"],"longest reception"],
     [/longest\s*rush|long\s*rush/,["longRushing"],"longest rush"],
     [/reception|\brec\b|catches/,["receptions"],"receptions"],
     [/tackle/,["totalTackles"],"tackles"],
@@ -1002,6 +1002,7 @@ function evaluateLeg(leg, game, players){
     const mk = marketFor(leg.league, leg.market);
     if(!mk){ st.missing="Unknown stat “"+leg.market+"”"; return st; }
     st.cur = mk.keys.reduce((s,k)=>s+(p.stats[k]??p.stats[k.split(".").pop()]??0),0);
+    if(mk.keys[0]==="longPassing" && p.stats.longPassing==null){ const tm=Object.values(players||{}).find(arr=>Array.isArray(arr)&&arr.some(x=>x===p||x.name===p.name)); st.cur=Math.max(0,...(tm||[]).map(x=>x.stats?.longReception||0)); }
     const s=p.stats;
     if(sportOf(leg.league)==="bball") st.detail=`${s.points||0} PTS · ${s.rebounds||0} REB · ${s.assists||0} AST · ${s.threePointFieldGoalsMade||0} 3PM${s.minutes!=null?" · "+s.minutes+" MIN":""}`;
     else st.detail=mk.label;
@@ -1188,7 +1189,14 @@ function parseSlip(text, league, roster){
   const seen=new Set();
   return legs.filter(l=>{const k=(l.player||l.team)+"|"+l.market+"|"+l.line; if(seen.has(k)) return false; seen.add(k); return true;});
 }
-if(typeof module!=="undefined") module.exports={amToDec,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findTeamGame,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
+// Model legs saved before the Nov 1 fix: "20+ longest reception" was stored as "receptions". Fix the label and line from the Polymarket slug; the leg still counts.
+function fixLegMarket(l){
+  if(!l || l.kind!=="prop") return null; const m=String(l.slug||"").match(/-(lrec|lrush|lcmp)-[a-z]+-gte(\d+)$/); if(!m) return null;
+  const market={lrec:"longest reception",lrush:"longest rush",lcmp:"longest pass"}[m[1]];
+  if(String(l.market||"").startsWith("longest")) return null;
+  return {...l, market, line:Number(m[2])-0.5, result:null, final:null, fixedMarket:true};
+}
+if(typeof module!=="undefined") module.exports={amToDec,fixLegMarket,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findTeamGame,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
 </script>
 
 <script src="fb-app.js?v=10.12.2"></script>
@@ -1832,8 +1840,8 @@ function cleanSlips(raw){
     if(isPM(s) && s.status!=="open" && s.pnl==null && !s.manual){ s.status="open"; s.unconfirmed=true; }
     if(s.source==="model" && s.modelKind==="props" && !s.pricingV){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; }   // priced before the fix: shown, not counted
     // Legs read wrong before the Nov 1 fix (e.g. "longest reception 20+" shown as "receptions", hockey periods as full game)
-    if(isPM(s)||s.source==="model"){ let bad=false; s.legs=(s.legs||[]).map(l=>{ const r=String(l.raw||""); const sl=String(l.slug||""); if(l.kind==="prop" && /-(lrec|lrush|lrsh|lru|lcmp|lpass|fpts|scrim)-[a-z]+-gte\d+$/.test(sl)){ bad=true; return {...l, kind:"pmus", market:`${l.player} ${sl.match(/-(\w+)-[a-z]+-gte(\d+)$/).slice(1).join(" ")}`, team:l.side==="under"?"No":"Yes"}; } if(l.kind!=="pmus" && /Long Rec|longest|FPTS|touchdowns|Two-Point|D\/ST|Period|60 Min|Scrim Yds|field goals|offensive yards/i.test(r) && !/Pass TD/i.test(r)){ bad=true; return {...l, kind:"pmus", league:l.league, market:r.replace(/ · (Yes|No)$/,""), team:/ · No$/.test(r)?"No":"Yes"}; } return l; });
-      if(bad && s.source==="model" && s.status!=="void"){ s.realStatus=s.status; s.status="void"; s.oldPricing=true; s.badMarket=true; } }
+    if(isPM(s)||s.source==="model"){ let bad=false; s.legs=(s.legs||[]).map(l=>{ const r=String(l.raw||""); const sl=String(l.slug||""); const fx=fixLegMarket(l); if(fx||l.fixedMarket){ bad=true; return fx||l; } if(l.kind!=="pmus" && /Long Rec|longest|FPTS|touchdowns|Two-Point|D\/ST|Period|60 Min|Scrim Yds|field goals|offensive yards/i.test(r) && !/Pass TD/i.test(r)){ bad=true; return {...l, kind:"pmus", league:l.league, market:r.replace(/ · (Yes|No)$/,""), team:/ · No$/.test(r)?"No":"Yes"}; } return l; });
+      if(bad && s.source==="model" && s.status!=="void"){ s.realStatus=s.status; s.status="void"; s.badMarket=true; } }
     const k=isPM(s)? pmKeyOf(s) : null;
     if(!k){ out.push(s); continue; }
     const cur=best.get(k);
@@ -2470,7 +2478,7 @@ function pmToLeg(mkt, side, fallbackTitle){
   }
   // Player props: slug like astatc-nba-sa-uta-2026-10-28-ast-defox-gte4, title "De'Aaron Fox 4+ Ast"
   // Player markets we can't track from a box score (longest play, fantasy points, first scorer, "most"): keep as plain Polymarket legs
-  if(/player_(fantasy|first|team_first|most|anytime_first|last|longest)|scrimmage|longest/.test(type)) return {...base, league:info.league, cat:catOf(info.league)};
+  if(/player_(fantasy|first|team_first|most|anytime_first|last)|scrimmage/.test(type)) return {...base, league:info.league, cat:catOf(info.league)};
   if(/player/.test(type) || /-(pts|reb|ast|pra|pr|pa|ra|3pm|threes|stl|blk|sb)-[a-z]+-gte\d/.test(slug)){
     const st0=type.replace(/^[a-z]+_player_/,"");
     const statText = (/longest|attempts|completions|interceptions|yards|touchdowns/.test(st0)? st0.replace(/_/g," ") : st0.replace(/_/g," + ")) + " " + title;   // points_rebounds_assists -> "points + rebounds + assists"; longest_reception -> "longest reception"
@@ -2879,7 +2887,7 @@ function buildPropParlays(ts){
   }
   return out;
 }
-function legLine(x){ const ln=Number(x.line); return Number.isInteger(ln+0.5)? (x.side==="over"? `${ln+0.5}+ ${x.label}` : `${ln-0.5} or fewer ${x.label}`) : `${x.side} ${ln} ${x.label}`; }
+function legLine(x){ const ln=Number(x.line); if(/^longest/.test(x.label||"") && Number.isInteger(ln+0.5)) return x.side==="over"? `${x.label} ${ln+0.5}+ yds` : `${x.label} ${ln-0.5} yds or less`; return Number.isInteger(ln+0.5)? (x.side==="over"? `${ln+0.5}+ ${x.label}` : `${ln-0.5} or fewer ${x.label}`) : `${x.side} ${ln} ${x.label}`; }
 function renderPropParlays(){
   $("#ppLeague").innerHTML=TREND_LEAGUES.map(l=>`<button type="button" class="chip" data-pp="${l}" aria-pressed="${ppLeagues.includes(l)}">${ppLeagues.includes(l)?"✓ ":""}${esc(LEAGUES[l].label)}</button>`).join("")
     + `<button type="button" class="chip" data-pp="__all" aria-pressed="false">All</button>`;
@@ -3113,7 +3121,7 @@ function pmEventUrl(l){
   return null;
 }
 function trendCard(it,i){
-  const S=it.S, W=S.W, ln=Number(it.line), thr=Number.isInteger(ln+0.5)? (it.side==="over"? (ln+0.5)+"+" : (ln-0.5)+" or fewer") : (it.side==="over"?"over ":"under ")+ln;
+  const S=it.S, W=S.W, ln=Number(it.line), thr=(Number.isInteger(ln+0.5)? (it.side==="over"? (ln+0.5)+"+" : (ln-0.5)+(/^longest/.test(it.label||"")?" yds or less":" or fewer")) : (it.side==="over"?"over ":"under ")+ln) + (/^longest/.test(it.label||"")&&it.side==="over"?" yds":"");
   const trend= S.hot? (it.side==="over"?'<span class="hot">🔥 Trending up</span>':'<span class="hot" style="color:var(--loss)">⚠ Trending up</span>') : S.cold? (it.side==="under"?'<span class="hot" style="color:var(--win)">❄ Trending down</span>':'<span class="hot" style="color:var(--muted)">❄ Trending down</span>') : "";
   const max=Math.max(ln+1,...S.recent.map(x=>x.v)); const hitF=v=> it.side==="under"? v<ln : v>ln;
   const bars=S.recent.map(x=>`<i class="${hitF(x.v)?"hit":""}" style="height:${Math.max(4,x.v/max*100)}%" title="${x.v}${x.opp?" vs "+esc(x.opp):""}"></i>`).join("");
@@ -3283,7 +3291,7 @@ const APP_VERSION=28;
 const RELEASES=[
   {v:28, date:"Nov 1", title:"Mix sports in prop parlays",
    news:["<b>Value parlays</b>: pick more than one sport (or tap <b>All</b>) and the suggested prop parlays can mix legs across them, like an NBA leg with an NFL leg.",
-         "Skips props whose price looks stale on Polymarket, like a harder line priced the same as an easier one.", "Fixed for real this time: \"longest reception 20+\" no longer shows as \"19 or fewer receptions\". Longest-play props are left out of model suggestions."]},
+         "Skips props whose price looks stale on Polymarket, like a harder line priced the same as an easier one.", "Fixed for real this time: \"longest reception 20+\" no longer shows as \"19 or fewer receptions\". It now reads \"longest reception 20+ yds\" or \"longest reception 19 yds or less\", and model picks already saved with the wrong name now show the right market, but they aren't counted in the model's record since they were built on a misread."]},
   {v:27, date:"Nov 1", title:"Fixes to picks and payouts",
    news:["Fixed: some player props were read wrong. For example, \"longest reception 20+ yards\" showed as \"19 or fewer receptions\". Touchdown totals, team totals and hockey periods are also read correctly now. Model picks built on a misread market aren't counted.",
          "Team longshots are now priced with <b>Polymarket US</b> instead of DraftKings, so the payout matches your combo (within a few cents), and they only include games you can bet on Polymarket."]},
