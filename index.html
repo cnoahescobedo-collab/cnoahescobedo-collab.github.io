@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-t4I54JPX4hZ9oPewGu8KQbqEMf6LN9uK9nB0biO/pbA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-i0sBI223f5G7My8bjwmOxhvtjTwF+0CzDEjzWiq+aeU=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -1283,37 +1283,51 @@ function startGroup(){
     ls.set(KEY+".seenN",[...seenNotifs].slice(-300)); renderBell(); },()=>{}));
   startSlips();
 }
-/* ---- Slips: open bets live, settled bets cached on this phone (keeps the group under Firebase's free daily limit) ---- */
-const SLIP_CAP=800, FULL_EVERY=24*3600e3;
+/* ---- Slips: open bets live, settled bets cached on this phone (keeps the group under Firebase's free daily limit) ----
+   The cache lives in IndexedDB (room for thousands of slips; localStorage tops out around 5 MB).
+   "syncedTo" only moves forward when the server actually delivers an update, so a failed or quota-limited
+   connection can never make the phone skip bets. Any listener error forces a full reload on the next open. */
+const SLIP_CAP=3000, FULL_EVERY=24*3600e3, CACHE_V="slips3";
 let slipMap=new Map(), openIds=new Set(), deltaIds=new Set(), slipCacheKey="";
 const tsRep=(k,v)=> v && typeof v==="object" && typeof v.toMillis==="function" ? {__ts:v.toMillis()} : v;
 const tsRev=(k,v)=> v && typeof v==="object" && v.__ts!=null ? firebase.firestore.Timestamp.fromMillis(v.__ts) : v;
-function loadSlipCache(){ try{ const raw=localStorage.getItem(slipCacheKey); if(!raw) return null; return JSON.parse(raw,tsRev); }catch{ return null; } }
-let saveTimer=null, cacheFullAt=0;
+const IDB={ p:null,
+  open(){ return this.p ||= new Promise((res,rej)=>{ try{ const r=indexedDB.open("liveBetTracker",1); r.onupgradeneeded=()=>r.result.createObjectStore("kv"); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } }); },
+  async run(mode,fn){ const d=await this.open(); return new Promise((res,rej)=>{ const tx=d.transaction("kv",mode); const rq=fn(tx.objectStore("kv")); tx.oncomplete=()=>res(rq?.result); tx.onerror=()=>rej(tx.error); tx.onabort=()=>rej(tx.error); }); },
+  get(k){ return this.run("readonly",st=>st.get(k)); }, set(k,v){ return this.run("readwrite",st=>st.put(v,k)); }, del(k){ return this.run("readwrite",st=>st.delete(k)); } };
+async function loadSlipCache(){
+  try{ const raw=await IDB.get(slipCacheKey); if(raw) return JSON.parse(raw,tsRev); }catch{}
+  try{ const raw=localStorage.getItem(slipCacheKey); if(raw) return JSON.parse(raw,tsRev); }catch{}
+  return null;
+}
+let saveTimer=null, cacheFullAt=0, syncedTo=0, deltaOk={a:0,b:0}, liveErr=false;
 function saveSlipCache(full){
   if(full) cacheFullAt=full;
-  clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ try{
+  clearTimeout(saveTimer); saveTimer=setTimeout(async()=>{
     const list=[...slipMap.values()].sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)).slice(0,SLIP_CAP);
-    const fullAt=cacheFullAt;
-    const maxSettled=Math.min(Date.now(), Math.max(0,...list.map(x=>Math.max(x.settledAt?.toMillis?.()||0, x.upd?.toMillis?.()||0))));
-    localStorage.setItem(slipCacheKey, JSON.stringify({fullAt, maxSettled, docs:list},tsRep));
-  }catch{ try{ localStorage.removeItem(slipCacheKey); }catch{} } },800);
+    const txt=JSON.stringify({fullAt: liveErr? 0 : cacheFullAt, syncedTo, docs:list},tsRep);
+    try{ await IDB.set(slipCacheKey, txt); try{ localStorage.removeItem(slipCacheKey); }catch{} }
+    catch{ try{ localStorage.setItem(slipCacheKey, txt); }catch{ try{ localStorage.removeItem(slipCacheKey); }catch{} } }
+  },800);
 }
 function publishSlips(){
   const raw=[...slipMap.values()].sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)).slice(0,SLIP_CAP);
   slips=cleanSlips(raw); renderAll(); refresh(); tidyDuplicates();
 }
 async function startSlips(){
-  slipCacheKey=KEY+".slips."+me.group+"."+uid; slipMap=new Map(); openIds=new Set(); deltaIds=new Set();
-  const cache=loadSlipCache(); const col=gref().collection("slips"); cacheFullAt=cache?.fullAt||0;
+  // Old caches (before Nov 1) could be missing bets: drop them so every phone reloads in full once
+  try{ for(const k of Object.keys(localStorage)) if(k.startsWith(KEY+".slips.")) localStorage.removeItem(k); }catch{}
+  slipCacheKey=KEY+"."+CACHE_V+"."+me.group+"."+uid; slipMap=new Map(); openIds=new Set(); deltaIds=new Set(); deltaOk={a:0,b:0}; liveErr=false;
+  const cache=await loadSlipCache(); const col=gref().collection("slips"); cacheFullAt=cache?.fullAt||0; syncedTo=cache?.syncedTo||0;
   if(cache?.docs?.length){ cache.docs.forEach(d=>slipMap.set(d.id,d)); publishSlips(); }
-  let since=cache?.maxSettled ? cache.maxSettled-6*3600e3 : Date.now()-3*864e5;
-  if(!cache || Date.now()-(cache.fullAt||0)>FULL_EVERY){
-    // Once a day: reload the latest slips in full (catches edits and deletes to old bets)
-    try{ const q=await col.orderBy("createdAt","desc").limit(SLIP_CAP).get(); slipMap=new Map(q.docs.map(d=>[d.id,{id:d.id,...d.data()}])); saveSlipCache(Date.now()); publishSlips(); since=Date.now()-6*3600e3; }
+  let since= syncedTo ? syncedTo-6*3600e3 : Date.now()-3*864e5;
+  if(!cache || !syncedTo || Date.now()-(cache.fullAt||0)>FULL_EVERY){
+    // Once a day (and after any connection problem): reload all slips in full (catches edits and deletes to old bets)
+    try{ const t0=Date.now(); const q=await col.orderBy("createdAt","desc").limit(SLIP_CAP).get(); slipMap=new Map(q.docs.map(d=>[d.id,{id:d.id,...d.data()}])); syncedTo=t0; saveSlipCache(t0); publishSlips(); since=t0-6*3600e3; }
     catch(e){ note("Couldn't load slips: "+e.message); }
   }
   const T=firebase.firestore.Timestamp;
+  const fail=e=>{ liveErr=true; saveSlipCache(); note("Lost the live connection to slips. Close and reopen the app to reload."); };
   unsub.push(col.where("status","==","open").onSnapshot(q=>{
     const now=new Set(q.docs.map(d=>d.id));
     q.docs.forEach(d=>slipMap.set(d.id,{id:d.id,...d.data()}));
@@ -1321,12 +1335,14 @@ async function startSlips(){
     const gone=[...openIds].filter(id=>!now.has(id) && !deltaIds.has(id)); openIds=now;
     gone.forEach(id=>col.doc(id).get().then(d=>{ if(d.exists) slipMap.set(id,{id,...d.data()}); else slipMap.delete(id); saveSlipCache(); publishSlips(); }).catch(()=>{}));
     saveSlipCache(); publishSlips();
-  }, e=>note("Couldn't load slips: "+e.message)));
+  }, e=>{ fail(e); note("Couldn't load slips: "+e.message); }));
   // Bets settled or corrected since your last visit (by time settled, or by time last changed)
   const dA=new Set(), dB=new Set();
-  const onDelta=(set)=>q=>{ set.clear(); q.docs.forEach(d=>{ set.add(d.id); slipMap.set(d.id,{id:d.id,...d.data()}); }); deltaIds=new Set([...dA,...dB]); saveSlipCache(); publishSlips(); };
-  unsub.push(col.where("settledAt",">=",T.fromMillis(since)).onSnapshot(onDelta(dA),()=>{}));
-  unsub.push(col.where("upd",">=",T.fromMillis(since)).onSnapshot(onDelta(dB),()=>{}));
+  const onDelta=(set,which)=>q=>{ set.clear(); q.docs.forEach(d=>{ set.add(d.id); slipMap.set(d.id,{id:d.id,...d.data()}); }); deltaIds=new Set([...dA,...dB]);
+    if(!q.metadata?.fromCache){ deltaOk[which]=Date.now(); if(deltaOk.a&&deltaOk.b) syncedTo=Math.max(syncedTo, Math.min(deltaOk.a,deltaOk.b)); }
+    saveSlipCache(); publishSlips(); };
+  unsub.push(col.where("settledAt",">=",T.fromMillis(since)).onSnapshot(onDelta(dA,"a"),fail));
+  unsub.push(col.where("upd",">=",T.fromMillis(since)).onSnapshot(onDelta(dB,"b"),fail));
 }
 // Your own edits and deletes show right away (and stay right in the cache)
 function forgetSlip(id){ slipMap.delete(id); saveSlipCache(); publishSlips(); }
@@ -3299,8 +3315,10 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=30;
+const APP_VERSION=31;
 const RELEASES=[
+  {v:31, date:"Nov 1", title:"All your history, every time",
+   news:["Fixed: some settled bets never showed up in History after Firebase hit its daily limit on Oct 31. Your phone now reloads everything once and keeps the full history (it used to keep only the newest 800 slips).", "If the live connection drops, the app reloads in full next time instead of skipping bets."]},
   {v:30, date:"Nov 1", title:"History dates fixed",
    news:["Polymarket bets now show on the day the game was played. Some of yesterday's bets were showing as today because their results were recorded late.", "Older Polymarket slips get re-read with the newer market reader, so legs like a first-half spread no longer show as a plain team win."]},
   {v:29, date:"Nov 1", title:"Clear losses yourself",
