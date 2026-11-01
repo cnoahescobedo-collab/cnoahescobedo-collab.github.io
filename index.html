@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-oq2QjiybbKSkWktzpDkywgLtXzYhXGq2xND79kmDtnA=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-+PnMXrIhOP9QNwYqphXCFoGR3NCQH2IaTWeRimG0oCE=' 'sha256-KL1hKBMjRm6vtqX0mo/K02BBd/ptYNFIQhDAMKCCFHk=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -262,21 +262,109 @@ button.google{width:100%}
 .toggle{display:flex;gap:10px;align-items:center;font-size:14px}.toggle input{width:20px;height:20px;flex:none;appearance:auto;-webkit-appearance:checkbox;accent-color:var(--accent,#c4531a);padding:0;margin:0}
 footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
 @media (max-width:440px){.c2{grid-column:span 3}.c3{grid-column:span 6}}
+
+/* ===== App shell v25: sticky app bar, side menu, add sheet, refined surfaces ===== */
+:root{--bg:#f2f3f6;--surface:#fff;--sunk:#f6f7f9;--ink:#0f1520;--muted:#626d7d;--line:#e3e6ec;--track:#e6e9ef;
+  --shadow:0 1px 2px rgba(15,21,32,.04),0 3px 10px rgba(15,21,32,.05);--shadow-lg:0 12px 40px rgba(15,21,32,.18);--r:16px}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1017;--surface:#141b25;--sunk:#10161f;--ink:#e9edf3;--muted:#8f9bae;--line:#232d3b;--track:#222c3b;
+  --shadow:0 1px 0 rgba(255,255,255,.02);--shadow-lg:0 16px 50px rgba(0,0,0,.55)}}
+body{padding-top:max(28px,env(safe-area-inset-top))}
+body.inapp{padding-top:0;padding-bottom:calc(110px + env(safe-area-inset-bottom))}
+.wrap{gap:18px}
+/* Onboarding */
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:18px 0 4px}
+.brand h1{font-size:32px}
+.brand .sub{font-size:14px;max-width:300px}
+.logo{width:60px;height:60px;border-radius:18px;background:linear-gradient(145deg,#1b2433,#0d121a);color:#fff;display:flex;align-items:center;justify-content:center;font:700 26px var(--display);letter-spacing:.02em;box-shadow:var(--shadow-lg);margin-bottom:6px}
+.logo span{color:#f07a3a}
+body.inapp .brand{display:none}
+#authPanel,#gatePanel,#joinPanel,#verifyPanel,#pendingPanel{max-width:460px;width:100%;margin:0 auto;padding:22px 20px;border-radius:22px;box-shadow:var(--shadow-lg);border-color:transparent;gap:14px}
+#authPanel h2,#gatePanel h2,#joinPanel h2,#verifyPanel h2,#pendingPanel h2{font-size:24px}
+.google{background:var(--surface)}
+/* App bar */
+.appbar{position:sticky;top:0;z-index:40;margin:0 calc(-1 * max(16px,env(safe-area-inset-left)));padding:calc(env(safe-area-inset-top) + 6px) 10px 8px;display:grid;grid-template-columns:46px 1fr 46px;align-items:center;
+  background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:saturate(1.5) blur(16px);backdrop-filter:saturate(1.5) blur(16px);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.ab-mid{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.ab-title{font:700 22px/1 var(--display);text-transform:uppercase;letter-spacing:.06em}
+.ab-mid .pulse{font-size:11px}
+.iconbtn{width:44px;height:44px;min-height:0;padding:0;border:none;background:transparent;border-radius:12px;color:var(--ink);display:grid;place-items:center}
+.iconbtn:active,.iconbtn.tapped{background:color-mix(in srgb,var(--ink) 10%,transparent)}
+.menubtn{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4.5px}
+.menubtn span{display:block;width:20px;height:2px;border-radius:2px;background:var(--ink)}
+.bell b{top:4px;right:4px}
+/* Surfaces */
+.panel,.slip,.cat,.pl,.rank,details.hist,.tablewrap{border-color:var(--line);box-shadow:var(--shadow)}
+.panel,.slip,.pl{border-radius:var(--r)}
+.section-head{margin-top:6px;align-items:center;flex-wrap:wrap;row-gap:4px}
+.panel a,.notice a,footer a{color:var(--accent)}
+.toggle{align-items:flex-start}.toggle input{margin-top:3px;flex:none}
+.section-head h2{font-size:14px}
+.empty{background:color-mix(in srgb,var(--surface) 60%,transparent)}
+input,select{border-radius:10px;background:var(--sunk)}
+button,.btn{border-radius:12px}
+.chips{scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+/* Segmented control for Live views */
+#liveView{background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+#liveView .chip{border:none;background:transparent;padding:6px 12px}
+#liveView .chip[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.live-tools{flex-wrap:nowrap}
+.live-tools select.pick{flex:1 1 0;min-width:0;text-overflow:ellipsis}
+.live-tools #toggleAll{white-space:nowrap}
+/* Floating add button */
+.fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));width:60px;height:60px;min-height:0;padding:0;border-radius:20px;border:none;
+  background:var(--accent);color:#fff;box-shadow:0 10px 28px color-mix(in srgb,var(--accent) 45%,transparent),0 2px 6px rgba(0,0,0,.15);z-index:45;display:grid;place-items:center}
+.fab:active{transform:scale(.94)}
+body.inapp .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
+/* Bottom sheets */
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{transform:translateX(-24px);opacity:0}to{transform:none;opacity:1}}
+.sheet-bg{position:fixed;inset:0;background:rgba(8,12,18,.5);z-index:58;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .15s ease}
+.sheet{background:var(--surface);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:8px 18px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-lg);animation:slideUp .2s ease}
+.sheet h2{font:700 22px var(--display);text-transform:uppercase;letter-spacing:.04em;margin:4px 0 0}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 2px}
+.sheet .actions .btn,.sheet .actions button{min-height:54px}
+.sheetpanel{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;max-height:86vh;overflow:auto;z-index:57;border-radius:24px 24px 0 0;
+  padding-bottom:calc(18px + env(safe-area-inset-bottom));box-shadow:0 0 0 100vmax rgba(8,12,18,.5),var(--shadow-lg);animation:slideUp .2s ease;overscroll-behavior:contain}
+/* Side menu */
+.drawer{animation:slideIn .18s ease;padding-top:calc(14px + env(safe-area-inset-top));padding-bottom:calc(24px + env(safe-area-inset-bottom));gap:14px;border-radius:0 22px 22px 0;box-shadow:var(--shadow-lg);border-right:none}
+.drawer-bg{animation:fadeIn .15s ease}
+.dr-brand{font:700 20px var(--display);text-transform:uppercase;letter-spacing:.03em}.dr-brand span{color:var(--accent)}
+.iconx{font-size:18px;width:40px;height:40px;padding:0}
+.dr-me{display:flex;gap:12px;align-items:center;background:var(--sunk);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.dr-me>div:last-child{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted);min-width:0}
+.dr-me b{color:var(--ink);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:700 18px var(--display);flex:none}
+.dr-nav{display:flex;flex-direction:column;gap:2px}
+.dr-nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:12px;font:600 16px var(--body);color:var(--ink)}
+.dr-nav button i{font-style:normal;width:22px;text-align:center;color:var(--muted)}
+.dr-nav button[aria-current="page"]{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.dr-nav button[aria-current="page"] i{color:var(--accent)}
+.dr-nav button:active{background:color-mix(in srgb,var(--ink) 8%,transparent)}
+.dr-g{border-top:1px solid var(--line);padding-top:8px}
+footer{margin-top:10px;font-size:11.5px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){.sheet,.sheetpanel,.drawer,.sheet-bg,.drawer-bg{animation:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="hd-left"><button type="button" class="menubtn" id="menuBtn" aria-label="Open menu" aria-controls="drawer" aria-expanded="false" hidden><span></span><span></span><span></span></button><div>
-      <h1>Live <span>Bet</span> Tracker</h1>
-      <p class="sub">Snap your slip. Watch every leg move. See who's cashing.</p>
-    </div></div>
-    <div class="pulse" id="pulse"><i></i><span id="pulseText">Ready</span></div>
+  <header class="brand" id="brandHead">
+    <div class="logo" aria-hidden="true">B<span>T</span></div>
+    <h1>Live <span>Bet</span> Tracker</h1>
+    <p class="sub">Snap your slip. Watch every leg move. See who's cashing.</p>
   </header>
 
   <div class="drawer-bg" id="drawerBg" hidden></div>
   <nav class="drawer" id="drawer" aria-label="All sections" hidden>
-    <div class="dr-h"><b>Menu</b><button type="button" class="ghost" id="drawerClose" aria-label="Close menu">✕</button></div>
+    <div class="dr-h"><div class="dr-brand">Live <span>Bet</span> Tracker</div><button type="button" class="ghost iconx" id="drawerClose" aria-label="Close menu">✕</button></div>
+    <div class="dr-me"><div class="avatar" id="drAvatar" aria-hidden="true">?</div><div><b id="meName"></b><span>Group <span class="code" id="groupCode"></span></span></div></div>
+    <div class="dr-nav">
+      <button type="button" data-go="live|top" data-nav="live"><i>●</i>Live</button>
+      <button type="button" data-go="history|top" data-nav="history"><i>↺</i>History</button>
+      <button type="button" data-go="picks|top" data-nav="picks"><i>◎</i>Picks</button>
+      <button type="button" data-go="board|top" data-nav="board"><i>▲</i>Board</button>
+      <button type="button" data-go="me|top" data-nav="me"><i>☺</i>Me</button>
+    </div>
     <div class="dr-g"><h4>Live</h4>
       <button type="button" data-go="live|liveList">Open slips</button><button type="button" data-go="live|sweat">Sweat board</button><button type="button" data-go="live|add">Add a slip</button></div>
     <div class="dr-g"><h4>History</h4><button type="button" data-go="history|histList">Settled bets</button></div>
@@ -332,7 +420,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <label class="f c2">Year<select id="dobY"><option value="">Year</option></select></label>
     </div>
     <p class="fine">Your birth date is only used to check your age right now. It isn't saved.</p>
-    <label class="toggle"><input type="checkbox" id="gateAgree"> I'm 21 or older, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including that I'm responsible for my own bets.</label>
+    <label class="toggle"><input type="checkbox" id="gateAgree"> <span>I'm 21 or older, and I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, including that I'm responsible for my own bets.</span></label>
     <div class="row-end"><button type="button" class="ghost" id="gateSignOut">Sign out</button><button type="button" class="primary" id="gateGo">Continue</button></div>
     <p class="fine">Gambling problem? Call or text <a href="tel:18006973738">1-800-MY-RESET</a> (24/7, free) or chat at <a href="https://1800myreset.org" target="_blank" rel="noopener">1800myreset.org</a>.</p>
   </section>
@@ -357,7 +445,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     </div>
   </section>
 
-  <section class="panel" id="unlockPanel" hidden>
+  <section class="panel sheetpanel" id="unlockPanel" hidden>
     <h2>Unlock Polymarket</h2>
     <p>Your Polymarket key on this device is locked with a PIN. Enter it to keep your bets syncing.</p>
     <label class="f">PIN<input id="unlockPin" type="password" inputmode="numeric" autocomplete="off"></label>
@@ -377,16 +465,14 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
   <!-- Main app -->
   <div id="app" hidden style="display:flex;flex-direction:column;gap:16px">
-    <div class="groupbar">
-      <span>You're <b id="meName"></b></span><span>·</span><span>Group <span class="code" id="groupCode"></span></span>
-      <span class="sp"></span>
-      <button type="button" class="ghost bell" id="bellBtn" aria-label="Notifications">🔔<b id="bellCount" hidden>0</b></button>
-      <button type="button" class="ghost" id="polyBtn">Connect Polymarket</button>
-      <button type="button" class="ghost" id="membersBtn">Members</button>
-      <button type="button" class="ghost" id="inviteBtn">Invite friends</button>
+    <div class="appbar" id="appbar">
+      <button type="button" class="iconbtn menubtn" id="menuBtn" aria-label="Open menu" aria-controls="drawer" aria-expanded="false"><span></span><span></span><span></span></button>
+      <div class="ab-mid"><div class="ab-title" id="abTitle">Live</div><div class="pulse" id="pulse"><i></i><span id="pulseText">Ready</span></div></div>
+      <button type="button" class="iconbtn bell" id="bellBtn" aria-label="Alerts"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"/></svg><b id="bellCount" hidden>0</b></button>
     </div>
-    <section class="panel" id="notifPanel" hidden><div class="section-head"><h2>Alerts</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
-    <section class="panel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div>
+    <div hidden><button type="button" id="polyBtn">Connect Polymarket</button><button type="button" id="membersBtn">Members</button><button type="button" id="inviteBtn">Invite friends</button></div>
+    <section class="panel sheetpanel" id="notifPanel" hidden><div class="section-head"><h2>Alerts</h2><button type="button" class="ghost" id="notifClose">Close</button></div><div id="notifList"></div></section>
+    <section class="panel sheetpanel" id="membersPanel" hidden><div class="section-head"><h2>Members</h2><button type="button" class="ghost" id="membersClose">Close</button></div><p id="membersNote"></p><div id="membersList"></div>
       <div id="syncOwner" hidden style="border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;flex-direction:column;gap:8px">
         <h3 style="margin:0;font-size:15px">Background sync setup (owner)</h3>
         <p class="fine" id="syncOwnerStatus"></p>
@@ -409,7 +495,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       </div>
     </section>
 
-    <div class="tabs" role="tablist">
+    <div class="tabs" role="tablist" hidden>
       <button role="tab" aria-selected="true" data-tab="live" id="tab-live">Live</button>
       <button role="tab" aria-selected="false" data-tab="history" id="tab-history">History</button>
       <button role="tab" aria-selected="false" data-tab="picks" id="tab-picks">Picks</button>
@@ -417,7 +503,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
       <button role="tab" aria-selected="false" data-tab="me" id="tab-me">Me</button>
     </div>
 
-    <section class="panel" id="polyPanel" hidden>
+    <section class="panel sheetpanel" id="polyPanel" hidden>
       <h2>Connect Polymarket</h2>
       <label class="f">Which Polymarket do you use?<select id="pmKind"><option value="us">Polymarket US (the US app)</option><option value="global">Polymarket.com (crypto wallet)</option></select></label>
       <div id="pmUsBox" style="display:flex;flex-direction:column;gap:10px">
@@ -441,10 +527,18 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
 
     <!-- LIVE -->
     <section id="view-live" style="display:flex;flex-direction:column;gap:14px">
-      <div class="chips" id="sports" role="group" aria-label="Sport for the next slip"></div>
-      <div class="actions">
-        <label class="btn primary" id="uploadBtn"><span id="uploadTxt">Scan bet slip</span><input type="file" id="shot" accept="image/*"></label>
-        <button id="manualBtn" type="button">Add slip manually</button>
+      <div class="sheet-bg" id="addSheet" hidden>
+        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="addSheetTitle">
+          <div class="grab" aria-hidden="true"></div>
+          <h2 id="addSheetTitle">Add a slip</h2>
+          <p class="fine">Sport for this slip</p>
+          <div class="chips" id="sports" role="group" aria-label="Sport for the next slip"></div>
+          <div class="actions">
+            <label class="btn primary" id="uploadBtn"><span id="uploadTxt">Scan a screenshot</span><input type="file" id="shot" accept="image/*"></label>
+            <button id="manualBtn" type="button">Type it in</button>
+          </div>
+          <button type="button" class="ghost" id="addSheetClose">Cancel</button>
+        </div>
       </div>
 
       <section class="panel" id="review" hidden>
@@ -470,7 +564,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
         <label class="sr" for="whoSel" style="position:absolute;left:-9999px">Whose slips</label><select class="pick" id="whoSel"></select>
         <label for="sortSel" style="position:absolute;left:-9999px">Sort</label><select class="pick" id="sortSel">
           <option value="close">Closest to cashing</option><option value="soon">Starting soonest</option><option value="pay">Biggest payout</option><option value="new">Newest</option></select>
-        <span class="sp"></span><button type="button" class="ghost" id="expandAll">Expand all</button><button type="button" class="ghost" id="collapseAll">Collapse all</button>
+        <button type="button" class="ghost" id="toggleAll">Expand all</button><button type="button" id="expandAll" hidden></button><button type="button" id="collapseAll" hidden></button>
       </div>
       <div class="list" id="liveList"></div>
     </section>
@@ -641,6 +735,7 @@ footer{font-size:12px;color:var(--muted);text-align:center;display:flex;flex-dir
     </section>
   </div>
 
+  <button type="button" class="fab" id="fabAdd" aria-label="Add a slip" hidden><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg></button>
   <div class="toast" id="toast" hidden></div>
   <div class="modal-bg" id="whatsNew" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wnTitle">
@@ -1132,7 +1227,7 @@ const gref = () => db.collection("groups").doc(me.group);
 function startGroup(){
   unsub.forEach(f=>f()); unsub=[];
   $("#meName").textContent=me.name; $("#groupCode").textContent=me.group;
-  ["authPanel","joinPanel","pendingPanel","verifyPanel","gatePanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false; $("#menuBtn").hidden=false;
+  ["authPanel","joinPanel","pendingPanel","verifyPanel","gatePanel"].forEach(id=>$("#"+id).hidden=true); $("#app").hidden=false; document.body.classList.add("inapp"); $("#fabAdd").hidden=false; $("#drAvatar").textContent=(me.name||"?").trim().charAt(0).toUpperCase();
   try{ localStorage.setItem(KEY+".lastGroup",JSON.stringify({uid,group:me.group})); }catch{}
   db.collection("users").doc(uid).set({lastGroup:me.group, groups:firebase.firestore.FieldValue.arrayUnion(me.group)},{merge:true}).catch(()=>{});
   if(!members[uid]) gref().collection("names").doc(nameKey(me.name)).set({uid}).catch(()=>{});
@@ -1202,7 +1297,7 @@ function rememberInUrl(){ try{ history.replaceState(null,"",location.pathname+"?
 function genCode(){ const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c=""; const r=crypto.getRandomValues(new Uint8Array(6)); r.forEach(x=>c+=a[x%a.length]); return c; }
 
 /* ---------- Accounts ---------- */
-function showOnly(id){ $("#menuBtn").hidden=true; ["authPanel","joinPanel","pendingPanel","verifyPanel","gatePanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
+function showOnly(id){ document.body.classList.remove("inapp"); $("#fabAdd").hidden=true; ["authPanel","joinPanel","pendingPanel","verifyPanel","gatePanel"].forEach(x=>$("#"+x).hidden=x!==id); $("#app").hidden=true; }
 function showAuth(){ showOnly("authPanel"); setAuthMode(firebase.auth().currentUser?.isAnonymous ? "signup" : "signin"); }
 function authMsg(e){
   const c=e?.code||"";
@@ -1385,6 +1480,7 @@ $("#drawer").addEventListener("click",e=>{
   document.querySelector(`[data-tab="${where}"]`)?.click();
   setTimeout(()=>{
     let el=null;
+    if(what==="top"){ window.scrollTo({top:0,behavior:"smooth"}); return; }
     if(what==="sweat"){ liveView="game"; renderLive(); el=$("#liveView"); }
     else if(what==="add"){ $("#manualBtn").click(); return; }
     else if(what.startsWith("pm:")){ pickMode=what.slice(3); ls.set(KEY+".pickMode",pickMode); renderPickMode(); el=$("#pickMode"); }
@@ -1394,6 +1490,24 @@ $("#drawer").addEventListener("click",e=>{
   },80);
 });
 
+
+/* ---- Add-a-slip sheet, swipe to open the menu ---- */
+function openAddSheet(on){ $("#addSheet").hidden=!on; document.body.classList.toggle("noscroll",on); if(on) renderSportChips(); }
+$("#fabAdd").onclick=()=>{ if(tab!=="live") document.querySelector('[data-tab="live"]').click(); openAddSheet(true); };
+$("#addSheetClose").onclick=()=>openAddSheet(false);
+// Only one bottom card at a time
+new MutationObserver(ms=>{ for(const m of ms){ const el=m.target; if(el.classList?.contains("sheetpanel") && !el.hidden) document.querySelectorAll(".sheetpanel").forEach(o=>{ if(o!==el && o.id!=="unlockPanel") o.hidden=true; }); } })
+  .observe(document.body,{subtree:true,attributes:true,attributeFilter:["hidden"]});
+$("#addSheet").addEventListener("click",e=>{ if(e.target.id==="addSheet") openAddSheet(false); });
+$("#manualBtn").addEventListener("click",()=>openAddSheet(false));
+$("#shot").addEventListener("change",()=>openAddSheet(false));
+document.addEventListener("keydown",e=>{ if(e.key!=="Escape") return; if(!$("#addSheet").hidden) openAddSheet(false); });
+(()=>{ let sx=null, sy=0;
+  document.addEventListener("touchstart",e=>{ const t=e.touches[0]; sx= (t.clientX<24 && document.body.classList.contains("inapp") && $("#drawer").hidden)? t.clientX : null; sy=t.clientY; },{passive:true});
+  document.addEventListener("touchmove",e=>{ if(sx==null) return; const t=e.touches[0]; if(t.clientX-sx>60 && Math.abs(t.clientY-sy)<40){ sx=null; openDrawer(true); } },{passive:true});
+  let dx=null; $("#drawer").addEventListener("touchstart",e=>{ dx=e.touches[0].clientX; },{passive:true});
+  $("#drawer").addEventListener("touchmove",e=>{ if(dx!=null && dx-e.touches[0].clientX>60){ dx=null; openDrawer(false); } },{passive:true});
+})();
 /* ---- Delete my account and data ---- */
 $("#delAcct").onclick=async()=>{
   if($("#delConfirm").value.trim()!=="DELETE"){ note("Type DELETE in the box to confirm."); return; }
@@ -1545,8 +1659,12 @@ $("#inviteBtn").onclick=async()=>{
 
 /* ---------- Tabs & chips ---------- */
 document.querySelector(".tabs").addEventListener("click",e=>{
-  const t=e.target.dataset.tab; if(!t) return; tab=t;
+  const t=e.target.dataset.tab; if(!t) return; const changed=tab!==t; tab=t;
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  $("#abTitle").textContent={live:"Live",history:"History",picks:"Picks",board:"Board",me:"Me"}[t];
+  document.querySelectorAll(".dr-nav [data-nav]").forEach(b=>b.setAttribute("aria-current",b.dataset.nav===t?"page":"false"));
+  if(changed) window.scrollTo({top:0});
+  ["notifPanel","membersPanel"].forEach(id=>$("#"+id).hidden=true);
   ["live","history","picks","board","me"].forEach(v=>{const el=$("#view-"+v); el.hidden=v!==t; if(v===t) el.style.display="flex";});
   renderAll();
 });
@@ -1557,6 +1675,9 @@ const people=()=>{ const r=removedNames(); const m=new Map(); for(const s of sli
 $("#whoSel").addEventListener("change",e=>{ whoLive=e.target.value; renderLive(); });
 $("#sortSel").addEventListener("change",e=>{ sortBy=e.target.value; ls.set(KEY+".sort",sortBy); renderLive(); });
 $("#liveView").addEventListener("click",e=>{const k=e.target.dataset.lv; if(!k) return; liveView=k; renderLive();});
+function syncToggleAll(){ const ds=[...document.querySelectorAll("#liveList details.slip")]; const allOpen=ds.length&&ds.every(d=>d.open); $("#toggleAll").textContent=allOpen?"Collapse all":"Expand all"; $("#toggleAll").hidden=!ds.length||liveView==="game"; }
+$("#toggleAll").onclick=()=>{ const ds=[...document.querySelectorAll("#liveList details.slip")]; (ds.length&&ds.every(d=>d.open)? $("#collapseAll") : $("#expandAll")).click(); syncToggleAll(); };
+$("#liveList").addEventListener("toggle",()=>syncToggleAll(),true);
 $("#expandAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=true; openSlips.add(d.dataset.sid);}); ls.set(KEY+".open",[...openSlips]); };
 $("#collapseAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=false;}); openSlips.clear(); ls.set(KEY+".open",[]); };
 $("#liveList").addEventListener("toggle",e=>{ const d=e.target; if(!d.matches?.("details.slip")) return; if(d.open) openSlips.add(d.dataset.sid); else openSlips.delete(d.dataset.sid); ls.set(KEY+".open",[...openSlips].slice(-200)); },true);
@@ -1800,10 +1921,10 @@ function renderLive(){
   chipRow($("#liveView"),[["person","By person"],["game","Sweat board"]],liveView,"lv");
   const {open}=liveSlips(); const list=$("#liveList");
   if(!open.length){
-    list.innerHTML=`<div class="empty"><b>No open slips</b>${slips.length?"Everything's settled. Check History and the Board.":"Pick a sport, then scan a screenshot of your slip or add one by hand. Your friends will see it here live."}</div>`;
-    return;
+    list.innerHTML=`<div class="empty"><b>No open slips</b>${slips.length?"Everything's settled. Check History and the Board.":"Tap + to scan a screenshot of your slip or type it in. Your friends will see it here live."}</div>`;
+    syncToggleAll(); return;
   }
-  if(liveView==="game"){ list.innerHTML=sweatHTML(open); return; }
+  if(liveView==="game"){ list.innerHTML=sweatHTML(open); syncToggleAll(); return; }
   const by=new Map();
   for(const s of open){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.source!=="model"&&(s.uid===uid||k===norm(me.name)),slips:[]}); by.get(k).slips.push(s); }
   const groups=[...by.values()].sort((a,b)=>(b.mine-a.mine)||a.name.localeCompare(b.name));
@@ -1811,6 +1932,7 @@ function renderLive(){
     const t=tally(vis().filter(s=>norm(s.name)===norm(g.name)));
     return `<div class="person"><div class="person-h"><h3>${esc(g.name)}${g.mine?' <span class="tag">YOU</span>':""}</h3><span>${t.w}-${t.l}${t.p?"-"+t.p:""} · ${moneyAs(g.name,t.profit,true)} · ${g.slips.length} open</span></div>${g.slips.map(slipHTML).join("")}</div>`;
   }).join("");
+  syncToggleAll();
 }
 function gamesHTML(open){
   const games=new Map(); const loose=[];
@@ -3057,8 +3179,12 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=24;
+const APP_VERSION=25;
 const RELEASES=[
+  {v:25, date:"Nov 1", title:"A cleaner app",
+   news:["New look: the top tabs are gone. Tap <b>☰</b> (or swipe in from the left edge) to get anywhere.",
+         "Tap the orange <b>+</b> button to add a slip. Pick the sport, then scan a screenshot or type it in.",
+         "Alerts, Members and Connect Polymarket now open as cards from the bottom of the screen."]},
   {v:24, date:"Nov 1", title:"Menu, age check and Terms",
    news:["<b>Menu</b> (☰, top left) jumps straight to any section: season, pick'em, leak finder, phone alerts and more.",
          "Live Bet Tracker is <b>21+</b>. Everyone confirms their age and agrees to the new <b>Terms</b> and <b>Privacy Policy</b> once.",
