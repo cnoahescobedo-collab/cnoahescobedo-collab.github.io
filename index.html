@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-Tr7lZD2nzGN/k+3Spo0VqL1MvwlHyYRbF+EuNuikQ2k=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-Kac8/9buhds1bOex9sdr55P3OubWwNGJ1DaOXV9XbXU=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -2189,13 +2189,13 @@ function spark(points){
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><line x1="0" x2="${W}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" stroke="var(--line)" stroke-dasharray="3 3"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${x(points.length-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="3" fill="${col}"/></svg>`;
 }
 $("#rankBy").addEventListener("click",e=>{const k=e.target.dataset.rb; if(!k) return; rankBy=k; renderBoard();});
-function rangeStart(r){ const d=new Date(); d.setHours(0,0,0,0); if(r==="week"){ d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getTime(); } if(r==="month"){ d.setDate(1); return d.getTime(); } return 0; }
+function rangeStart(r){ const d=new Date(); d.setHours(0,0,0,0); if(r==="today") return d.getTime(); if(r==="week"){ d.setDate(d.getDate()-((d.getDay()+6)%7)); return d.getTime(); } if(r==="month"){ d.setDate(1); return d.getTime(); } return 0; }
 $("#boardRange").addEventListener("click",e=>{const k=e.target.dataset.br; if(!k) return; boardRange=k; renderBoard();});
 function renderBoard(){
   renderRecap(); renderChallenges(); renderSeason(); renderPickem(); renderCloseCalls();
   const ppl=people().filter(([k])=>k!=="model");
-  chipRow($("#boardRange"),[["all","All-time"],["month","This month"],["week","This week"]],boardRange,"br");
-  $("#plTitle").textContent = boardRange==="week"?"This week's profit & loss":boardRange==="month"?"This month's profit & loss":"All-time profit & loss";
+  chipRow($("#boardRange"),[["all","All-time"],["month","This month"],["week","This week"],["today","Today"]],boardRange,"br");
+  $("#plTitle").textContent = boardRange==="today"?"Today's profit & loss":boardRange==="week"?"This week's profit & loss":boardRange==="month"?"This month's profit & loss":"All-time profit & loss";
   const from=rangeStart(boardRange);
   const settled=vis().filter(s=>isPerson(s) && s.status!=="open" && settledAt(s)>=from);
   // ---- All-time P/L ----
@@ -3323,8 +3323,10 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=32;
+const APP_VERSION=33;
 const RELEASES=[
+  {v:33, date:"Nov 1", title:"Today on the Board",
+   news:["<b>Standings</b> now has a <b>Today</b> view: everyone's profit and loss for bets settled today."]},
   {v:32, date:"Nov 1", title:"History rebuilt from Polymarket",
    news:["Your Polymarket bets are being rebuilt from Polymarket's own records: stake, result, amount, date and legs. Open the app with Polymarket connected and it happens automatically (it can take a minute). Duplicate copies are removed.", "Model picks and bets you entered by hand aren't changed."]},
   {v:31, date:"Nov 1", title:"All your history, every time",
