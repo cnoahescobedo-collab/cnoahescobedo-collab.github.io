@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-bMTTZUpXcb0Xe6fSEAfc5uNMgCDyk8qCpBHlGSkaNes=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-d83Oyzg480i83N1ZFw3B/jw0MDCayCWrB6wSTluWZis=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -121,13 +121,16 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .syncline{display:flex;align-items:center;gap:6px}
 .syncline .dot{width:8px;height:8px;border-radius:50%;background:var(--win,#1f8a4c);flex:none}
 .syncline.warn .dot{background:#d9480f}
+.waitpm>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.waitpm>summary::-webkit-details-marker{display:none}
+.waitpm>summary h3{margin:0}.waitpm>summary span:not(.chev){flex:1;min-width:160px}
+.waitpm>summary .chev{margin-left:auto;transition:transform .15s;color:var(--muted)}
+.waitpm[open]>summary .chev{transform:rotate(180deg)}
 .waitpm .wrow{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line,#e6e6ea)}
 .waitpm .wrow .t{flex:1;min-width:0}.waitpm .wrow .t b{display:block;font-size:14.5px}
 .waitpm .wrow .t span{font-size:12.5px;color:var(--muted)}
 .waitpm .wrow .r{font-weight:700;font-size:13px}.waitpm .wrow .r.lost{color:var(--loss,#c0392b)}.waitpm .wrow .r.won{color:var(--win,#1f8a4c)}
 .mem .mh{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:2px}
-#ptr{position:fixed;left:50%;transform:translate(-50%,-60px);top:calc(env(safe-area-inset-top,0px) + 64px);z-index:60;background:var(--card,#fff);border:1px solid var(--line,#e6e6ea);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.12);transition:transform .15s;pointer-events:none}
-#ptr.show{transform:translate(-50%,0)}
 .slip-f{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;background:var(--sunk);border-top:1px solid var(--line)}
 .empty{border:1.5px dashed var(--line);border-radius:14px;padding:22px 16px;text-align:center;color:var(--muted)}
 .empty b{display:block;color:var(--ink);font-family:var(--display);font-size:20px;text-transform:uppercase;margin-bottom:4px}
@@ -402,7 +405,6 @@ footer{margin-top:10px;font-size:11.5px;line-height:1.5}
   <div class="notice" id="moved" hidden><b>The app has a new address.</b> Open <a href="https://live-bet-tracker-b4f3f.web.app" id="movedLink">live-bet-tracker-b4f3f.web.app</a>, sign in, and add it to your home screen. You'll need to connect Polymarket again there. This old address keeps working for now.</div>
   <div class="notice" id="notice" hidden></div>
   <div class="health" id="healthBanner" hidden></div>
-  <div id="ptr" aria-hidden="true">Pull to refresh</div>
 
   <!-- Join screen -->
   <section class="panel" id="authPanel" hidden>
@@ -1394,14 +1396,15 @@ function renderHealth(){
 }
 setInterval(renderHealth,60000);
 // Pull down to refresh (Live and History): re-checks recent bets and live scores
-{ let y0=null, x0=0, pulled=0; const ptr=()=>$("#ptr");
+{ let y0=null, x0=0, pulled=0;
   document.addEventListener("touchstart",e=>{ if(!["live","history"].includes(tab) || window.scrollY>2 || e.touches.length!==1 || document.querySelector(".sheetpanel:not([hidden])")) { y0=null; return; } y0=e.touches[0].clientY; x0=e.touches[0].clientX; pulled=0; },{passive:true});
   document.addEventListener("touchmove",e=>{ if(y0==null) return; const dy=e.touches[0].clientY-y0, dx=Math.abs(e.touches[0].clientX-x0);
-    if(dx>dy || dy<0){ if(dy<0||dx>30){ y0=null; ptr().classList.remove("show"); } return; }
-    pulled=dy; if(dy>30){ ptr().classList.add("show"); ptr().textContent= dy>90? "Release to refresh" : "Pull to refresh"; } },{passive:true});
+    if(dx>dy || dy<0){ if(dy<0||dx>30) y0=null; return; }
+    pulled=dy; },{passive:true});
   document.addEventListener("touchend",async()=>{ if(y0==null) return; y0=null; const go=pulled>90; pulled=0;
-    if(!go){ ptr().classList.remove("show"); return; }
-    ptr().textContent="Refreshing…"; try{ await Promise.all([verifyRecent(), Promise.resolve(refresh())]); }catch{} finally{ ptr().textContent="Up to date"; setTimeout(()=>ptr().classList.remove("show"),700); } },{passive:true});
+    if(!go) return;
+    try{ navigator.vibrate?.(10); }catch{}   // quiet refresh: no banner; the "History checked" line updates
+    try{ await Promise.all([verifyRecent(), Promise.resolve(refresh())]); }catch{} },{passive:true});
 }
 let hiddenAt=0;
 document.addEventListener("visibilitychange",()=>{ if(document.hidden){ hiddenAt=Date.now(); return; } if(hiddenAt && Date.now()-hiddenAt>20*60000) verifyRecent(); });
@@ -1816,7 +1819,7 @@ $("#sortSel").addEventListener("change",e=>{ sortBy=e.target.value; ls.set(KEY+"
 $("#liveView").addEventListener("click",e=>{const k=e.target.dataset.lv; if(!k) return; liveView=k; renderLive();});
 function syncToggleAll(){ const ds=[...document.querySelectorAll("#liveList details.slip")]; const allOpen=ds.length&&ds.every(d=>d.open); $("#toggleAll").textContent=allOpen?"Collapse all":"Expand all"; $("#toggleAll").hidden=!ds.length||liveView==="game"; }
 $("#toggleAll").onclick=()=>{ const ds=[...document.querySelectorAll("#liveList details.slip")]; (ds.length&&ds.every(d=>d.open)? $("#collapseAll") : $("#expandAll")).click(); syncToggleAll(); };
-$("#liveList").addEventListener("toggle",()=>syncToggleAll(),true);
+$("#liveList").addEventListener("toggle",e=>{ if(e.target.id==="waitPm"){ ls.set(KEY+".waitOpen",e.target.open); return; } syncToggleAll(); },true);
 $("#expandAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=true; openSlips.add(d.dataset.sid);}); ls.set(KEY+".open",[...openSlips]); };
 $("#collapseAll").onclick=()=>{ document.querySelectorAll("#liveList details.slip").forEach(d=>{d.open=false;}); openSlips.clear(); ls.set(KEY+".open",[]); };
 $("#liveList").addEventListener("toggle",e=>{ const d=e.target; if(!d.matches?.("details.slip")) return; if(d.open) openSlips.add(d.dataset.sid); else openSlips.delete(d.dataset.sid); ls.set(KEY+".open",[...openSlips].slice(-200)); },true);
@@ -2074,11 +2077,12 @@ function renderLive(){
     const over=s.legs.length && s.legs.every(l=>{ const g=gameOf(l); return g && g.final; });
     if(s.unconfirmed || pr.lost || pr.remaining===0 || over) waitInfo.set(s.id,{pr, lost:pr.lost||s.legs.some(l=>l.result==="lost")}); }
   const waiting=open.filter(s=>waitInfo.has(s.id)); const playing=open.filter(s=>!waitInfo.has(s.id));
-  const waitHTML = waiting.length ? `<div class="person waitpm"><div class="person-h"><h3>⏳ Waiting on Polymarket</h3><span>${waiting.length} bet${waiting.length===1?"":"s"} · games over, payout not posted yet</span></div>${waiting.map(s=>{
+  const nLost=waiting.filter(s=>waitInfo.get(s.id).lost).length, nWon=waiting.filter(s=>!waitInfo.get(s.id).lost && s.legs.every(l=>l.result==="won"||l.result==="push")).length;
+  const waitHTML = waiting.length ? `<details class="person waitpm" id="waitPm" ${ls.get(KEY+".waitOpen",false)?"open":""}><summary class="person-h"><h3>⏳ Waiting on Polymarket</h3><span>${waiting.length} bet${waiting.length===1?"":"s"}${nLost?` · ${nLost} likely lost`:""}${nWon?` · ${nWon} likely won`:""}</span><span class="chev" aria-hidden="true">▼</span></summary>${waiting.map(s=>{
       const w=waitInfo.get(s.id); const mine=s.uid===uid||members[s.uid]?.linkedTo===uid; const n=s.legs.length;
       const hit=s.legs.filter(l=>l.result==="won"||l.result==="push").length;
       return `<div class="wrow"><div class="t"><b>${esc(s.name)} · ${n}-leg ${esc(slipCategory(s))}</b><span>${w.lost?"A leg lost":hit===n?"Every leg hit":`${hit}/${n} legs hit`}${s.stake&&showMoney(s.name)?` · ${money(+s.stake)} stake`:""}</span></div>
-        <span class="r ${w.lost?"lost":hit===n?"won":""}">${w.lost?"Likely lost":hit===n?"Likely won":"Waiting"}</span>${mine?`<button type="button" class="ghost small" data-pmlost="${esc(s.id)}">Mark lost now</button>`:""}</div>`; }).join("")}</div>` : "";
+        <span class="r ${w.lost?"lost":hit===n?"won":""}">${w.lost?"Likely lost":hit===n?"Likely won":"Waiting"}</span>${mine?`<button type="button" class="ghost small" data-pmlost="${esc(s.id)}">Mark lost now</button>`:""}</div>`; }).join("")}</details>` : "";
   const by=new Map();
   for(const s of playing){ const k=norm(s.name); if(!by.has(k)) by.set(k,{name:s.name,mine:s.source!=="model"&&(s.uid===uid||k===norm(me.name)),slips:[]}); by.get(k).slips.push(s); }
   const groups=[...by.values()].sort((a,b)=>(b.mine-a.mine)||a.name.localeCompare(b.name));
