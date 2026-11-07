@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-9xlpTqMftLIO6NjueX35ILCVWNUUNDpnPfR+HkonwAM=' 'sha256-CR6tshAvrcxRy9UP9iejdXbAxVWQGinI0/yGOGXA2OM=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-TL7lMNyHwNpD0nAKdIFOmOotuCvXVM47gPxfYDMsnUM=' 'sha256-th5CqgCgGK/wgCsYE6uuBWp466hFumB90Rt7oREGcpA=' 'sha256-6jqw9hF+Pbmy9e+s/YiAsByajw6XzLCTBXEQrJKJSGI=' 'wasm-unsafe-eval' https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; connect-src 'self' https://site.api.espn.com https://site.web.api.espn.com https://api.polymarket.us https://gateway.polymarket.us https://gamma-api.polymarket.com https://data-api.polymarket.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://content-firebaseappcheck.googleapis.com https://api.pwnedpasswords.com https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.1.1/ https://cdn.jsdelivr.net/npm/@tesseract.js-data/; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://live-bet-tracker-b4f3f.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f141c">
 <link rel="manifest" href="manifest.json">
@@ -117,6 +117,11 @@ input,select{font:500 16px var(--body);color:var(--ink);background:var(--bg);bor
 .pill.live{color:var(--live)}.pill.won{color:var(--win)}.pill.lost{color:var(--loss)}.pill.wait{color:var(--muted)}
 .statline{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.plive:empty{display:none}.plive{margin-top:8px;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.plive .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.plive .row b{font-variant-numeric:tabular-nums}
+.plive .st{font-weight:700;font-size:12px;letter-spacing:.02em}.plive .st.won{color:var(--win,#1f8a4c)}.plive .st.lost{color:var(--loss,#c0392b)}.plive .st.live{color:#d9480f}
+.plive .bar{height:5px;border-radius:3px;background:var(--line,#e6e6ea);position:relative;overflow:hidden}.plive .bar i{position:absolute;left:0;top:0;bottom:0;background:#d9480f;border-radius:3px}
+.plive.won .bar i{background:var(--win,#1f8a4c)}.plive.lost .bar i{background:var(--loss,#c0392b)}
 .tchip{font-size:11.5px;line-height:1.3;padding:3px 8px;border-radius:999px;background:var(--surface2,#f1f2f5);color:var(--ink,#222);border:1px solid var(--line,#e6e6ea)}
 .tchip.pro{background:#eaf6ef;border-color:#cde9d8;color:#155c34}.tchip.con{background:#fdf0ea;border-color:#f3d4c4;color:#8a3d12}
 .health{margin:0 0 4px;padding:10px 14px;border-radius:12px;background:#fdecea;color:#8a1f11;font-size:13.5px;line-height:1.35;border:1px solid #f3c2bb}
@@ -814,10 +819,10 @@ const FIREBASE_CONFIG = {
 const LEAGUES = {
   nba:{label:"NBA",path:"basketball/nba",sport:"bball",periods:4,len:12},
   wnba:{label:"WNBA",path:"basketball/wnba",sport:"bball",periods:4,len:10},
-  ncaamb:{label:"NCAAM",path:"basketball/mens-college-basketball",sport:"bball",periods:2,len:20},
-  ncaawb:{label:"NCAAW",path:"basketball/womens-college-basketball",sport:"bball",periods:4,len:10},
+  ncaamb:{label:"NCAAM",path:"basketball/mens-college-basketball",sport:"bball",periods:2,len:20,q:"groups=50&limit=400"},
+  ncaawb:{label:"NCAAW",path:"basketball/womens-college-basketball",sport:"bball",periods:4,len:10,q:"groups=50&limit=400"},
   nfl:{label:"NFL",path:"football/nfl",sport:"fball"},
-  ncaafb:{label:"NCAAF",path:"football/college-football",sport:"fball"},
+  ncaafb:{label:"NCAAF",path:"football/college-football",sport:"fball",q:"groups=80&limit=400"},   // all FBS games, not just the Top 25
   mlb:{label:"MLB",path:"baseball/mlb",sport:"base"},
   nhl:{label:"NHL",path:"hockey/nhl",sport:"hock"},
   epl:{label:"Premier League",path:"soccer/eng.1",sport:"soc"},
@@ -974,7 +979,7 @@ function tennisGames(d){
 function gamesFromBoard(league, d){ return sportOf(league)==="ten" ? tennisGames(d) : (d.events||[]).map(toGame); }
 
 // Words that make a different school/team ("Iowa" vs "Iowa State", "Florida" vs "South Florida")
-const TEAM_DISTINCT=new Set("state st tech a m am southern northern eastern western central international intl atlantic christian oh poly north south east west upstate gulf coast mountain pacific baptist methodist".split(" "));
+const TEAM_DISTINCT=new Set("state st tech a m am southern northern eastern western central international intl atlantic christian oh poly north south east west upstate gulf coast mountain pacific baptist methodist n s e w c ne nw se sw so no ga fl".split(" "));   // short forms too: "N Illinois" is Northern Illinois, not Illinois
 // 3 = exact name, 2 = safe partial (e.g. "Lakers" ↔ "Los Angeles Lakers"), 0 = no match
 function teamScore(x,t){
   const q=norm(t); if(!q) return 0;
@@ -1003,8 +1008,15 @@ function findTeamGame(games,t){
   for(const g of games) for(const x of g.teams){ const v=teamScore(x,t); if(v>sc){sc=v;best=g;} }
   return best;
 }
+// Exact name first; a looser match ("M. Wilson") only when it points to one player. Otherwise "Michael Wilson"
+// could be graded on Mack Wilson Sr.'s stats just because Mack is listed first.
 function findPlayer(players,name){
-  for(const [team,list] of Object.entries(players||{})){const p=list.find(x=>sameName(x.name,name)); if(p) return {team,...p};}
+  const bare=v=>norm(v).replace(/\b(jr|sr|ii|iii|iv|v)\b/g,"").replace(/\s+/g," ").trim();
+  const all=Object.entries(players||{}).flatMap(([team,list])=>(list||[]).map(p=>({team,...p})));
+  const want=bare(name); if(!want) return null;
+  const exact=all.filter(p=>bare(p.name)===want); if(exact.length) return exact[0];
+  const loose=all.filter(p=>sameName(p.name,name)); if(loose.length===1) return loose[0];
+  if(loose.length>1){ const first=want.split(" ")[0]; const same=loose.filter(p=>bare(p.name).split(" ")[0]===first); if(same.length===1) return same[0]; }
   return null;
 }
 
@@ -1127,9 +1139,28 @@ function polyCategory(slug){
   if(/^nhl-/.test(s)) return "Hockey";
   if(/^(epl|ucl|uel|lal|laliga|sea|seriea|bun|bundesliga|fl1|ligue1|mls|mex|uef|fifa|wc|soccer|efl|ere|por)-/.test(s)) return "Soccer";
   if(/^(atp|wta|tennis)-/.test(s)) return "Tennis";
+  if(/^(wtt|ttelite|tabletennis|tt)-/.test(s)) return "Table tennis";
   if(/^(ufc|mma|boxing)-/.test(s)) return "Fighting";
   if(/^(f1|nascar|golf|pga)-/.test(s)) return "Racing & golf";
   return null; // not a sports market
+}
+// Sport from Polymarket's own market type (e.g. "table_tennis_match_winner"), for sports the slug list doesn't know.
+// Anything Polymarket files under "sports" is imported, so no sport is skipped again.
+function sportFromType(type,category){
+  const t=String(type||"").toLowerCase();
+  if(/^table_tennis/.test(t)) return "Table tennis";
+  if(/^(basketball)/.test(t)) return "Basketball";
+  if(/^(american_)?football/.test(t)) return "Football";
+  if(/^baseball/.test(t)) return "Baseball";
+  if(/^(ice_)?hockey/.test(t)) return "Hockey";
+  if(/^soccer/.test(t)) return "Soccer";
+  if(/^tennis/.test(t)) return "Tennis";
+  if(/^(mma|ufc|boxing|fight)/.test(t)) return "Fighting";
+  if(/^(golf|f1|formula|nascar|racing|motorsport)/.test(t)) return "Racing & golf";
+  if(/^cricket/.test(t)) return "Cricket";
+  if(/^(esports|lol|cs2?|dota|valorant)/.test(t)) return "Esports";
+  if(String(category||"").toLowerCase()==="sports" || t) return "Other sports";
+  return null;
 }
 
 function slipCategory(slip){
@@ -1217,7 +1248,7 @@ function fixLegMarket(l){
   if(String(l.market||"").startsWith("longest")) return null;
   return {...l, market, line:Number(m[2])-0.5, result:null, final:null, fixedMarket:true};
 }
-if(typeof module!=="undefined") module.exports={amToDec,fixLegMarket,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findTeamGame,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
+if(typeof module!=="undefined") module.exports={sportFromType,amToDec,fixLegMarket,decToAm,valueSides,buildParlays,polySlugs,polyCategory,LEAGUES,CATEGORY,norm,sameName,boxPlayers,marketFor,toGame,tennisGames,gamesFromBoard,teamMatch,findTeamGame,findPlayer,evaluateLeg,slipStatus,oddsToPayout,slipCategory,profitOf,tally,parseSlip,parseMoney,matchName};
 </script>
 
 <script src="fb-app.js?v=10.12.2"></script>
@@ -1838,12 +1869,17 @@ $("#boardWho").addEventListener("click",e=>{const k=e.target.dataset.who; if(k==
 /* ---------- Live data from ESPN ---------- */
 async function loadBoard(lg,date){
   if(!LEAGUES[lg]?.path) return [];
-  const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard"+(date?"?dates="+date.replace(/-/g,""):""));
+  const qs=[date?"dates="+date.replace(/-/g,""):"", LEAGUES[lg].q||""].filter(Boolean).join("&");
+  const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard"+(qs?"?"+qs:""));
   const fresh=gamesFromBoard(lg,d); const ids=new Set(fresh.map(g=>g.id));
   boards[lg]=[...fresh, ...(boards[lg]||[]).filter(g=>!ids.has(g.id))]; return boards[lg];
 }
 async function loadBox(lg,id){ const d=await getJSON(ESPN+LEAGUES[lg].path+"/summary?event="+id); boxes[id]=boxPlayers(d); return boxes[id]; }
 const gameOf = l => (boards[l.league]||[]).find(g=>g.id===l.gameId)||null;
+// When a leg's game isn't in today's schedule, ask ESPN for its date once (used to catch legs attached to an old game)
+const gameDates=new Map();
+async function gameDateOf(lg,id){ if(!id||!LEAGUES[lg]?.path) return null; const k=lg+"|"+id; if(gameDates.has(k)) return gameDates.get(k);
+  const d=await getJSON(ESPN+LEAGUES[lg].path+"/summary?event="+id).catch(()=>null); const t=d?.header?.competitions?.[0]?.date||null; gameDates.set(k,t); return t; }
 
 async function refresh(){
   if(busy || !db) return;
@@ -1851,7 +1887,9 @@ async function refresh(){
   if(!open.length){ renderAll(); return; }
   busy=true;
   try{
-    const lgs=[...new Set(open.flatMap(s=>s.legs.filter(l=>!l.result).map(l=>l.league)))].filter(l=>LEAGUES[l]?.path);
+    // leagues to load: ungraded legs, plus auto-graded legs that may need re-checking (open slips and recent hand-entered ones)
+    const recentGraded=vis().filter(x=>x.status!=="open" && !isPM(x) && settledAt(x)>=Date.now()-10*864e5);
+    const lgs=[...new Set([...open.flatMap(s=>s.legs.filter(l=>!l.result||(!l.byHand&&l.gameId)).map(l=>l.league)), ...recentGraded.flatMap(s=>s.legs.filter(l=>l.gameId&&!l.byHand).map(l=>l.league))])].filter(l=>LEAGUES[l]?.path);
     [...new Set(open.flatMap(s=>s.legs.filter(l=>!l.result&&l.kind==="prop").map(l=>l.league)))].filter(l=>LEAGUES[l]?.path).forEach(l=>{ const c=injCache.get(l); if(!c||Date.now()-c.at>15*60000) leagueInjuries(l).catch(()=>{}); });
     await Promise.all(lgs.map(l=>loadBoard(l).catch(()=>null)));
     const today=new Date().toLocaleDateString("en-CA",{timeZone:"America/New_York"});
@@ -1860,14 +1898,31 @@ async function refresh(){
     // attach games to legs that don't have one yet
     for(const s of open){
       let changed=false;
+      // A bet can only be on a game that starts after it was placed (36 h allowance for live bets and late uploads).
+      // Stops a leg from being graded on last week's game between the same teams.
+      const born=s.createdAt?.toMillis?.()||0, MIN=born? born-36*3600e3 : 0;
       for(const l of s.legs){
-        if(l.result || !LEAGUES[l.league]?.path) continue;
-        const games=boards[l.league]||[];
+        if(!LEAGUES[l.league]?.path) continue;
+        // Polymarket legs carry their exact game date, which already pins the game; the window is for legs without one
+        const okTime=x=>!MIN || !!l.date || Date.parse(x.date)>=MIN;
+        if(l.result){
+          // Undo a result that came from a game before the bet existed (never one marked by hand)
+          const og=l.gameId? (boards[l.league]||[]).find(x=>String(x.id)===String(l.gameId)) : null;
+          const at=l.gameAt||og?.date||(!l.byHand && !l.date && MIN && l.gameId? await gameDateOf(l.league,l.gameId) : null);
+          if(!l.byHand && !l.date && MIN && at && Date.parse(at)<MIN){ l.result=null; delete l.final; delete l.gameId; delete l.gameAt; changed=true; }
+          else continue;
+        }
+        let games=(boards[l.league]||[]).filter(okTime);
+        // Games on the leg's own day only (two ATL–WSH games two days apart must not be mixed up)
+        const onDay=x=>!l.date || etDay(x.date)===l.date;
+        // no saved date: try today's games first, then the nearest upcoming
+        if(!l.date){ const td=etDay(); games=[...games].sort((a,b)=>((etDay(a.date)===td?0:1)-(etDay(b.date)===td?0:1)) || Math.abs(Date.parse(a.date)-Date.now())-Math.abs(Date.parse(b.date)-Date.now())); }
         if(l.gameId){
-          // Re-check an earlier match: drop it if the team isn't actually in that game (e.g. Iowa vs Iowa State)
-          const og=games.find(x=>String(x.id)===String(l.gameId));
-          if(!og || l.kind==="prop" || !(l.team||l.opponent) || teamMatch(og,l.team||l.opponent)) continue;
-          delete l.gameId; changed=true;
+          // Re-check an earlier match: drop it if it's on the wrong day, or the team isn't actually in that game (e.g. Iowa vs Iowa State)
+          const og=(boards[l.league]||[]).find(x=>String(x.id)===String(l.gameId));
+          if(og && (!onDay(og) || !okTime(og) || (l.gameAt && l.gameAt!==og.date && !okTime({date:l.gameAt})))){ delete l.gameId; delete l.gameAt; changed=true; }
+          else if(!og || l.kind==="prop" || !(l.team||l.opponent) || teamMatch(og,l.team||l.opponent)) continue;
+          else { delete l.gameId; changed=true; }
         }
         let g=null;
         if(l.abbrA&&l.abbrH){
@@ -1875,24 +1930,33 @@ async function refresh(){
           const eq=(e,p)=>{ e=String(e||"").toLowerCase(); return e===p || AL[e]===p || AL[p]===e || (e.length>2&&p.length>2&&(e.startsWith(p)||p.startsWith(e))); };
           const ex=(e,p)=>{ e=String(e||"").toLowerCase(); return e===p || AL[e]===p || AL[p]===e; };
           const has=(x,a,f)=>x.teams.some(t=>f(t.abbr,a));
-          g=games.find(x=>has(x,l.abbrA,ex)&&has(x,l.abbrH,ex))||null;
+          g=games.find(x=>onDay(x)&&has(x,l.abbrA,ex)&&has(x,l.abbrH,ex))||null;
           // Loose abbreviation match only if it doesn't change the school ("iowa" must not match "iowast")
           if(!g){ const lo=(e,p)=>{ e=String(e||"").toLowerCase(); if(ex(e,p)) return true; const [a,b]=e.length<p.length?[e,p]:[p,e]; return a.length>2 && b.startsWith(a) && !/^s/.test(b.slice(a.length)); };
-            g=games.find(x=>has(x,l.abbrA,lo)&&has(x,l.abbrH,lo))||null; }
+            g=games.find(x=>onDay(x)&&has(x,l.abbrA,lo)&&has(x,l.abbrH,lo))||null; }
           if(g && l.team && !teamMatch(g,l.team)) g=null; }
-        if(g){ l.gameId=g.id; changed=true; continue; }
+        if(g){ l.gameId=g.id; l.gameAt=g.date; changed=true; continue; }
         if(l.kind==="prop"){
-          const t=l.team; const hint=t?findTeamGame(games,t):null;
-          for(const cand of (hint?[hint,...games.filter(x=>x!==hint)]:games).filter(x=>x.state!=="pre")){
+          const t=l.team; const dayGames=games.filter(onDay); const hint=t?findTeamGame(dayGames,t):null;
+          for(const cand of (hint?[hint,...dayGames.filter(x=>x!==hint)]:dayGames).filter(x=>x.state!=="pre")){
             const p=boxes[cand.id]||await loadBox(l.league,cand.id).catch(()=>null);
             if(p && findPlayer(p,l.player)){ g=cand; break; }
           }
           if(!g && hint && hint.state==="pre") g=hint;
-        } else { g=findTeamGame(games,l.team||l.opponent); }
-        if(g){ l.gameId=g.id; changed=true; }
+        } else { g=findTeamGame(games.filter(onDay),l.team||l.opponent); }
+        if(g){ l.gameId=g.id; l.gameAt=g.date; changed=true; }
       }
       if(changed) persistLegs(s);
     }
+    // Recently settled hand-entered / model slips that were graded on a game from before the bet: undo those grades and reopen
+    { const cut=Date.now()-10*864e5;
+      for(const s of vis().filter(x=>x.status!=="open" && !isPM(x) && settledAt(x)>=cut)){
+        const born=s.createdAt?.toMillis?.()||0; if(!born) continue; const MIN=born-36*3600e3; let bad=false;
+        const legs=[]; for(const l of s.legs){ if(!l.result || l.byHand || l.date){ legs.push(l); continue; } const og=l.gameId? (boards[l.league]||[]).find(x=>String(x.id)===String(l.gameId)) : null;
+          const at=l.gameAt||og?.date||(l.gameId? await gameDateOf(l.league,l.gameId) : null);
+          if(at && Date.parse(at)<MIN){ bad=true; const {gameId,gameAt,final,...rest}=l; legs.push({...rest,result:null}); } else legs.push(l); }
+        if(bad){ s.legs=legs; persistLegs({...s, status:s.status}); }
+      } }
     // refresh box scores for games with open props
     const need=new Map();
     for(const s of open) for(const l of s.legs) if(l.kind==="prop" && !l.result && l.gameId){ const g=gameOf(l); if(g && g.state!=="pre") need.set(g.id,l.league); }
@@ -1946,7 +2010,8 @@ function persistLegs(s){
   const rs=s.legs.map(l=>l.result||null);
   if(isPM(s)){ gref().collection("slips").doc(s.id).update({legs:s.legs.map(l=>({...l}))}).catch(()=>{}); return; }   // Polymarket settles these, not ESPN
   const status = rs.includes("lost") ? "lost" : rs.every(Boolean) ? slipStatus(rs) : "open";
-  const upd={legs:s.legs.map(l=>({...l}))};
+  const upd={legs:s.legs.map(l=>({...l})), upd:firebase.firestore.FieldValue.serverTimestamp()};
+  if(status==="open" && s.status!=="open"){ upd.status="open"; upd.settledAt=null; }   // reopened after a wrong grade was undone
   if(status!=="open" && s.status==="open"){ upd.status=status; upd.settledAt=upd.upd=firebase.firestore.FieldValue.serverTimestamp(); }
   gref().collection("slips").doc(s.id).update(upd).catch(()=>{});
 }
@@ -2053,6 +2118,66 @@ function slipHTML(s){
     ${mine&&s.source!=="polymarket"&&s.source!=="pmus"?`<div class="slip-f">${canEdit?`<button type="button" class="ghost" data-edit="${esc(s.id)}">Edit</button>`:""}<button type="button" class="ghost" data-settle="${esc(s.id)}|won">Mark slip won</button><button type="button" class="ghost" data-settle="${esc(s.id)}|lost">Mark slip lost</button><span class="sp"></span><button type="button" class="ghost" data-del="${esc(s.id)}">Delete</button></div>`:""}
   </details>`;
 }
+/* ---------- Bets other people have that you don't ----------
+   A bet counts as yours if one of your open (or last-3-days) slips has the same legs. Legs you already hold elsewhere are noted. */
+const legSig=l=>[l.league||"", l.kind||"", norm(l.team||l.player||""), norm(l.market||""), l.line??"", l.kind==="prop"||l.kind==="total"? (l.side||"over") : "", l.kind==="pmus"||l.kind==="poly"? (l.slug||"") : ""].join("|");
+const slipSig=s=>(s.legs||[]).map(legSig).sort().join("§");
+function notTailedList(){
+  const recent=Date.now()-3*864e5;
+  const mine=vis().filter(isMineSlip).filter(s=>s.status==="open" || settledAt(s)>=recent);
+  const mySlips=new Set(mine.map(slipSig)), myLegs=new Set(mine.flatMap(s=>(s.legs||[]).map(legSig)));
+  const canTail=s=>(s.legs||[]).some(l=>{ if(l.result) return false; const g=gameOf(l); return !g || g.state==="pre"; });
+  let list=vis().filter(s=>s.status==="open" && s.source!=="model" && !isMineSlip(s) && canTail(s) && !mySlips.has(slipSig(s)));
+  if(whoLive!=="all" && whoLive!=="me") list=list.filter(s=>norm(s.name)===whoLive);
+  // the same bet from two friends shows once
+  const seen=new Set(); list=list.filter(s=>{ const k=slipSig(s); if(seen.has(k)) return false; seen.add(k); return true; });
+  return list.map(s=>({s, have:(s.legs||[]).filter(l=>myLegs.has(legSig(l))).length}))
+    .sort((a,b)=>(b.s.createdAt?.toMillis?.()||0)-(a.s.createdAt?.toMillis?.()||0));
+}
+function notTailedHTML(){
+  const list=notTailedList();
+  if(!list.length) return `<div class="empty"><b>You're caught up</b>Every open bet from the group that can still be placed is already in your slips.</div>`;
+  return `<div class="statline" style="padding:0 2px">${list.length} open bet${list.length===1?"":"s"} from the group that you don't have yet. Only bets with a game still to start are shown.</div>`+list.map(({s,have})=>{
+    const n=(s.legs||[]).length, pm=isPM(s); const url=pm? s.legs.map(pmEventUrl).find(Boolean) : null;
+    const legs=s.legs.map(l=>{ const g=gameOf(l); const started=g && g.state!=="pre";
+      return `<div class="lg ${started?"none":""}"><span class="m">${started?"·":"○"}</span><span>${(()=>{ const t=legTitle(l), bet=legBet(l); return String(bet).replace(/<[^>]*>/g,"").trim().toLowerCase().startsWith(String(t).toLowerCase())? "" : esc(t)+" "; })()}<span class="meta3">${legBet(l)}${g?` · ${esc(g.teams.map(t=>t.abbr).join(" @ "))}${started?" · started":` · ${new Date(g.date).toLocaleString(undefined,{weekday:"short",hour:"numeric",minute:"2-digit"})}`}`:""}</span></span></div>`; }).join("");
+    return `<article class="slip"><div class="slip-h"><div class="ttl">${esc(s.name)} · ${n}-leg ${esc(slipCategory(s))}${have?` <span class="tag">YOU HAVE ${have} OF ${n} LEGS</span>`:""}</div>
+      <div class="money">${s.odds?esc(s.odds)+" · ":""}${s.stake&&showMoney(s.name)?`${money(+s.stake)} → ${money(+s.payout||0)}`:""}</div></div>
+      <div class="hlegs" style="padding:4px 14px 8px">${legs}</div>
+      <div class="slip-f">${url?`<a class="ghost btn small" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open in Polymarket</a>`:""}<button type="button" class="ghost small" data-copy="${esc(s.id)}">Copy bet</button><span class="sp"></span>${!pm?`<button type="button" class="small" data-tailslip="${esc(s.id)}">Tail this bet</button>`:""}</div></article>`; }).join("")
+    + `<div class="fine" style="padding:6px 2px">Polymarket bets: place it in Polymarket and it shows up here on its own. Others: <b>Tail this bet</b> fills in the legs; add your stake and odds.</div>`;
+}
+/* ---------- Live stats on suggestions (Picks → Value parlays) ----------
+   Once a suggested leg's game starts, show the player's live stat vs the line (or the team's score), updated every 20 s. */
+let sugBusy=false;
+async function updateSuggestionLive(){
+  const els=[...document.querySelectorAll("#view-picks [data-plive], #view-picks [data-tlive]")]; if(!els.length || sugBusy) return; sugBusy=true;
+  try{
+    const parse=el=>(el.dataset.plive||el.dataset.tlive).split("|");
+    const lgs=new Set(els.map(el=>parse(el)[0]).filter(l=>LEAGUES[l]?.path));
+    await Promise.all([...lgs].map(l=>loadBoard(l).catch(()=>null)));
+    const need=new Map(); els.forEach(el=>{ if(!el.dataset.plive) return; const [lg,id]=parse(el); const g=(boards[lg]||[]).find(x=>String(x.id)===String(id)); if(g && g.state!=="pre") need.set(id,lg); });
+    await Promise.all([...need].map(([id,lg])=>loadBox(lg,id).catch(()=>null)));
+    for(const el of els){
+      const [lg,id,...rest]=parse(el); const g=(boards[lg]||[]).find(x=>String(x.id)===String(id)); el.className="plive";
+      if(!g){ el.innerHTML=""; continue; }
+      const clock= g.final? "Final" : g.state==="pre"? "" : (g.detail||"Live");
+      if(g.state==="pre"){ el.innerHTML=`<div class="row"><span class="statline">Starts ${esc(new Date(g.date).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}))}</span></div>`; continue; }
+      if(el.dataset.tlive){ const team=rest[0]; const mine=teamMatch(g,team), opp=g.teams.find(t=>t!==mine); if(!mine||!opp){ el.innerHTML=""; continue; }
+        const d=mine.score-opp.score; const res=g.final? (d>0?"won":d<0?"lost":"") : "";
+        el.classList.add(res); el.innerHTML=`<div class="row"><span><b>${esc(mine.abbr)} ${mine.score}</b> – ${esc(opp.abbr)} ${opp.score}</span><span class="st ${res||"live"}">${res==="won"?"WON":res==="lost"?"LOST":d>0?"LEADING":d<0?"TRAILING":"TIED"} · ${esc(clock)}</span></div>`; continue; }
+      const [player,market,line,side]=rest; const leg={league:lg,kind:"prop",player,market,line:Number(line),side,gameId:id};
+      const st=evaluateLeg(leg,g,boxes[id]);
+      if(st.cur==null){ el.innerHTML=`<div class="row"><span class="statline">${esc(st.missing||"Waiting for stats")}</span><span class="st live">${esc(clock)}</span></div>`; continue; }
+      const L=Number(line), need=side==="under"? `${Math.ceil(L-0.5)} or fewer` : `${Math.floor(L+0.5)}+`;
+      const res=st.result==="won"?"won":st.result==="lost"?"lost":""; if(res) el.classList.add(res);
+      const pct=Math.max(0,Math.min(1, st.cur/Math.max(L+0.5,0.5)));   // bar fills toward the line for both overs and unders
+      const pace= !res && st.pace!=null ? ` · on pace for ${Math.round(st.pace*10)/10}` : "";
+      el.innerHTML=`<div class="row"><span><b>${Math.round(st.cur*10)/10}</b> ${esc(market)} <span class="statline">(needs ${need}${pace})</span></span><span class="st ${res||"live"}">${res==="won"?"HIT":res==="lost"?"MISSED":"LIVE"} · ${esc(clock)}</span></div><div class="bar"><i style="width:${(pct*100).toFixed(1)}%"></i></div>`;
+    }
+  }finally{ sugBusy=false; }
+}
+setInterval(()=>{ if(!document.hidden && tab==="picks") updateSuggestionLive(); },20000);
 function liveSlips(){
   let open=vis().filter(s=>s.status==="open" && (isPM(s) || !s.legs.some(l=>l.result==="lost")));
   if(whoLive==="me") open=open.filter(isMineSlip);
@@ -2067,13 +2192,14 @@ function renderLive(){
   const sel=$("#whoSel"); const opts=[["all","Everyone"],["me","Just me"],...ppl.filter(([k])=>k!==norm(me.name))];
   sel.innerHTML=opts.map(([k,l])=>`<option value="${esc(k)}" ${k===whoLive?"selected":""}>${esc(l)}</option>`).join("");
   $("#sortSel").value=sortBy;
-  chipRow($("#liveView"),[["person","By person"],["game","Sweat board"]],liveView,"lv");
+  chipRow($("#liveView"),[["person","By person"],["game","Sweat board"],["tail","Don't have"]],liveView,"lv");
   const {open}=liveSlips(); const list=$("#liveList");
   if(!open.length){
     list.innerHTML=`<div class="empty"><b>No open slips</b>${slips.length?"Everything's settled. Check History and the Board.":"Tap + to scan a screenshot of your slip or type it in. Your friends will see it here live."}</div>`;
     syncToggleAll(); return;
   }
   if(liveView==="game"){ list.innerHTML=sweatHTML(open); syncToggleAll(); return; }
+  if(liveView==="tail"){ list.innerHTML=notTailedHTML(); syncToggleAll(); return; }
   // Polymarket bets whose games are over (or a leg already lost) but Polymarket hasn't paid out yet get their own section
   const waitInfo=new Map();
   for(const s of open){ if(!isPM(s)) continue; const pr=slipProgress(s);
@@ -2363,7 +2489,7 @@ async function pmusMoneyline(lg,g){
   return {pmSlug:m.slug, buyA: ok(awaySide)? q(awaySide) : null, buyH: ok(homeSide)? q(homeSide) : null, midA: mid(awaySide), midH: mid(homeSide), polyA: mid(awaySide), polyH: mid(homeSide)};
 }
 async function scanLeagueOdds(lg){
-  const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard").catch(()=>null); if(!d) return [];
+  const d=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard"+(LEAGUES[lg].q?"?"+LEAGUES[lg].q:"")).catch(()=>null); if(!d) return [];
   const soon=Date.now()+30*3600e3;
   const evs=(d.events||[]).filter(e=>e.status?.type?.state==="pre" && Date.parse(e.date)<soon);
   const games=await Promise.all(evs.map(async e=>{
@@ -2446,7 +2572,7 @@ function trendChips(tt,max=3){ const a=[...tt.pro.map(t=>({...t,c:"pro",i:"📈"
 setInterval(()=>{ if(!document.hidden && me) loadTeamTrends(); },15*60000);
 const amS = a => (a>0?"+":"")+a;
 function renderPicks(){
-  renderPickMode();
+  renderPickMode(); setTimeout(updateSuggestionLive,0);
   const ps=picksState;
   if(ps && ps.day!==etDay()) { $("#picksStatus").textContent="Last scan was an earlier day. Scan again for today."; }
   else if(ps) $("#picksStatus").textContent=`Checked ${ps.games} games ${Math.max(0,Math.round((Date.now()-ps.at)/60000))} min ago`;
@@ -2454,7 +2580,7 @@ function renderPicks(){
     $("#parlayList").innerHTML=ps.parlays.map((p,i)=>`<article class="slip"><div class="slip-h"><div><span class="who">${p.legs.length}-leg longshot</span> <span class="tag">${i<2?"TRACKED":"IDEA"}</span></div>
       <div class="money">Polymarket combo ≈ <b>${p.dec.toFixed(2)}x</b> · $10 → <b>${money(10*p.dec)}</b></div></div>
       <div class="legs">${p.legs.map(l=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(l.team)}</div><div class="leg-bet"><b>To win</b> vs ${esc(l.opp)} · ${esc(LEAGUES[l.league].label)} · ${new Date(l.start).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div></div><div class="leg-num"><div class="cur">${l.buy!=null?Math.round(l.buy*100)+"¢":amS(l.ml)}</div><div class="of">${l.buy!=null?"Polymarket":"DraftKings"}</div></div></div>
-        <div class="statline">${l.buy!=null?`Polymarket ${pctS(l.mid)}`:`Odds imply ${pctS(l.fair)}`} · ESPN model ${pctS(l.espn)}${l.book!=null?` · Sportsbooks ${pctS(l.book)}`:""} · <b class="pos">+${Math.round(l.edge*100)} pts</b></div>${trendChips(teamTrendsFor(l.gameId,l.league,l.team))}</div>`).join("")}</div>
+        <div class="statline">${l.buy!=null?`Polymarket ${pctS(l.mid)}`:`Odds imply ${pctS(l.fair)}`} · ESPN model ${pctS(l.espn)}${l.book!=null?` · Sportsbooks ${pctS(l.book)}`:""} · <b class="pos">+${Math.round(l.edge*100)} pts</b></div>${trendChips(teamTrendsFor(l.gameId,l.league,l.team))}<div class="plive" data-tlive="${esc([l.league,l.gameId||"",l.team].join("|"))}"></div></div>`).join("")}</div>
       <div class="slip-f"><span class="statline" style="align-self:center">Estimated chance all hit: ${(p.p*100).toFixed(1)}% · Expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}% per bet · Polymarket shows the exact payout when you build the combo</span><span class="sp"></span><button type="button" class="ghost" data-tail="${i}">Tail this</button></div></article>`).join("");
   } else if(ps){ $("#parlayList").innerHTML=`<div class="empty"><b>No good longshots right now</b>None of today's prices beat the estimates by enough. That happens. Check again closer to game time, when lines move.</div>`; }
   if(ps && ps.spots?.length){
@@ -2578,10 +2704,10 @@ function pmSlugInfo(slug){
   return m?{league:PM_LEAGUE[m[1]], a:m[2], h:m[3], date:m[4]}:null;
 }
 async function pmMarket(sym){
-  const ck=KEY+".mkt3."+sym; const c=ls.get(ck,null); if(c) return c;
+  const ck=KEY+".mkt4."+sym; const c=ls.get(ck,null); if(c) return c;
   const r=await getJSON("https://gateway.polymarket.us/v1/market/slug/"+encodeURIComponent(sym)).catch(()=>null);
   const m=r?.market||r; if(!m || !m.slug) return null;
-  const out={slug:m.slug, q:m.question||"", short:m.titleShort||m.title||"", title:m.title||"", line:(m.line!=null?Number(m.line):null), type:String(m.sportsMarketType||m.sportsMarketTypeV2||m.marketType||"").toLowerCase(),
+  const out={slug:m.slug, cat:String(m.category||"").toLowerCase(), q:m.question||"", short:m.titleShort||m.title||"", title:m.title||"", line:(m.line!=null?Number(m.line):null), type:String(m.sportsMarketType||m.sportsMarketTypeV2||m.marketType||"").toLowerCase(),
     sides:(m.marketSides||[]).map(x=>({d:x.description||"", long:!!x.long, team:(x.team?.abbreviation||"").toLowerCase(), teamName:x.team?.safeName||x.team?.name||""}))};
   ls.set(ck,out); return out;
 }
@@ -2610,7 +2736,7 @@ function pmToLeg(mkt, side, fallbackTitle){
   const title=(mkt?.short||mkt?.title||mkt?.q||fallbackTitle||"").trim();
   const raw=title+(picked?.d&&!/^(yes)$/i.test(picked.d)?` · ${picked.d}`:"");
   const type=mkt?.type||""; const q=mkt?.q||""; const slug=String(mkt?.slug||"").toLowerCase();
-  const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw, result:null};
+  const base={league:"other", kind:"pmus", cat:polyCategory(mkt?.slug)||sportFromType(mkt?.type,mkt?.cat)||"Other", team:picked?.d||(buy?"Yes":"No"), market:title, slug:mkt?.slug||null, raw, result:null};
   if(!info || !LEAGUES[info.league]) return base;
   base.date=info.date;   // the game's day, so history dates it correctly
   if(picked?.teamName && /^[+-]?\d/.test(picked.d||"")) { const n=Number(picked.d); const per=(title.match(/\b(1H|2H|[1-4]Q|Q[1-4]|[1-3]P|P[1-3]|F5|1st Half|2nd Half)\b/i)||[])[1]; base.team=`${picked.teamName} ${isNaN(n)? picked.d : (n>0?"+":"")+n}${per?" "+({"1h":"1st half","2h":"2nd half","f5":"first 5 inn."}[per.toLowerCase()]||per):""}`; }   // "+10.50" -> "Knicks +10.5"
@@ -2638,6 +2764,9 @@ function pmToLeg(mkt, side, fallbackTitle){
   }
   // Full-game spread: "Will the SA Spurs cover 10.5 vs the UTA Jazz…", slug …-pos-10pt5 / -neg-
   if(/spread/.test(type) && fullGame){
+    // Each side states its team and number directly ("+3.50", team ARI): the most reliable source
+    const num=Number(String(picked?.d||"").replace(/[^\d.+-]/g,"")); const tm=picked?.teamName||(picked?.team? picked.team.toUpperCase() : "");
+    if(tm && picked?.d && /^[+-]?\d/.test(String(picked.d).trim()) && !isNaN(num)) return {...g, kind:"spread", team:tm, line:num, side:"over"};
     const m=q.match(/Will the\s+([A-Z]{2,4})\s+(.+?)\s+cover\s+([\d.]+)\s+vs\.?\s+the\s+([A-Z]{2,4})\s+(.+?)\s+in\b/i);
     const n = L ?? (m? Number(m[3]) : null);
     if(m && n!=null){
@@ -3059,11 +3188,12 @@ function renderPropParlays(){
       <div class="right"><span class="pill won">≈${p.dec.toFixed(1)}x</span></div></div>
       <div class="legs">${p.legs.map(x=>`<div class="leg"><div class="leg-top"><div><div class="leg-name">${esc(x.player)}</div><div class="leg-bet">${esc(legLine(x))} · ${esc(x.game.name||"")}${ppLeagues.length>1?` · ${esc(LEAGUES[x.lg]?.label||"")}`:""}</div></div>
         <div class="leg-num"><div class="cur">${Math.round(x.price*100)}¢</div><div class="of">est. ${Math.round(x.S.p*100)}%</div></div></div>
-        <div class="statline">L10 ${x.S.W.l10.h}/${x.S.W.l10.n} · season ${x.S.W.season.n?x.S.W.season.h+"/"+x.S.W.season.n:"–"} · <b class="pos">+${Math.round(x.edge*100)} pts</b>${x.S.hot&&x.side==="over"?" · 🔥 trending up":""}</div>${splitChips(x.S)}</div>`).join("")}</div>
+        <div class="statline">L10 ${x.S.W.l10.h}/${x.S.W.l10.n} · season ${x.S.W.season.n?x.S.W.season.h+"/"+x.S.W.season.n:"–"} · <b class="pos">+${Math.round(x.edge*100)} pts</b>${x.S.hot&&x.side==="over"?" · 🔥 trending up":""}</div>${splitChips(x.S)}<div class="plive" data-plive="${esc([x.lg||ppLeague,x.game?.id||"",x.player,x.label,x.line,x.side].join("|"))}"></div></div>`).join("")}</div>
       <div class="slip-f"><span class="statline" style="align-self:center">Estimated Polymarket combo payout ${p.dec.toFixed(2)}x (${decToAm(p.dec)}) · estimated chance all hit ${(p.prob*100).toFixed(1)}%${p.corr?" (adjusted for same-game legs)":""} · expected return ${p.ev>=0?"+":""}${Math.round(p.ev*100)}%</span><span class="sp"></span><button type="button" class="small" data-ppadd="${i}">Add to a slip</button></div></article>`).join("")
     + `<p class="fine">Payouts are estimates: Polymarket prices a combo as its own market, usually about 5% less per leg than the legs alone. Check the real combo price before you buy. Hit chances treat legs as independent; two legs from the same game can move together.</p>`
     : `<div class="empty"><b>No prop parlays right now</b>${esc(ts.note || "Not enough props beat their prices today. Check back closer to tip-off, when lines move.")}</div>`;
   if(list.length) logPropModel(ppLeagues.length===1? ppLeagues[0] : [...ppLeagues].sort().join("-"),list);
+  setTimeout(updateSuggestionLive,0);
 }
 $("#ppLeague").addEventListener("click",e=>{ const k=e.target.closest("[data-pp]")?.dataset.pp; if(!k) return;
   if(k==="__all") ppLeagues=[...TREND_LEAGUES];
@@ -3240,7 +3370,7 @@ async function scanTrends(lgArg){
     const findAth=(name,g)=>{ for(const t of g.teams){ const a=(rosters[g.id+":"+t.id]||[]).find(x=>sameName(x.name,name)); if(a) return {...a,team:t.abbr}; } return null; };
     const ath=new Map(); props.forEach(p=>{ const a=findAth(p.player,p.game); if(a){ p.ath=a; ath.set(a.id,{...a,game:p.game}); } });
     // Team leaders from ESPN's scoreboard, so every sport shows players even without props
-    const raw=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard?dates="+today.replace(/-/g,"")).catch(()=>null);
+    const raw=await getJSON(ESPN+LEAGUES[lg].path+"/scoreboard?dates="+today.replace(/-/g,"")+(LEAGUES[lg].q?"&"+LEAGUES[lg].q:"")).catch(()=>null);
     for(const e of raw?.events||[]){ const g=games.find(x=>x.id===e.id); if(!g) continue; const comp=e.competitions?.[0]||{};
       const groups=[...(comp.leaders||[]), ...(comp.competitors||[]).flatMap(c=>(c.leaders||[]).map(L=>({...L,team:c.team})))];
       for(const L of groups) for(const x of (L.leaders||[]).slice(0,2)){ const a=x.athlete; if(!a?.id||ath.has(String(a.id))) continue;
@@ -3394,8 +3524,12 @@ document.body.addEventListener("click",async e=>{
     const lines=[`${s.name}'s ${s.legs.length}-leg ${slipCategory(s)}${s.odds?" ("+s.odds+")":""}`, ...s.legs.map(l=>"• "+legTitle(l)+(l.kind==="prop"?` ${(l.side||"over")==="over"?"over":"under"} ${l.line} ${l.market||""}`:l.kind==="spread"?` ${l.line>0?"+":""}${l.line}`:l.kind==="total"?` ${l.side} ${l.line}`:""))];
     if(s.stake&&showMoney(s.name)) lines.push(`$${s.stake} to pay $${s.payout||"?"}`);
     try{ await navigator.clipboard.writeText(lines.join("\n")); toast("Bet copied. Paste it anywhere."); }catch{ note("Couldn't copy on this device."); } }
-  if(d.mark){ const [id,i,res]=d.mark.split("|"); const s=slips.find(x=>x.id===id); if(!s) return; s.legs[+i].result=res; persistLegs(s); }
+  if(d.mark){ const [id,i,res]=d.mark.split("|"); const s=slips.find(x=>x.id===id); if(!s) return; s.legs[+i].result=res; s.legs[+i].byHand=true; persistLegs(s); }
   const rb=e.target.closest?.("[data-react]"); if(rb){ e.preventDefault(); react(...rb.dataset.react.split("|")); }
+  if(d.tailslip){ const s=slips.find(x=>x.id===d.tailslip); if(!s) return; editingId=null;
+    drafts=s.legs.map(l=>({league:l.league,kind:l.kind,side:l.side||"over",player:l.player||"",team:l.team||"",market:l.market||"",line:l.line??""}));
+    $("#stake").value=""; $("#odds").value=s.odds||""; $("#payout").value=""; $("#previewImg").hidden=true; $("#saveSlip").textContent="Post slip";
+    showReview(`Tail ${s.name}'s ${s.legs.length}-leg. Add your stake and odds`); $("#review").scrollIntoView({behavior:"smooth"}); }
   if(d.edit){ const s=slips.find(x=>x.id===d.edit); if(!s) return; editingId=s.id;
     drafts=s.legs.map(l=>({league:l.league,kind:l.kind,side:l.side||"over",player:l.player||"",team:l.team||"",market:l.market||"",line:l.line??""}));
     $("#stake").value=s.stake||""; $("#odds").value=s.odds||""; $("#payout").value=s.payout||""; $("#previewImg").hidden=true;
@@ -3467,8 +3601,10 @@ $("#membersList").addEventListener("click",async e=>{ const k=e.target.dataset.a
 
 /* ---------- What's new (shown once per update) ---------- */
 // Add a new entry at the top for each release and bump APP_VERSION to match.
-const APP_VERSION=35;
+const APP_VERSION=36;
 const RELEASES=[
+  {v:36, date:"Nov 7", title:"Live stats on picks + bets you don't have",
+   news:["Fixed: some legs were graded on <b>last week's game</b> between the same team (e.g. Oregon showing last week's win as a hit). A leg can now only match a game that starts after the bet was placed, wrong grades are undone automatically, and slips settled that way reopen. Legs you marked by hand are never changed.", "Fixed: college football and basketball only loaded the ~16 featured games, so unranked games (UCLA at Minnesota) weren't found. All games load now.", "Fixed: “Illinois” could match <b>Northern Illinois</b>, and a player could be graded on a teammate with a similar name (Michael Wilson vs Mack Wilson Sr.).", "Fixed: most NFL and college spreads from Polymarket weren't read as spreads, so they had no live tracking.", "Fixed: table tennis bets (and other sports the app didn't know yet) weren't being imported from Polymarket. Anything Polymarket lists as sports now comes in.", "Fixed: a player prop could be matched to the same two teams' game on a different day (e.g. ATL–WSH twice in three days), so it showed Pending instead of live stats.", "Picks → Value parlays: once a suggested leg's game starts, it shows the <b>live stat vs the line</b> (or the team's score) with a progress bar, updated every 20 seconds.", "Live → <b>Don't have</b>: every open bet from the group that isn't in your slips yet and still has a game to start. It shows how many of the legs you already hold, with <b>Tail this bet</b> or <b>Open in Polymarket</b> right there."]},
   {v:35, date:"Nov 2", title:"Trends behind the picks",
    news:["<b>Team trends</b> on picks and in Injuries & news: head-to-head and at-this-stadium records, streaks like “hasn’t lost by more than 4 since Dec 2024”, home/road and bounce-back form, back-to-backs. Built nightly from ESPN results and only shown when they’d be unusual by luck alone.", "<b>Player splits</b> on prop picks: how he’s done on this exact line vs tonight’s opponent and at home or on the road. Green backs the pick, orange cuts against it.", "Trends don’t change the model’s odds until its own results show they help. Picks → Model record has a <b>Trend check</b> that tracks this."]},
   {v:34, date:"Nov 2", title:"History that checks itself",
